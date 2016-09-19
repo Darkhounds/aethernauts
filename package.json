@@ -1,0 +1,56 @@
+{
+  "name": "aethernauts",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "client-compile-html": "copyfiles -u 2 src/client/index.html public/",
+    "client-compile-css": "node-sass --source-map true src/client/css/main.scss public/lib/css/main.css",
+    "client-compile-js-bundle": "browserify src/client/js/app.js -t stringify --extensions [.html] --debug | exorcist public/lib/js/app.js.map > public/lib/js/app.js",
+    "client-compile-js-uglify": "uglifyjs public/lib/js/app.js -o public/lib/js/app.js --source-map public/lib/js/app.js.map -p relative --in-source-map public/lib/js/app.js.map",
+    "client-compile-js": "npm run client-compile-js-bundle && npm run client-compile-js-uglify",
+    "client-compile": "npm run client-compile-html && npm run client-compile-css && npm run client-compile-js",
+    "client-compile-watch": "watch 'npm run client-compile && echo \"Client compiled!\"' ./src/client/ --interval 2",
+    "client-tests": "mocha test/client/suit/**/*.spec.js --recursive -R min -r ./test/client/setup.js || true",
+    "client-tests-watch": "watch 'npm run client-tests' src/client/ test/client/suit/ test/client/mockups --interval 2",
+    "client-coverage": "istanbul cover --dir ./coverage/client -x '**/mockups/**/*.*' ./node_modules/mocha/bin/_mocha -- test/client/suit/**/*.spec.js --recursive -R min -r ./test/client/setup.js",
+    "client-coverage-watch": "watch 'npm run client-coverage' src/client/ test/client/suit/ test/client/mockups --interval 10",
+    "server-tests": "mocha test/server/suit/**/*.spec.js --recursive -R min || true",
+    "server-tests-watch": "watch 'npm run server-tests' src/server/ test/server/suit/ test/server/mockups --interval 2",
+    "server-coverage": "istanbul cover --dir ./coverage/server/ -x '**/mockups/**/*.*' ./node_modules/mocha/bin/_mocha -- test/server/suit/**/*.spec.js --recursive -R min",
+    "server-coverage-watch": "watch 'npm run server-coverage' src/server/ test/server/suit/ test/server/mockups --interval 10",
+    "start": "node start-server"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@gitlab.com/darkhounds/aethernauts.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://gitlab.com/darkhounds/aethernauts/issues"
+  },
+  "homepage": "https://gitlab.com/darkhounds/aethernauts#README",
+  "devDependencies": {
+    "browserify": "^13.1.0",
+    "chai": "^3.5.0",
+    "copyfiles": "^1.0.0",
+    "exorcist": "^0.4.0",
+    "istanbul": "^0.4.5",
+    "jsdom": "^9.5.0",
+    "minifyify": "^7.3.3",
+    "mocha": "^3.0.2",
+    "mocha-jsdom": "^1.1.0",
+    "mock-require": "^1.3.0",
+    "node-sass": "^3.10.0",
+    "npm-css": "^0.2.3",
+    "sails-disk": "^0.10.10",
+    "sinon": "^1.17.6",
+    "sinon-chai": "^2.8.0",
+    "stringify": "^5.1.0",
+    "uglify-js": "^2.7.3",
+    "watch": "^0.19.2",
+    "waterline": "^0.12.2",
+    "ws": "^1.1.1"
+  }
+}

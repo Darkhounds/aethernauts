@@ -1,0 +1,10 @@
+.idea
+*.iws
+*.iml
+*.ipr
+node_modules
+coverage
+data/**/*.*
+public/**/*.*
+
+!**/*/.include
