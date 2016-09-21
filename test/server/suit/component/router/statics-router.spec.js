@@ -1,6 +1,7 @@
 var sinon = require('sinon');
 var LoggerRoute = require('./../../../mockups/component/router/logger-route');
 var StaticAssetsRoute = require('./../../../mockups/component/router/static-assets-route');
+var StaticFaviconRoute = require('./../../../mockups/component/router/static-favicon-route');
 var StaticIndexRoute = require('./../../../mockups/component/router/static-index-route');
 
 describe('The StaticsRouter class', function () {
@@ -10,11 +11,13 @@ describe('The StaticsRouter class', function () {
 		sandbox = sinon.sandbox.create();
 		LoggerRoute.mockStart();
 		StaticAssetsRoute.mockStart();
+		StaticFaviconRoute.mockStart();
 		StaticIndexRoute.mockStart();
 		StaticsRouter = require('./../../../../../src/server/component/router/statics-router');
 	});
 	afterEach(function () {
 		StaticIndexRoute.mockStop();
+		StaticFaviconRoute.mockStop();
 		StaticAssetsRoute.mockStop();
 		LoggerRoute.mockStop();
 		sandbox.restore();
@@ -46,8 +49,16 @@ describe('The StaticsRouter class', function () {
 		});
 
 		it('should use the "StaticIndexRoute" class when invoking the addStaticIndex method', function () {
-			var index = 'index.html';
+			var icon = 'jdfhgsdjgsgjk==';
 			
+			instance.addStaticFavicon(icon);
+
+			StaticFaviconRoute.should.have.been.calledWith(server, icon);
+		});
+
+		it('should use the "StaticIndexRoute" class when invoking the addStaticIndex method', function () {
+			var index = 'index.html';
+
 			instance.addStaticIndex(index);
 
 			StaticIndexRoute.should.have.been.calledWith(server, index);

@@ -8,6 +8,7 @@ function Constructor () {
 
 Constructor.prototype.addLogger = function () {};
 Constructor.prototype.addStaticAssets = function () {};
+Constructor.prototype.addStaticFavicon = function () {};
 Constructor.prototype.addStaticIndex = function () {};
 
 Constructor.mockStart = function () {
