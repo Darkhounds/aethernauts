@@ -3,8 +3,6 @@ var StaticsServerConfig = require('./../../../../src/server/object/statics-serve
 describe('The StaticsServerConfig class', function () {
 	var root = 'root/';
 	var port = '3000';
-	var index = 'index.html';
-
 
 	it ('Should generated an object with the expected root property', function () {
 		var config = new StaticsServerConfig(root);
@@ -16,8 +14,13 @@ describe('The StaticsServerConfig class', function () {
 		config.port.should.equal(port);
 	});
 
+	it ('Should generated an object with the expected statics property', function () {
+		var config = new StaticsServerConfig(root, port, StaticsServerConfig.STATICS);
+		config.statics.should.equal(root + StaticsServerConfig.STATICS);
+	});
+
 	it ('Should generated an object with the expected index property', function () {
-		var config = new StaticsServerConfig(root, port, index);
-		config.index.should.equal(root + index);
+		var config = new StaticsServerConfig(root, port, StaticsServerConfig.INDEX);
+		config.index.should.equal(root + StaticsServerConfig.INDEX);
 	});
 });
