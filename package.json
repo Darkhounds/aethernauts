@@ -46,6 +46,7 @@
     "node-sass": "^3.10.0",
     "npm-css": "^0.2.3",
     "sails-disk": "^0.10.10",
+    "simulant": "^0.2.2",
     "sinon": "^1.17.6",
     "sinon-chai": "^2.8.0",
     "stringify": "^5.1.0",
