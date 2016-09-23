@@ -18,6 +18,7 @@ Constructor.prototype.connect = function () {
 		this._router.addLogger();
 		this._router.addStaticAssets(this._config.statics);
 		this._router.addStaticFavicon(this._config.data);
+		this._router.addSaveFormHistory();
 		this._router.addStaticIndex(this._config.index);
 
 		this._server.listen(this._config.port, function () {

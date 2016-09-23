@@ -69,5 +69,34 @@ describe('The StaticsController class', function () {
 
 			spy.should.have.been.calledWith(staticServerConfig.statics);
 		});
+
+		it ('should invoke the addStaticFavicon method of the statics-router when connecting', function () {
+			var staticServerConfig = StaticsServerConfig.getInstance();
+			var staticsController = StaticsRouter.getInstance();
+			var spy = sandbox.spy(staticsController, 'addStaticFavicon');
+
+			instance.connect();
+
+			spy.should.have.been.calledWith(staticServerConfig.data);
+		});
+
+		it ('should invoke the addSaveFormHistory method of the statics-router when connecting', function () {
+			var staticsController = StaticsRouter.getInstance();
+			var spy = sandbox.spy(staticsController, 'addSaveFormHistory');
+
+			instance.connect();
+
+			spy.should.have.been.calledOnce;
+		});
+
+		it ('should invoke the addStaticIndex method of the statics-router when connecting', function () {
+			var staticServerConfig = StaticsServerConfig.getInstance();
+			var staticsController = StaticsRouter.getInstance();
+			var spy = sandbox.spy(staticsController, 'addStaticIndex');
+
+			instance.connect();
+
+			spy.should.have.been.calledWith(staticServerConfig.index);
+		});
 	});
 });
