@@ -8,7 +8,7 @@ describe('The StaticAssetsRoute class', function () {
 		sandbox = sinon.sandbox.create();
 		server = {use: function () {}};
 
-		StaticAssetsRoute = require('./../../../../../src/server/component/router/static-assets-route');
+		StaticAssetsRoute = require('./../../../../../src/server/component/statics-router/static-assets-route');
 	});
 	afterEach(function () {
 		sandbox.restore();

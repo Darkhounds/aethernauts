@@ -1,7 +1,8 @@
-var Express = require('./../../mockups/express');
 var sinon = require('sinon');
-var StaticsServerConfig = require('./../../mockups/object/statics-server-config');
-var StaticsRouter = require('./../../mockups/component/router/statics-router');
+
+var Express = require('./../../mockups/express.mock');
+var StaticsServerConfig = require('./../../mockups/object/statics-server-config.mock');
+var StaticsRouter = require('./../../mockups/component/statics-router/statics-router.mock');
 
 describe('The StaticsController class', function () {
 	var StaticsController, sandbox;

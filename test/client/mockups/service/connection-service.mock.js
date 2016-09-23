@@ -1,7 +1,8 @@
 var util = require('util');
-var mock = require('mock-require');
 
 var EventEmitter = require('events').EventEmitter;
+
+var mock = require('mock-require');
 
 var _instance = null;
 
@@ -10,16 +11,20 @@ var Constructor = function () {
 };
 util.inherits(Constructor, EventEmitter);
 
-Constructor.prototype.setData = function () {};
-
-Constructor.prototype.render = function () {};
+Constructor.prototype.setup = function (url) {
+	this._url = url;
+};
+Constructor.prototype.open = function () {};
+Constructor.prototype.close = function () {};
 
 Constructor.mockStart = function () {
-	mock('./../../../../src/client/js/view/login-view', Constructor);
+	mock('./../../../../src/client/js/service/connection-service', new Constructor());
 };
+
 Constructor.mockStop = function () {
-	mock.stop('./../../../../src/client/js/view/login-view');
+	mock.stop('./../../../../src/client/js/service/connection-service');
 };
+
 Constructor.getInstance = function () {
 	return _instance;
 };

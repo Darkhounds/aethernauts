@@ -4,11 +4,11 @@ var sinon = require('sinon');
 var Constructor = sinon.stub();
 
 Constructor.mockStart = function () {
-	mock('./../../../../../src/server/component/router/static-index-route', Constructor);
+	mock('./../../../../../src/server/component/sockets-router/unknown-route', Constructor);
 };
 Constructor.mockStop = function () {
 	Constructor.reset();
-	mock.stop('./../../../../../src/server/component/router/static-index-route');
+	mock.stop('./../../../../../src/server/component/sockets-router/unknown-route');
 };
 
 module.exports = Constructor;

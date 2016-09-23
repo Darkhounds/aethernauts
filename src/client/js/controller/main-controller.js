@@ -1,11 +1,24 @@
+var querystring = require('querystring');
+
 var MainView = require('./../view/main-view');
 
 function Constructor () {
+	this._connectionService = require('./../service/connection-service');
+	this._setupConnectionService();
+
 	this._view = new MainView();
 
 	this._addDocumentEventListeners();
 	this._checkDocumentReady();
 }
+
+Constructor.prototype._setupConnectionService = function () {
+	var params = querystring.decode(window.location.search.substr(1));
+	var address = params.serverAddress || 'localhost';
+	var port = params.serverPort || '3002';
+
+	this._connectionService.setup('ws://' + address + ':' + port);
+};
 
 Constructor.prototype._addDocumentEventListeners = function () {
 	this._handleDocumentStateChange = this._handleDocumentStateChange.bind(this);

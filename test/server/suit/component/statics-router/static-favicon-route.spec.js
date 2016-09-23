@@ -8,7 +8,7 @@ describe('The StaticFaviconRoute class', function () {
 		sandbox = sinon.sandbox.create();
 		server = {use: function () {}};
 
-		StaticFaviconRoute = require('./../../../../../src/server/component/router/static-favicon-route');
+		StaticFaviconRoute = require('./../../../../../src/server/component/statics-router/static-favicon-route');
 	});
 	afterEach(function () {
 		sandbox.restore();

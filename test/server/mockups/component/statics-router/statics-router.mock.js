@@ -13,10 +13,10 @@ Constructor.prototype.addSaveFormHistory = function () {};
 Constructor.prototype.addStaticIndex = function () {};
 
 Constructor.mockStart = function () {
-	mock('./../../../../../src/server/component/router/statics-router', Constructor);
+	mock('./../../../../../src/server/component/statics-router/statics-router', Constructor);
 };
 Constructor.mockStop = function () {
-	mock.stop('./../../../../../src/server/component/router/statics-router');
+	mock.stop('./../../../../../src/server/component/statics-router/statics-router');
 };
 Constructor.getInstance = function () {
 	return _instance;

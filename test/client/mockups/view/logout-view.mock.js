@@ -15,10 +15,10 @@ Constructor.prototype.setData = function () {};
 Constructor.prototype.render = function () {};
 
 Constructor.mockStart = function () {
-	mock('./../../../../src/client/js/view/login-view', Constructor);
+	mock('./../../../../src/client/js/view/logout-view', Constructor);
 };
 Constructor.mockStop = function () {
-	mock.stop('./../../../../src/client/js/view/login-view');
+	mock.stop('./../../../../src/client/js/view/logout-view');
 };
 Constructor.getInstance = function () {
 	return _instance;

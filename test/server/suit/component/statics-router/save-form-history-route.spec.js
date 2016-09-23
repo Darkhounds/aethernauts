@@ -7,7 +7,7 @@ describe('The SaveFormHistoryRoute class', function () {
 		sandbox = sinon.sandbox.create();
 		server = {use: function () {}};
 
-		SaveFormHistoryRoute = require('./../../../../../src/server/component/router/save-form-history-route');
+		SaveFormHistoryRoute = require('./../../../../../src/server/component/statics-router/save-form-history-route');
 	});
 	afterEach(function () {
 		sandbox.restore();

@@ -8,7 +8,7 @@ describe('The StaticIndexRoute class', function () {
 		sandbox = sinon.sandbox.create();
 		server = {use: function () {}};
 
-		StaticIndexRoute = require('./../../../../../src/server/component/router/static-index-route');
+		StaticIndexRoute = require('./../../../../../src/server/component/statics-router/static-index-route');
 	});
 	afterEach(function () {
 		sandbox.restore();

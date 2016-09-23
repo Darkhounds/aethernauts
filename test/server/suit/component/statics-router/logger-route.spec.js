@@ -30,7 +30,7 @@ describe('The LoggerRoute class', function () {
 		consoleLog = sandbox.stub(console, 'log');
 		server = {use: function () {}};
 
-		LoggerRoute = require('./../../../../../src/server/component/router/logger-route');
+		LoggerRoute = require('./../../../../../src/server/component/statics-router/logger-route');
 	});
 	afterEach(function () {
 		sandbox.restore();

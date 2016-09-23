@@ -1,6 +1,6 @@
 var express = require('express');
 var ServerConfigObject = require('./../object/statics-server-config');
-var StaticsRouter = require('./../component/router/statics-router');
+var StaticsRouter = require('./../component/statics-router/statics-router');
 
 function Constructor (root, port) {
 	this._listening = false;
