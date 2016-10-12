@@ -2,7 +2,7 @@ var sinon = require('sinon');
 
 var LoggerRoute = require('./../../../mockups/component/statics-router/logger-route.mock');
 var StaticAssetsRoute = require('./../../../mockups/component/statics-router/static-assets-route.mock');
-var StaticFaviconRoute = require('./../../../mockups/component/statics-router/static-favicon-route.mock');
+var FaviconRoute = require('./../../../mockups/component/statics-router/favicon-route.mock');
 var SaveFormHistoryRoute = require('./../../../mockups/component/statics-router/save-form-history-route.mock');
 var StaticIndexRoute = require('./../../../mockups/component/statics-router/static-index-route.mock');
 
@@ -13,7 +13,7 @@ describe('The StaticsRouter class', function () {
 		sandbox = sinon.sandbox.create();
 		LoggerRoute.mockStart();
 		StaticAssetsRoute.mockStart();
-		StaticFaviconRoute.mockStart();
+		FaviconRoute.mockStart();
 		SaveFormHistoryRoute.mockStart();
 		StaticIndexRoute.mockStart();
 		StaticsRouter = require('./../../../../../src/server/component/statics-router/statics-router');
@@ -21,7 +21,7 @@ describe('The StaticsRouter class', function () {
 	afterEach(function () {
 		StaticIndexRoute.mockStop();
 		SaveFormHistoryRoute.mockStop();
-		StaticFaviconRoute.mockStop();
+		FaviconRoute.mockStop();
 		StaticAssetsRoute.mockStop();
 		LoggerRoute.mockStop();
 		sandbox.restore();
@@ -57,7 +57,7 @@ describe('The StaticsRouter class', function () {
 			
 			instance.addStaticFavicon(icon);
 
-			StaticFaviconRoute.should.have.been.calledWith(server, icon);
+			FaviconRoute.should.have.been.calledWith(server, icon);
 		});
 
 		it('should use the "SaveFormHistoryRoute" class when invoking the addSaveFormHistory method', function () {
