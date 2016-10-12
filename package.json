@@ -1,6 +1,6 @@
 {
   "name": "aethernauts",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -38,6 +38,7 @@
     "data-router": "^1.0.1-rc2",
     "exorcist": "^0.4.0",
     "express": "^4.14.0",
+    "express-ws": "^2.0.0",
     "istanbul": "^0.4.5",
     "jsdom": "^9.5.0",
     "minifyify": "^7.3.3",

@@ -15,9 +15,9 @@ function Constructor () {
 Constructor.prototype._setupConnectionService = function () {
 	var params = querystring.decode(window.location.search.substr(1));
 	var address = params.serverAddress || 'localhost';
-	var port = params.serverPort || '3002';
+	var port = params.serverPort || '3001';
 
-	this._connectionService.setup('ws://' + address + ':' + port);
+	this._connectionService.setup('ws://' + address + ':' + port + '/server');
 };
 
 Constructor.prototype._addDocumentEventListeners = function () {

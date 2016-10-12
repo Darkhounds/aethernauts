@@ -1,4 +1,4 @@
-var util = require('util')
+var util = require('util');
 var EventEmitter = require('events').EventEmitter;
 var mock = require('mock-require');
 

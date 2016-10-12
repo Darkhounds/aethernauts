@@ -1,14 +1,16 @@
 var diskAdapter = require('sails-disk');
 
-module.exports =  {
-	adapters: {
+var Constructor = function (storageLocation) {
+	this.adapters =  {
 		'disk': diskAdapter
-	},
+	};
 
-	connections: {
+	this.connections =  {
 		default: {
 			adapter: 'disk',
-			filePath: 'data/'
+			filePath: storageLocation
 		}
-	}
+	};
 };
+
+module.exports = Constructor;

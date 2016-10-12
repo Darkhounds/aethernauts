@@ -1,9 +1,16 @@
-function Constructor(waterline) {
-	this._waterline = waterline;
+var Waterline = require('waterline');
+
+function Constructor() {
 	this._schema = {
 		identity: 'abstract'
 	};
 }
+
+Constructor.prototype.setup = function (waterline) {
+	this._collection = Waterline.Collection.extend(this._schema);
+	this._waterline = waterline;
+	this._waterline.loadCollection(this._collection);
+};
 
 Constructor.prototype._getInstance = function () {
 	return this._waterline.collections[this._schema.identity];
@@ -36,5 +43,7 @@ Constructor.prototype.destroy = function (criteria) {
 Constructor.prototype.query = function (query, data) {
 	return this._getInstance().query(query, data);
 };
+
+Constructor.prototype.initialize = function () { };
 
 module.exports = Constructor;

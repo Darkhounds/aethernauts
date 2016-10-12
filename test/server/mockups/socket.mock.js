@@ -6,6 +6,12 @@ var _instance = null;
 
 function Constructor() {
 	_instance = this;
+
+	this.upgradeReq = {
+		connection: {
+			remoteAddress: '127.0.0.1'
+		}
+	}
 }
 util.inherits(Constructor, EventEmitter);
 

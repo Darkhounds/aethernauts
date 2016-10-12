@@ -1,22 +1,30 @@
 var mock = require('mock-require');
-var memoryAdapter = require('sails-memory');
+var sinon = require('sinon');
+var util = require('util');
 
-var instance = {
-	adapters: {
-		'memory': memoryAdapter
-	},
-	connections: {
-		default: {
-			adapter: 'memory'
-		}
-	}
+var WaterlineConfig = require('./../../../../src/server/object/waterline-config');
+
+var _instance = null;
+
+var Constructor = sinon.spy(function (storageLocation) {
+	_instance = new WaterlineConfig(storageLocation);
+
+	return _instance;
+});
+
+util.inherits(Constructor, WaterlineConfig);
+
+Constructor.getInstance = function () {
+	return _instance;
 };
 
-instance.mockStart = function () {
-	mock('./../../../../src/server/object/waterline-config', instance);
+Constructor.mockStart = function () {
+	mock('./../../../../src/server/object/waterline-config', Constructor);
 };
-instance.mockStop = function () {
+
+Constructor.mockStop = function () {
 	mock.stop('./../../../../src/server/object/waterline-config');
+	Constructor.reset();
 };
 
-module.exports = instance;
+module.exports = Constructor;

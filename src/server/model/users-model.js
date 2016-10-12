@@ -1,12 +1,8 @@
-var Abstract = require('./abstract-model');
-var Waterline = require('waterline');
 var util = require('util');
 
-function Constructor(waterline) {
-	Abstract.call(this);
+var Abstract = require('./abstract-model');
 
-	this._waterline = waterline;
-
+function Constructor() {
 	this._schema = {
 		identity: 'user',
 		connection: 'default',
@@ -16,9 +12,13 @@ function Constructor(waterline) {
 			token: 'string'
 		}
 	};
-	this._collection = Waterline.Collection.extend(this._schema);
-	this._waterline.loadCollection(this._collection);
 }
 util.inherits(Constructor, Abstract);
+
+Constructor.prototype.initialize = function () {
+	var defaultUser = { username: 'username', password: 'password' };
+
+	return this.findOrCreate({username: defaultUser.username}, defaultUser);
+};
 
 module.exports = Constructor;

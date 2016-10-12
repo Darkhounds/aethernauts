@@ -1,10 +1,13 @@
 var mock = require('mock-require');
+var sinon = require('sinon');
 var when = require('when');
 
 var _instance = null;
-var Constructor = function () {
+var Constructor = sinon.spy(function () {
 	_instance = this;
-};
+});
+
+Constructor.prototype.setup = function () {};
 
 Constructor.prototype.find = function () {
 	return _createPromise();
@@ -34,6 +37,8 @@ Constructor.prototype.query = function () {
 	return _createPromise();
 };
 
+Constructor.prototype.initialize = function () {};
+
 var _responses = [];
 Constructor.addResponse = function (error, data) {
 	_responses.push({ error: error, data: data });
@@ -55,6 +60,7 @@ Constructor.mockStart = function () {
 
 Constructor.mockStop = function () {
 	mock.stop('./../../../../src/server/model/abstract-model');
+	Constructor.reset();
 };
 
 module.exports = Constructor;
