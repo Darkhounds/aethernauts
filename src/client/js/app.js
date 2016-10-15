@@ -1,1 +1,2 @@
-console.log('Client Started');
+var MainController = require('./controller/main-controller');
+var mainController = new MainController();
