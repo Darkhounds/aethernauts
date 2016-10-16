@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "client-compile-html": "copyfiles -u 2 src/client/index.html public/",
-    "client-compile-css": "node-sass --source-map true --output-style compact src/client/css/main.scss public/lib/css/main.css",
+    "client-compile-css-fonts": "copyfiles -u 2 node_modules/font-awesome/fonts/**/*.* public/lib",
+    "client-compile-css-sass": "node-sass --source-map true --output-style compact src/client/css/main.scss public/lib/css/main.css",
+    "client-compile-css": "npm run client-compile-css-fonts && npm run client-compile-css-sass",
     "client-compile-js-bundle": "browserify src/client/js/app.js -t stringify --extensions [.html] --debug | exorcist public/lib/js/app.js.map > public/lib/js/app.js",
     "client-compile-js-uglify": "uglifyjs public/lib/js/app.js -o public/lib/js/app.js --source-map public/lib/js/app.js.map -p relative --in-source-map public/lib/js/app.js.map",
     "client-compile-js": "npm run client-compile-js-bundle && npm run client-compile-js-uglify",
@@ -40,6 +42,7 @@
     "exorcist": "^0.4.0",
     "express": "^4.14.0",
     "express-ws": "^2.0.0",
+    "font-awesome": "^4.6.3",
     "istanbul": "^0.4.5",
     "jsdom": "^9.5.0",
     "minifyify": "^7.3.3",
