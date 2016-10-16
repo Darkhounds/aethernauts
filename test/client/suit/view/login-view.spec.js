@@ -2,7 +2,7 @@ var sinon = require('sinon');
 var simulant = require('simulant');
 var EventEmitter = require('events').EventEmitter;
 
-describe('The LoginView class', function () {
+describe('The Login View class', function () {
 	var LoginView, sandbox, context;
 
 	beforeEach(function() {
@@ -11,8 +11,13 @@ describe('The LoginView class', function () {
 		context = document.createElement('div');
 		context.id = 'AUTHENTICATION';
 	});
+
 	afterEach(function() {
 		sandbox.restore();
+	});
+
+	it('should be a function', function () {
+		LoginView.should.be.a('function');
 	});
 
 	describe('as an instance', function () {
@@ -21,6 +26,7 @@ describe('The LoginView class', function () {
 		beforeEach(function () {
 			instance = new LoginView();
 		});
+
 		afterEach(function () {
 			instance = null;
 		});

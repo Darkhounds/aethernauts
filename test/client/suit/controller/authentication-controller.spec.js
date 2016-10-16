@@ -1,37 +1,45 @@
 var sinon = require('sinon');
 
-var connectionEvent = require('./../../../../src/client/js/event/connection-events');
-var connectionService = require('./../../mockups/service/connection-service.mock');
+var ConnectionEvent = require('./../../../../src/client/js/event/connection-event');
+var ConnectionService = require('./../../mockups/service/connection-service.mock');
 
 var LoginView = require('./../../mockups/view/login-view.mock');
 var LogoutView = require('./../../mockups/view/logout-view.mock');
 
 describe('The AuthenticationController class', function () {
 	var AuthenticationController, sandbox, context;
+	var username = 'foo';
+	var password = 'bar';
 
 	beforeEach(function() {
 		sandbox = sinon.sandbox.create();
 		LoginView.mockStart();
 		LogoutView.mockStart();
-		connectionService.mockStart();
+		ConnectionService.mockStart();
 		AuthenticationController = require('./../../../../src/client/js/controller/authentication-controller');
 		context = document.createElement('div');
 	});
+
 	afterEach(function() {
-		connectionService.mockStop();
+		ConnectionService.mockStop();
 		LogoutView.mockStop();
 		LoginView.mockStop();
 		sandbox.restore();
 	});
 
+	it('should be a function', function () {
+		AuthenticationController.should.be.a('function');
+	});
+
 	describe('as an instance', function () {
-		var instance, username, password;
+		var instance, connectionService;
 
 		beforeEach(function () {
-			username = 'foo';
-			password = 'bar';
+			connectionService = new ConnectionService();
 			instance = new AuthenticationController();
+			instance.setup(connectionService);
 		});
+
 		afterEach(function () {
 			instance = null;
 		});
@@ -52,7 +60,7 @@ describe('The AuthenticationController class', function () {
 			var error = 'bogus';
 			var spy = sandbox.stub(console, 'error');
 
-			connectionService.getInstance().emit(connectionEvent.CONNECTION_ERROR, error);
+			connectionService.emit(ConnectionEvent.CONNECTION_ERROR, error);
 
 			spy.should.have.been.calledWith(error);
 		});
@@ -61,13 +69,13 @@ describe('The AuthenticationController class', function () {
 			var error = 'bogus';
 			var spy = sandbox.stub(console, 'error');
 
-			connectionService.getInstance().emit(connectionEvent.AUTHENTICATION_ERROR, error);
+			connectionService.emit(ConnectionEvent.AUTHENTICATION_ERROR, error);
 
 			spy.should.have.been.calledWith(error);
 		});
 
 		it ('should handle a login view authenticate event', function () {
-			var spy = sandbox.spy(connectionService.getInstance(), 'open');
+			var spy = sandbox.spy(connectionService, 'open');
 
 			LoginView.getInstance().emit('authenticate', username, password);
 
@@ -78,7 +86,7 @@ describe('The AuthenticationController class', function () {
 			var spy = sandbox.spy(LogoutView.getInstance(), 'render');
 
 			instance.setContext(context);
-			connectionService.getInstance().emit(connectionEvent.OPENED);
+			connectionService.emit(ConnectionEvent.OPENED);
 
 			spy.should.have.been.calledWith(context);
 		});
@@ -87,7 +95,7 @@ describe('The AuthenticationController class', function () {
 			var spy = sandbox.spy(context.classList, 'add');
 
 			instance.setContext(context);
-			connectionService.getInstance().emit(connectionEvent.DISCONNECTED);
+			connectionService.emit(ConnectionEvent.DISCONNECTED);
 
 			spy.should.have.been.calledWith('disconnected');
 		});
@@ -96,13 +104,13 @@ describe('The AuthenticationController class', function () {
 			var spy = sandbox.spy(context.classList, 'remove');
 
 			instance.setContext(context);
-			connectionService.getInstance().emit(connectionEvent.RECONNECTED);
+			connectionService.emit(ConnectionEvent.RECONNECTED);
 
 			spy.should.have.been.calledWith('disconnected');
 		});
 
 		it ('should handle a logout view disconnect event', function () {
-			var spy = sandbox.spy(connectionService.getInstance(), 'close');
+			var spy = sandbox.spy(connectionService, 'close');
 
 			LogoutView.getInstance().emit('disconnect');
 
@@ -114,7 +122,7 @@ describe('The AuthenticationController class', function () {
 
 			var spy = sandbox.spy(LoginView.getInstance(), 'render');
 
-			connectionService.getInstance().emit(connectionEvent.CLOSED);
+			connectionService.emit(ConnectionEvent.CLOSED);
 
 			spy.should.have.been.calledWith(context);
 		});

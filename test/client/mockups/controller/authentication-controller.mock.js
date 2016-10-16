@@ -1,19 +1,24 @@
+var sinon = require('sinon');
 var mock = require('mock-require');
 
 var _instance = null;
-
-var Constructor = function () {
+var Constructor = sinon.spy(function () {
 	_instance = this;
-};
+});
+
+Constructor.prototype.setup = function () {};
 
 Constructor.prototype.setContext = function () {};
 
 Constructor.mockStart = function () {
 	mock('./../../../../src/client/js/controller/authentication-controller', Constructor);
 };
+
 Constructor.mockStop = function () {
 	mock.stop('./../../../../src/client/js/controller/authentication-controller');
+	Constructor.reset();
 };
+
 Constructor.getInstance = function () {
 	return _instance;
 };

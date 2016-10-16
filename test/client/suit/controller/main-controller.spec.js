@@ -1,54 +1,41 @@
 var sinon = require('sinon');
-var jsdom = require('jsdom');
+var simulant = require('simulant');
 
 var MainView = require('./../../mockups/view/main-view.mock');
-var connectionService = require('./../../mockups/service/connection-service.mock');
+var ConnectionService = require('./../../mockups/service/connection-service.mock');
 
-describe('The MainController class', function () {
+describe('The Main Controller class', function () {
 	var MainController, sandbox;
+	var address = '127.0.0.1';
+	var port = '999';
+	var path = '/bogus';
 
 	beforeEach(function() {
 		sandbox = sinon.sandbox.create();
 		MainView.mockStart();
-		connectionService.mockStart();
+		ConnectionService.mockStart();
 		MainController = require('./../../../../src/client/js/controller/main-controller');
 	});
+
 	afterEach(function() {
-		connectionService.mockStop();
+		ConnectionService.mockStop();
 		MainView.mockStop();
 		sandbox.restore();
 	});
 
-	it ('should setup the connection service when created with the default url', function () {
-		var address = 'localhost';
-		var port = '3002';
-		var spy = sandbox.spy(connectionService.getInstance(), 'setup');
-
-		new MainController();
-
-		spy.should.have.been.calledWith('ws://' + address + ':' + port);
-	});
-
-	it ('should define a new connection service with the expected url', function () {
-		var address = 'bogus';
-		var port = '666';
-		var spy = sandbox.spy(connectionService.getInstance(), 'setup');
-
-		setWindowAddress('http://localhost?serverAddress=' + address + '&serverPort=' + port);
-
-		new MainController();
-
-		spy.should.have.been.called
-
-		resetWindowAddress();
+	it('should be a function', function () {
+		MainController.should.be.a('function');
 	});
 
 	describe('as an instance', function () {
-		var instance;
+		var instance, connectionService, mainView;
 
 		beforeEach(function () {
 			instance = new MainController();
+			connectionService = ConnectionService.getInstance();
+			mainView = MainView.getInstance();
 		});
+
 		afterEach(function () {
 			instance = null;
 		});
@@ -57,12 +44,44 @@ describe('The MainController class', function () {
 			instance.should.be.an.instanceof(MainController);
 		});
 
-		it ('should render the view after the dom is loaded with the document as argument', function () {
-			var spy = sandbox.spy(MainView.getInstance(), 'render');
+		it('should setup the connectionService with the default url after the setup', function() {
+			var spy = sandbox.spy(connectionService, 'setup');
+			var expectedURL = 'ws://' + MainController.DEFAULT_ADDRESS + ':' + MainController.DEFAULT_PORT + MainController.DEFAULT_PATH;
 
-			document.readyState = 'complete';
+			instance.setup();
 
-			spy.should.have.been.calledWith(document);
+			spy.should.have.been.calledWith(expectedURL);
+		});
+
+		it('should setup the connectionService with the expected url after the setup', function() {
+			var spy = sandbox.spy(connectionService, 'setup');
+			var expectedURL = 'ws://' + address + ':' + port + path;
+
+			instance.setup(address, port, path);
+
+			spy.should.have.been.calledWith(expectedURL);
+		});
+
+		describe('after setup', function () {
+			var mockReadystatechangeListener;
+
+			beforeEach(function () {
+				sandbox.stub(document, 'addEventListener', function (type, cb) {
+					switch (type) {
+						case 'readystatechange': mockReadystatechangeListener = cb; break;
+						default: break;
+					}
+				});
+				instance.setup(address, port, path);
+			});
+
+			it ('should render the view after the dom is loaded with the document as argument', function () {
+				var spy = sandbox.spy(mainView, 'render');
+
+				mockReadystatechangeListener();
+
+				spy.should.have.been.calledWith(document);
+			});
 		});
 	});
 });

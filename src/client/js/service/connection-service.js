@@ -1,6 +1,6 @@
 var util = require('util')
 var EventEmitter = require('events').EventEmitter;
-var connectionEvents = require('./../event/connection-events');
+var ConnectionEvent = require('./../event/connection-event');
 
 var Constructor = function () {
 	this._url = '';
@@ -12,7 +12,7 @@ var Constructor = function () {
 };
 util.inherits(Constructor, EventEmitter);
 
-Constructor.prototype.DEFAULT_DELAY = 3 * 1000;
+Constructor.DEFAULT_DELAY = 3 * 1000;
 
 Constructor.prototype.setup = function (url) {
 	this._url = url;
@@ -59,7 +59,7 @@ Constructor.prototype.close = function () {
 	this._username = '';
 	this._token = '';
 
-	this.emit(connectionEvents.CLOSED);
+	this.emit(ConnectionEvent.CLOSED);
 };
 
 Constructor.prototype._destroyConnection = function () {
@@ -79,7 +79,7 @@ Constructor.prototype._handleConnectionError = function () {
 	if (this._token) {
 		this._reconnect();
 	} else {
-		this.emit(connectionEvents.CONNECTION_ERROR);
+		this.emit(ConnectionEvent.CONNECTION_ERROR, ConnectionEvent.CONNECTION_ERROR);
 		this.close();
 	}
 };
@@ -89,7 +89,7 @@ Constructor.prototype._reconnect = function () {
 	this._reconnectionTimeout = setTimeout(this._handleReconnection, Constructor.DEFAULT_DELAY);
 
 	this._destroyConnection();
-	this.emit(connectionEvents.DISCONNECTED);
+	this.emit(ConnectionEvent.DISCONNECTED);
 };
 
 Constructor.prototype._handleMessageReceived = function (e) {
@@ -106,7 +106,7 @@ Constructor.prototype._handleMessageReceived = function (e) {
 			this._handleMessage(data);
 			break;
 		default:
-			this.emit(connectionEvents.MESSAGE_ERROR);
+			this.emit(ConnectionEvent.MESSAGE_ERROR);
 			break;
 	}
 };
@@ -115,31 +115,31 @@ Constructor.prototype._handleAuthentication = function (data) {
 	if (data.valid) {
 		this._connected = true;
 		this._token = data.token;
-		this.emit(connectionEvents.OPENED, this._username, this._token);
+		this.emit(ConnectionEvent.OPENED, this._username, this._token);
 	} else {
-		this.emit(connectionEvents.AUTHENTICATION_ERROR);
+		this.emit(ConnectionEvent.AUTHENTICATION_ERROR, ConnectionEvent.AUTHENTICATION_ERROR);
 		this.close();
 	}
 };
 
 Constructor.prototype._handleReconnected = function (data) {
 	if (data.valid) {
-		this.emit(connectionEvents.RECONNECTED);
+		this.emit(ConnectionEvent.RECONNECTED);
 	} else {
-		this.emit(connectionEvents.AUTHENTICATION_ERROR);
+		this.emit(ConnectionEvent.AUTHENTICATION_ERROR);
 		this.close();
 	}
 };
 
 Constructor.prototype._handleMessage = function (data) {
-	this.emit(connectionEvents.MESSAGE, data.id, data.data);
+	this.emit(ConnectionEvent.MESSAGE, data.id, data.data);
 };
 
 Constructor.prototype._handleClosed = function () {
 	if (this._token) {
 		this._reconnect();
 	} else {
-		this.emit(connectionEvents.CONNECTION_ERROR);
+		this.emit(ConnectionEvent.CONNECTION_ERROR);
 		this.close();
 	}
 };
@@ -164,4 +164,4 @@ Constructor.prototype.send = function (data, id) {
 	return result;
 };
 
-module.exports = new Constructor();
+module.exports = Constructor;

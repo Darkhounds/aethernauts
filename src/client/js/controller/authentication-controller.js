@@ -1,12 +1,15 @@
 var LoginView = require('./../view/login-view');
 var LogoutView = require('./../view/logout-view');
-var connectionEvents = require('./../event/connection-events');
+var ConnectionEvent = require('./../event/connection-event');
 
-function Constructor () {
+var Constructor = function () {
 	this._context = null;
 	this._data = null;
 
-	this._connectionService = require('./../service/connection-service');
+};
+
+Constructor.prototype.setup = function (connectionService) {
+	this._connectionService = connectionService;
 	this._addConnectionServiceEvents();
 
 	this._loginView = new LoginView();
@@ -14,24 +17,24 @@ function Constructor () {
 
 	this._logoutView = new LogoutView();
 	this._setupLogoutView();
-}
+};
 
 Constructor.prototype._addConnectionServiceEvents = function () {
 	this._handleConnectionError = Constructor.prototype._handleConnectionError.bind(this);
-	this._connectionService.on(connectionEvents.CONNECTION_ERROR, this._handleConnectionError);
-	this._connectionService.on(connectionEvents.AUTHENTICATION_ERROR, this._handleConnectionError);
+	this._connectionService.on(ConnectionEvent.CONNECTION_ERROR, this._handleConnectionError);
+	this._connectionService.on(ConnectionEvent.AUTHENTICATION_ERROR, this._handleConnectionError);
 
 	this._handleConnectionOpened = Constructor.prototype._handleConnectionOpened.bind(this);
-	this._connectionService.on(connectionEvents.OPENED, this._handleConnectionOpened);
+	this._connectionService.on(ConnectionEvent.OPENED, this._handleConnectionOpened);
 
 	this._handleConnectionDisconnected = Constructor.prototype._handleConnectionDisconnected.bind(this);
-	this._connectionService.on(connectionEvents.DISCONNECTED, this._handleConnectionDisconnected);
+	this._connectionService.on(ConnectionEvent.DISCONNECTED, this._handleConnectionDisconnected);
 
 	this._handleConnectionReconnected = Constructor.prototype._handleConnectionReconnected.bind(this);
-	this._connectionService.on(connectionEvents.RECONNECTED, this._handleConnectionReconnected);
+	this._connectionService.on(ConnectionEvent.RECONNECTED, this._handleConnectionReconnected);
 
 	this._handleConnectionClosed = Constructor.prototype._handleConnectionClosed.bind(this);
-	this._connectionService.on(connectionEvents.CLOSED, this._handleConnectionClosed);
+	this._connectionService.on(ConnectionEvent.CLOSED, this._handleConnectionClosed);
 };
 
 Constructor.prototype._handleConnectionError = function (e) {

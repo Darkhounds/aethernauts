@@ -1,9 +1,9 @@
 var util = require('util');
+var sinon = require('sinon');
 var EventEmitter = require('events').EventEmitter;
 
 var _instance = null;
-
-var Constructor = function (url, protocols) {
+var Constructor = sinon.spy(function (url, protocols) {
 	_instance = this;
 
 	this.protocol = '';
@@ -14,7 +14,7 @@ var Constructor = function (url, protocols) {
 	this.url = url;
 	this.readyState = true;
 	this.binaryType = 'blob';
-};
+});
 util.inherits(Constructor, EventEmitter);
 
 Constructor.prototype.send = function () {};
@@ -28,6 +28,20 @@ Constructor.CONNECTING = 0;
 Constructor.OPEN = 1;
 Constructor.CLOSING = 2;
 Constructor.CLOSED = 3;
+
+Constructor.mockStart = function () {
+	_websocket = global.WebSocket;
+	global.WebSocket = Constructor;
+	window.WebSocket = Constructor;
+};
+
+var _websocket;
+Constructor.mockStop = function () {
+	global.WebSocket = _websocket;
+	window.WebSocket = _websocket;
+	Constructor.reset();
+};
+
 Constructor.getInstance = function () {
 	return _instance;
 };

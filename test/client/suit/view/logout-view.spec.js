@@ -11,8 +11,13 @@ describe('The LogoutView class', function () {
 		context = document.createElement('div');
 		context.id = 'AUTHENTICATION';
 	});
+	
 	afterEach(function() {
 		sandbox.restore();
+	});
+
+	it('should be a function', function () {
+		LogoutView.should.be.a('function');
 	});
 
 	describe('as an instance', function () {
@@ -21,6 +26,7 @@ describe('The LogoutView class', function () {
 		beforeEach(function () {
 			instance = new LogoutView();
 		});
+
 		afterEach(function () {
 			instance = null;
 		});

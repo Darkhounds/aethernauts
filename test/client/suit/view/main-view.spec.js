@@ -1,5 +1,6 @@
 var sinon = require('sinon');
 
+var ConnectionService = require('./../../mockups/service/connection-service.mock');
 var AuthenticationController = require('./../../mockups/controller/authentication-controller.mock');
 
 describe('The MainView class', function () {
@@ -7,28 +8,43 @@ describe('The MainView class', function () {
 
 	beforeEach(function() {
 		sandbox = sinon.sandbox.create();
+		ConnectionService.mockStart();
 		AuthenticationController.mockStart();
 		MainView = require('./../../../../src/client/js/view/main-view');
 		context = document.createElement('div');
 		context.innerHTML = '<div id="APP"><div id="AUTHENTICATION"></div></div>';
 	});
+
 	afterEach(function() {
 		AuthenticationController.mockStop();
+		ConnectionService.mockStop();
 		sandbox.restore();
 	});
 
+	it ('should be a function', function () {
+		MainView.should.be.a('function');
+	});
+
 	describe('as an instance', function () {
-		var instance;
+		var instance, connectionService, authenticationController;
 
 		beforeEach(function () {
-			instance = new MainView();
+			connectionService = new ConnectionService();
+			instance = new MainView(connectionService);
+			instance.setup(connectionService);
+			authenticationController = AuthenticationController.getInstance();
 		});
+
 		afterEach(function () {
 			instance = null;
 		});
 
 		it ('should be an instance of "MainView"', function () {
 			instance.should.be.an.instanceof(MainView);
+		});
+
+		it ('should create a new Authentication Controller with the expected connectionService when setup', function () {
+			AuthenticationController.should.have.been.called;
 		});
 
 		it ('should render', function () {
@@ -38,7 +54,7 @@ describe('The MainView class', function () {
 		});
 
 		it ('should set the authenticationController context', function () {
-			var spy = sandbox.spy(AuthenticationController.getInstance(), 'setContext');
+			var spy = sandbox.spy(authenticationController, 'setContext');
 
 			instance.render(context);
 

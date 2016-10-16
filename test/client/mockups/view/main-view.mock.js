@@ -1,10 +1,13 @@
+var sinon = require('sinon');
 var mock = require('mock-require');
 
 var _instance = null;
-
-var Constructor = function () {
+var Constructor = sinon.spy(function () {
 	_instance = this;
-};
+});
+
+Constructor.prototype.setup = function () {};
+
 Constructor.prototype.render = function () {};
 
 Constructor.mockStart = function () {
@@ -12,6 +15,7 @@ Constructor.mockStart = function () {
 };
 Constructor.mockStop = function () {
 	mock.stop('./../../../../src/client/js/view/main-view');
+	Constructor.reset();
 };
 Constructor.getInstance = function () {
 	return _instance;
