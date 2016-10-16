@@ -83,7 +83,7 @@ describe('The AuthenticationController class', function () {
 			spy.should.have.been.calledWith(context);
 		});
 
-		it ('should add the disconnected class to the context on connection service disconnected events', function () {
+		it ('should add the disconnected class to the context on connection service disconnected event', function () {
 			var spy = sandbox.spy(context.classList, 'add');
 
 			instance.setContext(context);
@@ -92,7 +92,7 @@ describe('The AuthenticationController class', function () {
 			spy.should.have.been.calledWith('disconnected');
 		});
 
-		it ('should add the disconnected class to the context on connection service disconnected events', function () {
+		it ('should remove the disconnected class from the context on connection service reconnected event', function () {
 			var spy = sandbox.spy(context.classList, 'remove');
 
 			instance.setContext(context);
