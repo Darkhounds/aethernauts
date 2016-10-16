@@ -1,8 +1,11 @@
 <div>
 	<iframe id="AUTHENTICATION-HACK" name="AUTHENTICATION-HACK" style="display: none" ></iframe>
-	<form id="AUTHENTICATION" target="AUTHENTICATION-HACK" autocomplete="on" method="post" action="save-form-history">
-		<input id="USERNAME" type="text" placeholder="username" value="">
-		<input id="PASSWORD" type="password" placeholder="password" value="">
-		<button id="LOGIN" type="submit">Login</button>
+	<form id="AUTHENTICATION" class="control has-addons" target="AUTHENTICATION-HACK" autocomplete="on" method="post" action="save-form-history">
+		<input id="USERNAME" class="input is-primary" type="text" placeholder="username" value="">
+		<div class="control has-icon">
+			<input id="PASSWORD" class="input is-primary" type="password" placeholder="password" value="">
+			<div class="fa fa-lock"></div>
+		</div>
+		<button id="LOGIN" class="button is-primary" type="submit" >Login</button>
 	</form>
 </div>
