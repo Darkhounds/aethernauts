@@ -2,8 +2,12 @@ var sinon = require('sinon');
 var simulant = require('simulant');
 var EventEmitter = require('events').EventEmitter;
 
+var AuthenticationEvent = require('./../../../../src/client/js/event/authentication-event');
+
 describe('The Login View class', function () {
 	var LoginView, sandbox, context;
+	var username = 'foo';
+	var password = 'bar';
 
 	beforeEach(function() {
 		sandbox = sinon.sandbox.create();
@@ -54,13 +58,13 @@ describe('The Login View class', function () {
 		it ('should render with a username input element', function () {
 			instance.render(context);
 
-			context.querySelector('input#USERNAME').should.exist;
+			context.querySelector('#USERNAME input').should.exist;
 		});
 
 		it ('should render with a password input element', function () {
 			instance.render(context);
 
-			context.querySelector('input#PASSWORD[type="password"]').should.exist;
+			context.querySelector('#PASSWORD input[type="password"]').should.exist;
 		});
 
 		it ('should render with a login submit element', function () {
@@ -73,15 +77,14 @@ describe('The Login View class', function () {
 			instance.setData();
 			instance.render(context);
 
-			context.querySelector('#USERNAME').value.should.equal('');
+			context.querySelector('#USERNAME input').value.should.equal('');
 		});
 
 		it ('should render with the specified username', function () {
-			var username = 'foo';
 			instance.setData({username: username});
 			instance.render(context);
 
-			context.querySelector('#USERNAME').value.should.equal(username);
+			context.querySelector('#USERNAME input').value.should.equal(username);
 		});
 
 		it ('should render with the specified password', function () {
@@ -89,15 +92,13 @@ describe('The Login View class', function () {
 			instance.setData({password: password});
 			instance.render(context);
 
-			context.querySelector('#PASSWORD').value.should.equal(password);
+			context.querySelector('#PASSWORD input').value.should.equal(password);
 		});
 
-		it ('should trigger an "authenticate" event when clicking the login submit element', function () {
+		it ('should trigger an AuthenticationEvent.AUTHENTICATE event when clicking the login submit element', function () {
 			var spy = sandbox.spy();
-			var username = 'foo';
-			var password = 'bar';
 
-			instance.on('authenticate', spy);
+			instance.on(AuthenticationEvent.AUTHENTICATE, spy);
 			instance.setData({username: username, password: password});
 			instance.render(context);
 			simulant.fire(context.querySelector('#LOGIN[type="submit"]'), 'click');
@@ -134,6 +135,16 @@ describe('The Login View class', function () {
 			simulant.fire(context.querySelector('#LOGIN[type="submit"]'), 'click');
 
 			spy.should.have.not.been.called;
+		});
+
+		it ('should trigger an AuthenticationEvent.REGISTER event when clicking the login submit element', function () {
+			var spy = sandbox.spy();
+
+			instance.on(AuthenticationEvent.REGISTER, spy);
+			instance.render(context);
+			simulant.fire(context.querySelector('#REGISTER'), 'click');
+
+			spy.should.have.been.calledOnce;
 		});
 	});
 });

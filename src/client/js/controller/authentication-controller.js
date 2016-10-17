@@ -1,11 +1,23 @@
 var LoginView = require('./../view/login-view');
 var LogoutView = require('./../view/logout-view');
+var RegisterView = require('./../view/register-view');
+var AuthenticationEvent = require('./../event/authentication-event');
 var ConnectionEvent = require('./../event/connection-event');
 
 var Constructor = function () {
 	this._context = null;
 	this._data = null;
 
+	this._handleLogout = Constructor.prototype._handleLogout.bind(this);
+	this._handleConnectionError = Constructor.prototype._handleConnectionError.bind(this);
+	this._handleConnectionOpened = Constructor.prototype._handleConnectionOpened.bind(this);
+	this._handleConnectionDisconnected = Constructor.prototype._handleConnectionDisconnected.bind(this);
+	this._handleConnectionReconnected = Constructor.prototype._handleConnectionReconnected.bind(this);
+	this._handleConnectionClosed = Constructor.prototype._handleConnectionClosed.bind(this);
+	this._handleAuthenticated = Constructor.prototype._handleAuthenticated.bind(this);
+	this._handleRegister = Constructor.prototype._handleRegister.bind(this);
+	this._handleRegistered = Constructor.prototype._handleRegistered.bind(this);
+	this._handleAuthenticate = Constructor.prototype._handleAuthenticate.bind(this);
 };
 
 Constructor.prototype.setup = function (connectionService) {
@@ -17,23 +29,17 @@ Constructor.prototype.setup = function (connectionService) {
 
 	this._logoutView = new LogoutView();
 	this._setupLogoutView();
+
+	this._registerView = new RegisterView();
+	this._setupRegisterView();
 };
 
 Constructor.prototype._addConnectionServiceEvents = function () {
-	this._handleConnectionError = Constructor.prototype._handleConnectionError.bind(this);
 	this._connectionService.on(ConnectionEvent.CONNECTION_ERROR, this._handleConnectionError);
 	this._connectionService.on(ConnectionEvent.AUTHENTICATION_ERROR, this._handleConnectionError);
-
-	this._handleConnectionOpened = Constructor.prototype._handleConnectionOpened.bind(this);
 	this._connectionService.on(ConnectionEvent.OPENED, this._handleConnectionOpened);
-
-	this._handleConnectionDisconnected = Constructor.prototype._handleConnectionDisconnected.bind(this);
 	this._connectionService.on(ConnectionEvent.DISCONNECTED, this._handleConnectionDisconnected);
-
-	this._handleConnectionReconnected = Constructor.prototype._handleConnectionReconnected.bind(this);
 	this._connectionService.on(ConnectionEvent.RECONNECTED, this._handleConnectionReconnected);
-
-	this._handleConnectionClosed = Constructor.prototype._handleConnectionClosed.bind(this);
 	this._connectionService.on(ConnectionEvent.CLOSED, this._handleConnectionClosed);
 };
 
@@ -59,21 +65,38 @@ Constructor.prototype._handleConnectionClosed = function () {
 };
 
 Constructor.prototype._setupLoginView = function () {
-	this._handleAuthenticate = Constructor.prototype._handleAuthenticate.bind(this);
-	this._loginView.on('authenticate', this._handleAuthenticate);
+	this._loginView.on(AuthenticationEvent.AUTHENTICATE, this._handleAuthenticated);
+	this._loginView.on(AuthenticationEvent.REGISTER, this._handleRegister);
 };
 
-Constructor.prototype._handleAuthenticate = function (username, password) {
+Constructor.prototype._handleAuthenticated = function (username, password) {
 	this._connectionService.open(username, password);
 };
 
-Constructor.prototype._setupLogoutView = function () {
-	this._handleDisconnect = Constructor.prototype._handleDisconnect.bind(this);
-	this._logoutView.on('disconnect', this._handleDisconnect);
+Constructor.prototype._handleRegister = function () {
+	this._registerView.render(this._context);
 };
 
-Constructor.prototype._handleDisconnect = function () {
+Constructor.prototype._setupLogoutView = function () {
+	this._logoutView.on(AuthenticationEvent.LOGOUT, this._handleLogout);
+};
+
+Constructor.prototype._handleLogout = function () {
 	this._connectionService.close();
+};
+
+Constructor.prototype._setupRegisterView = function () {
+	this._registerView.on(AuthenticationEvent.REGISTER, this._handleRegistered);
+	this._registerView.on(AuthenticationEvent.AUTHENTICATE, this._handleAuthenticate);
+};
+
+Constructor.prototype._handleRegistered = function (email, username, password, character) {
+	this._connectionService.register(email, username, password, character);
+};
+
+
+Constructor.prototype._handleAuthenticate = function () {
+	this._loginView.render(this._context);
 };
 
 Constructor.prototype.setContext = function (context) {

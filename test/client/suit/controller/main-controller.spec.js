@@ -82,6 +82,15 @@ describe('The Main Controller class', function () {
 
 				spy.should.have.been.calledWith(document);
 			});
+
+			it ('should not render the view if the readyStateChange is not to "complete" state', function () {
+				var spy = sandbox.spy(mainView, 'render');
+
+				document.readyState = 'bogus';
+				mockReadystatechangeListener();
+
+				spy.should.not.have.been.calledWith(document);
+			});
 		});
 	});
 });

@@ -2,20 +2,26 @@ var sinon = require('sinon');
 
 var ConnectionEvent = require('./../../../../src/client/js/event/connection-event');
 var Websocket = require('./../../mockups/websocket');
+var XMLHttpRequest = require('./../../mockups/http-request');
 
 describe('The Connection Service class', function () {
 	var ConnectionService, sandbox;
 	var url = 'localhost:3001/server';
+	var email = 'something@somewhere.com';
 	var username = 'foo';
 	var password = 'bar';
+	var character = 'bogus';
+	var token = 'bogus';
 
 	beforeEach(function() {
 		sandbox = sinon.sandbox.create();
 		Websocket.mockStart();
+		XMLHttpRequest.mockStart();
 		ConnectionService = require('./../../../../src/client/js/service/connection-service');
 	});
 
 	afterEach(function() {
+		XMLHttpRequest.mockStop();
 		Websocket.mockStop();
 		sandbox.restore();
 	});
@@ -38,6 +44,62 @@ describe('The Connection Service class', function () {
 
 		it('should be an instance of', function () {
 			instance.should.be.an.instanceOf(ConnectionService);
+		});
+
+		it('should hit the registration endpoint', function () {
+			var expected = 'email=' + email + '&username=' + username + '&password=' + password + '&character=' + character;
+			var spy = sandbox.spy(XMLHttpRequest.prototype, 'send');
+
+			instance.register(email, username, password, character);
+
+			spy.should.have.been.calledWith(expected);
+		});
+
+		it('should fail silently while handeling another registration process', function () {
+			instance.register(email, username, password, character);
+			instance.register(email, username, password, character);
+
+			XMLHttpRequest.should.have.been.calledOnce;
+		});
+
+		it('should do handle a connection error during a registration process by triggering a ConnectionEvent.CONNECTION_ERROR event', function () {
+			var spy = sandbox.spy();
+
+			instance.on(ConnectionEvent.CONNECTION_ERROR, spy);
+			instance.register(email, username, password, character);
+
+			var request = XMLHttpRequest.getInstance();
+			request.emit('error');
+
+			spy.should.have.been.calledOnce;
+		});
+
+		it('should do handle a successful registration process with a new connection', function () {
+			var data = JSON.stringify({command: 'registration', valid: true, token: token});
+			var spy = sandbox.spy(instance, 'open');
+
+			instance.register(email, username, password, character);
+
+			var request = XMLHttpRequest.getInstance();
+			request.responseText = data;
+			request.emit('load');
+
+			spy.should.have.been.calledWith(username, null, token);
+		});
+
+		it('should do handle a unsuccessful registration process by triggering a ConnectionEvent.REGISTRATION_ERROR event', function () {
+			var error = ['email'];
+			var data = JSON.stringify({command: 'registration', valid: false, error: error});
+			var spy = sandbox.spy();
+
+			instance.on(ConnectionEvent.REGISTRATION_ERROR, spy);
+			instance.register(email, username, password, character);
+
+			var request = XMLHttpRequest.getInstance();
+			request.responseText = data;
+			request.emit('load');
+
+			spy.should.have.been.calledWith(error);
 		});
 
 		it('should create a websocket when opening a connection', function () {

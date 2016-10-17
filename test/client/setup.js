@@ -22,6 +22,13 @@ global.history = {
 };
 global.document = document;
 
+Object.defineProperty(document, "readyState", {
+	writable: true,
+	value: 'complete',
+	enumerable: true,
+	configurable: true
+});
+
 global.setWindowAddress = function (newAddress) {
 	jsdom.changeURL(window, newAddress);
 };

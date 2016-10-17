@@ -2,9 +2,13 @@ var util = require('util');
 var EventEmitter = require('events').EventEmitter;
 
 var loginTemplate = require('./../../html/authentication/login.html');
+var AuthenticationEvent = require('./../event/authentication-event');
 
 function Constructor () {
 	this._data = {};
+
+	this._handleSubmit = Constructor.prototype._handleSubmit.bind(this);
+	this._handleResgisterClicked = Constructor.prototype._handleResgisterClicked.bind(this);
 }
 util.inherits(Constructor, EventEmitter);
 
@@ -25,11 +29,11 @@ Constructor.prototype._updateContext = function (context) {
 Constructor.prototype._updateLogin = function (context) {
 	this._context = context;
 	this._context.innerHTML = loginTemplate;
-	this._context.querySelector('#USERNAME').value = this._data.username || '';
-	this._context.querySelector('#PASSWORD').value = this._data.password || '';
+	this._context.querySelector('#USERNAME input').value = this._data.username || '';
+	this._context.querySelector('#PASSWORD input').value = this._data.password || '';
 
-	this._handleSubmit = Constructor.prototype._handleSubmit.bind(this);
 	this._context.querySelector('#AUTHENTICATION').addEventListener('submit', this._handleSubmit);
+	this._context.querySelector('#REGISTER').addEventListener('click', this._handleResgisterClicked)
 };
 
 Constructor.prototype._handleSubmit = function (e) {
@@ -39,10 +43,14 @@ Constructor.prototype._handleSubmit = function (e) {
 };
 
 Constructor.prototype._submit = function () {
-	var username = this._context.querySelector('#USERNAME').value;
-	var password = this._context.querySelector('#PASSWORD').value;
+	var username = this._context.querySelector('#USERNAME input').value;
+	var password = this._context.querySelector('#PASSWORD input').value;
 
-	this.emit('authenticate', username, password);
+	this.emit(AuthenticationEvent.AUTHENTICATE, username, password);
+};
+
+Constructor.prototype._handleResgisterClicked = function () {
+	this.emit(AuthenticationEvent.REGISTER);
 };
 
 module.exports = Constructor;

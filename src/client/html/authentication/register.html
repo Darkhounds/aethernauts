@@ -1,0 +1,48 @@
+<div class="box is-gapless">
+	<iframe id="REGISTRATION-HACK" name="REGISTRATION-HACK" style="display: none" ></iframe>
+	<form id="REGISTRATION" target="REGISTRATION-HACK" autocomplete="on" method="post" action="save-form-history">
+		<div id="USERNAME" class="columns is-marginless">
+			<span class="column is-3 is-hidden-mobile">Username:</span>
+			<input required class="input is-primary is-expanded" placeholder="username" autocomplete="on" name="username">
+		</div>
+		<div id="EMAIL" class="columns is-marginless">
+			<span class="column is-3 is-hidden-mobile">E-Mail:</span>
+			<div class="control has-icon is-expanded">
+				<div class="fa fa-envelope"></div>
+				<input required class="input is-primary" placeholder="e-mail" type="email" autocomplete="on" name="email">
+			</div>
+		</div>
+		<div id="CONFIRM-EMAIL" class="columns is-marginless">
+			<span class="column is-3  is-hidden-mobile">Confirm E-Mail:</span>
+			<div class="control has-icon is-expanded">
+				<div class="fa fa-envelope"></div>
+				<input required class="input is-primary is-expanded" placeholder="e-mail confirmation" type="email">
+				<span class="hidden error">e-mail confirmation failed</span>
+			</div>
+		</div>
+		<div id="PASSWORD" class="columns is-marginless">
+			<span class="column is-3 is-hidden-mobile">Password:</span>
+			<div class="control has-icon is-expanded">
+				<div class="fa fa-lock"></div>
+				<input required class="input is-primary is-expanded" placeholder="password" type="password">
+			</div>
+		</div>
+		<div id="CONFIRM-PASSWORD" class="columns is-marginless">
+			<span class="column is-3 is-hidden-mobile">Confirm Password:</span>
+			<div class="control has-icon is-expanded">
+				<div class="fa fa-lock"></div>
+				<input required class="input is-primary is-expanded" placeholder="password confirmation" type="password">
+				<span class="hidden error">password confirmation failed</span>
+			</div>
+		</div>
+		<div id="CHARACTER" class="columns is-marginless">
+			<span class="column is-3 is-hidden-mobile">Character Name:</span>
+			<input required class="input is-primary is-expanded" placeholder="character name" autocomplete="on" name="character">
+		</div>
+		<div class="">&nbsp;</div>
+		<div class="control has-addons has-addons-right">
+			<button id="REGISTER" class="button is-primary" type="submit" >Register</button>
+			<a id="LOGIN" class="button is-info">Login</a>
+		</div>
+	</form>
+</div>

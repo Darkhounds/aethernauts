@@ -9,22 +9,16 @@ var Constructor = sinon.spy(function () {
 });
 util.inherits(Constructor, EventEmitter);
 
-Constructor.prototype.setup = function (url) {
-	this._url = url;
-};
+Constructor.prototype.setData = function () {};
 
-Constructor.prototype.open = function () {};
-
-Constructor.prototype.close = function () {};
-
-Constructor.prototype.register = function () {};
+Constructor.prototype.render = function () {};
 
 Constructor.mockStart = function () {
-	mock('./../../../../src/client/js/service/connection-service', Constructor);
+	mock('./../../../../src/client/js/view/register-view', Constructor);
 };
 
 Constructor.mockStop = function () {
-	mock.stop('./../../../../src/client/js/service/connection-service');
+	mock.stop('./../../../../src/client/js/view/register-view');
 	Constructor.reset();
 };
 
