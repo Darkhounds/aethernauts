@@ -22,6 +22,13 @@ global.history = {
 };
 global.document = document;
 
+Object.defineProperty(document, "readyState", {
+	writable: true,
+	value: 'complete',
+	enumerable: true,
+	configurable: true
+});
+
 global.setWindowAddress = function (newAddress) {
 	jsdom.changeURL(window, newAddress);
 };
@@ -30,28 +37,8 @@ global.resetWindowAddress = function () {
 	jsdom.changeURL(window, address);
 };
 
-var simulant = require('simulant');
-var readyState = "loading";
-function setReadyState(state) {
-	if (state != readyState) {
-		readyState = state;
-		simulant.fire( document, 'readystatechange' );
-		if (document.onreadystatechange) {
-			document.onreadystatechange();
-		}
-	}
-}
-Object.defineProperty(document, "readyState", {
-	get: function () { return readyState; },
-	set: function (state) { setReadyState(state); }
-});
-
 var chai = require("chai");
 var sinon = require("sinon");
 var sinonChai = require("sinon-chai");
 chai.should();
 chai.use(sinonChai);
-
-WebSocket = require('./mockups/websocket');
-window.WebSocket = WebSocket;
-

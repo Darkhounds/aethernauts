@@ -7,16 +7,18 @@ function Constructor() {
 		identity: 'user',
 		connection: 'default',
 		attributes: {
+			type: 'string',
 			username: 'string',
 			password: 'string',
-			token: 'string'
+			token: 'string',
+			character: 'string'
 		}
 	};
 }
 util.inherits(Constructor, Abstract);
 
 Constructor.prototype.initialize = function () {
-	var defaultUser = { username: 'username', password: 'password' };
+	var defaultUser = { type: 'god', username: 'username', password: 'password' };
 
 	return this.findOrCreate({username: defaultUser.username}, defaultUser);
 };

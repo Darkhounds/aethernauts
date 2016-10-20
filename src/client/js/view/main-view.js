@@ -1,8 +1,12 @@
 var AuthenticationController = require('./../controller/authentication-controller');
 
 function Constructor () {
-	this._authenticationController = new AuthenticationController();
 }
+
+Constructor.prototype.setup = function (connectionService) {
+	this._authenticationController = new AuthenticationController();
+	this._authenticationController.setup(connectionService)
+};
 
 Constructor.prototype.render = function (context) {
 	var appElement = context.querySelector('#APP');

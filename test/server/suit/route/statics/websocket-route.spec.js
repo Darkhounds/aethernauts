@@ -13,9 +13,12 @@ describe('The Websocket Route class', function () {
 		WebsocketRoute = require('./../../../../../src/server/route/statics/websocket-route');
 	});
 
+	afterEach(function () {
+		sandbox.restore();
+	});
+
 	it('should be a function', function () {
 		WebsocketRoute.should.be.a('function');
-		sandbox.restore();
 	});
 
 	describe('as an instance', function () {

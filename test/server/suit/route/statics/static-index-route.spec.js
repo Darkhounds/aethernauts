@@ -8,9 +8,12 @@ describe('The Static Index Route class', function () {
 		StaticIndexRoute = require('./../../../../../src/server/route/statics/static-index-route');
 	});
 
+	afterEach(function () {
+		sandbox.restore();
+	});
+
 	it('should be a function', function () {
 		StaticIndexRoute.should.be.a('function');
-		sandbox.restore();
 	});
 
 	describe('as an instance', function () {

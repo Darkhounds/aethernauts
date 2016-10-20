@@ -1,23 +1,24 @@
-var querystring = require('querystring');
-
 var MainView = require('./../view/main-view');
+var ConnectionService = require('./../service/connection-service');
 
 function Constructor () {
-	this._connectionService = require('./../service/connection-service');
-	this._setupConnectionService();
-
+	this._connectionService = new ConnectionService();
 	this._view = new MainView();
+}
+
+Constructor.DEFAULT_ADDRESS = 'localhost';
+Constructor.DEFAULT_PORT = 3001;
+Constructor.DEFAULT_PATH = '/server';
+
+Constructor.prototype.setup = function (address, port, path) {
+	address = address || Constructor.DEFAULT_ADDRESS;
+	port = port || Constructor.DEFAULT_PORT;
+	path = path || Constructor.DEFAULT_PATH;
+	this._connectionService.setup('ws://' + address + ':' + port + path);
+	this._view.setup(this._connectionService);
 
 	this._addDocumentEventListeners();
 	this._checkDocumentReady();
-}
-
-Constructor.prototype._setupConnectionService = function () {
-	var params = querystring.decode(window.location.search.substr(1));
-	var address = params.serverAddress || 'localhost';
-	var port = params.serverPort || '3001';
-
-	this._connectionService.setup('ws://' + address + ':' + port + '/server');
 };
 
 Constructor.prototype._addDocumentEventListeners = function () {

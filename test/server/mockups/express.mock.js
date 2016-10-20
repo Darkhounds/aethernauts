@@ -15,13 +15,13 @@ Constructor.prototype.listen = function (port, callback) {
 	callback();
 };
 
-Constructor.prototype.use = function () {
+Constructor.prototype.use = function () {};
 
-};
+Constructor.prototype.post = function () {};
 
-Constructor.prototype.close = function () {
+Constructor.prototype.close = function () {};
 
-};
+Constructor.bodyParser = function () {};
 
 Constructor.mockStart = function () {
 	mock('express', Constructor);

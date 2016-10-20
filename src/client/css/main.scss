@@ -1,0 +1,19 @@
+//@fa-font-path:   "../font"
+@import "node_modules/font-awesome/scss/font-awesome";
+@import "node_modules/bulma/bulma";
+
+.hidden {
+	display: none;
+}
+
+.error {
+	color: #f00;
+}
+
+.control {
+	&.has-icon {
+		&.is-expanded {
+			width: 100%
+		}
+	}
+}

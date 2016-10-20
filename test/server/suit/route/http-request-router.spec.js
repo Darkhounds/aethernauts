@@ -10,6 +10,7 @@ var FaviconRoute = require('./../../mockups/route/statics/favicon-route.mock');
 var SaveFormHistoryRoute = require('./../../mockups/route/statics/save-form-history-route.mock');
 var StaticIndexRoute = require('./../../mockups/route/statics/static-index-route.mock');
 var WebsocketRoute = require('./../../mockups/route/statics/websocket-route.mock');
+var RegisterRoute = require('./../../mockups/route/statics/register-route.mock');
 
 describe('The HTTP Request Router class', function () {
 	var HTTPRequestRouter, sandbox, consoleLog;
@@ -28,9 +29,12 @@ describe('The HTTP Request Router class', function () {
 		SaveFormHistoryRoute.mockStart();
 		StaticIndexRoute.mockStart();
 		WebsocketRoute.mockStart();
+		RegisterRoute.mockStart();
 		HTTPRequestRouter = require('./../../../../src/server/route/http-request-router');
 	});
+
 	afterEach(function () {
+		RegisterRoute.mockStop();
 		WebsocketRoute.mockStop();
 		StaticIndexRoute.mockStop();
 		SaveFormHistoryRoute.mockStop();
@@ -116,6 +120,15 @@ describe('The HTTP Request Router class', function () {
 			var config = ServerConfig.getInstance();
 
 			spy.should.have.been.calledWith(config);
+		});
+
+		it('should setup the RegisterRoute with the config created by the setup', function () {
+			// var spy = sandbox.spy(RegisterRoute.getInstance(), 'setup');
+			//
+			// instance.setup(port, root);
+			// var config = ServerConfig.getInstance();
+			//
+			// spy.should.have.been.calledWith(config);
 		});
 
 		it('should set the server t listen on the expected port when initializing', function (done) {

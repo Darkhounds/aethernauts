@@ -8,9 +8,12 @@ describe('The Save Form History Route class', function () {
 		SaveHistoryRoute = require('./../../../../../src/server/route/statics/save-form-history-route');
 	});
 
+	afterEach(function () {
+		sandbox.restore();
+	});
+
 	it('should be a function', function () {
 		SaveHistoryRoute.should.be.a('function');
-		sandbox.restore();
 	});
 
 	describe('as an instance', function () {

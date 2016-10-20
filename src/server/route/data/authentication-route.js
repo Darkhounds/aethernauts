@@ -6,7 +6,7 @@ var Constructor = function (eventManager, dataStorage) {
 };
 
 Constructor.prototype.execute = function (data) {
-	return this._usersModel.findOne({ username: data.username, password: data.password })
+	return this._usersModel.findOne({ username: data.username.toLowerCase(), password: data.password })
 		.then(this._checkUserIsValid.bind(this))
 		.then(this._updateUserToken.bind(this))
 		.then(this._sendSuccess.bind(this, data._socket))

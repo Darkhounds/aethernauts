@@ -1,18 +1,60 @@
-var util = require('util')
+var util = require('util');
 var EventEmitter = require('events').EventEmitter;
-var connectionEvents = require('./../event/connection-events');
+var ConnectionEvent = require('./../event/connection-event');
 
 var Constructor = function () {
+	this._registerRequest = null;
 	this._url = '';
 	this._username = '';
+	this._password = '';
 	this._token = '';
 	this._websocket = null;
 	this._connected = false;
 	this._reconnectionTimeout = -1;
+
+	this._handleRegisterRequest = this._handleRegisterRequest.bind(this);
+	this._handleRegisterRequestError = this._handleRegisterRequestError.bind(this);
+	this._handleReconnection = Constructor.prototype._handleReconnection.bind(this);
+	this._handleConnectionError = Constructor.prototype._handleConnectionError.bind(this);
+	this._handleConnectionOpened = Constructor.prototype._handleConnectionOpened.bind(this);
+	this._handleMessageReceived = Constructor.prototype._handleMessageReceived.bind(this);
+	this._handleClosed = Constructor.prototype._handleClosed.bind(this);
 };
 util.inherits(Constructor, EventEmitter);
 
-Constructor.prototype.DEFAULT_DELAY = 3 * 1000;
+Constructor.DEFAULT_DELAY = 3 * 1000;
+
+Constructor.prototype.register = function (email, username, password, character) {
+	if (!this._registerRequest) {
+		var params = 'email=' + email + '&username=' + username + '&password=' + password + '&character=' + character;
+
+		this._username = username;
+		this._password = password;
+		this._registerRequest = new XMLHttpRequest();
+		this._registerRequest.open('POST', '/register', true);
+		this._registerRequest.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+		this._registerRequest.addEventListener('load', this._handleRegisterRequest);
+		this._registerRequest.addEventListener('error', this._handleRegisterRequestError);
+		this._registerRequest.send(params);
+	}
+};
+
+Constructor.prototype._handleRegisterRequest = function () {
+	var data = JSON.parse(this._registerRequest.responseText);
+	this._registerRequest = null;
+
+	if (data.command === 'registration' && data.valid) {
+		this.open(this._username, this._password);
+	} else {
+		this.emit(ConnectionEvent.REGISTRATION_ERROR, data.error)
+	}
+};
+
+Constructor.prototype._handleRegisterRequestError = function () {
+	this._registerRequest = null;
+
+	this.emit(ConnectionEvent.CONNECTION_ERROR, ConnectionEvent.CONNECTION_ERROR)
+};
 
 Constructor.prototype.setup = function (url) {
 	this._url = url;
@@ -21,6 +63,7 @@ Constructor.prototype.setup = function (url) {
 Constructor.prototype.open = function (username, password, token) {
 	if (!this._websocket) {
 		this._username = username;
+		this._password = password;
 		this._token = token || this._token;
 		this._connected = false;
 
@@ -28,29 +71,21 @@ Constructor.prototype.open = function (username, password, token) {
 	}
 };
 
-Constructor.prototype._createConnection = function (password) {
+Constructor.prototype._createConnection = function () {
 	clearTimeout(this._reconnectionTimeout);
 
 	this._websocket = new WebSocket(this._url);
-
-	this._handleConnectionError = Constructor.prototype._handleConnectionError.bind(this);
 	this._websocket.addEventListener('error', this._handleConnectionError);
-
-	this._handleConnectionOpened = Constructor.prototype._handleConnectionOpened.bind(this, password);
 	this._websocket.addEventListener('open', this._handleConnectionOpened);
-
-	this._handleMessageReceived = Constructor.prototype._handleMessageReceived.bind(this);
 	this._websocket.addEventListener('message', this._handleMessageReceived);
-
-	this._handleClosed = Constructor.prototype._handleClosed.bind(this);
 	this._websocket.addEventListener('close', this._handleClosed);
 };
 
-Constructor.prototype._handleConnectionOpened = function (password) {
+Constructor.prototype._handleConnectionOpened = function () {
 	if (this._token) {
 		this._websocket.send(JSON.stringify({command:'reconnection', username: this._username, token: this._token}));
 	} else {
-		this._websocket.send(JSON.stringify({command:'authentication', username: this._username, password: password}))
+		this._websocket.send(JSON.stringify({command:'authentication', username: this._username, password: this._password}))
 	}
 };
 
@@ -59,7 +94,7 @@ Constructor.prototype.close = function () {
 	this._username = '';
 	this._token = '';
 
-	this.emit(connectionEvents.CLOSED);
+	this.emit(ConnectionEvent.CLOSED);
 };
 
 Constructor.prototype._destroyConnection = function () {
@@ -79,17 +114,16 @@ Constructor.prototype._handleConnectionError = function () {
 	if (this._token) {
 		this._reconnect();
 	} else {
-		this.emit(connectionEvents.CONNECTION_ERROR);
+		this.emit(ConnectionEvent.CONNECTION_ERROR, ConnectionEvent.CONNECTION_ERROR);
 		this.close();
 	}
 };
 
 Constructor.prototype._reconnect = function () {
-	this._handleReconnection = Constructor.prototype._handleReconnection.bind(this);
 	this._reconnectionTimeout = setTimeout(this._handleReconnection, Constructor.DEFAULT_DELAY);
 
 	this._destroyConnection();
-	this.emit(connectionEvents.DISCONNECTED);
+	this.emit(ConnectionEvent.DISCONNECTED);
 };
 
 Constructor.prototype._handleMessageReceived = function (e) {
@@ -106,40 +140,42 @@ Constructor.prototype._handleMessageReceived = function (e) {
 			this._handleMessage(data);
 			break;
 		default:
-			this.emit(connectionEvents.MESSAGE_ERROR);
+			this.emit(ConnectionEvent.MESSAGE_ERROR);
 			break;
 	}
 };
 
 Constructor.prototype._handleAuthentication = function (data) {
+	this._password = null;
+
 	if (data.valid) {
 		this._connected = true;
 		this._token = data.token;
-		this.emit(connectionEvents.OPENED, this._username, this._token);
+		this.emit(ConnectionEvent.OPENED, this._username, this._token);
 	} else {
-		this.emit(connectionEvents.AUTHENTICATION_ERROR);
+		this.emit(ConnectionEvent.AUTHENTICATION_ERROR, ConnectionEvent.AUTHENTICATION_ERROR);
 		this.close();
 	}
 };
 
 Constructor.prototype._handleReconnected = function (data) {
 	if (data.valid) {
-		this.emit(connectionEvents.RECONNECTED);
+		this.emit(ConnectionEvent.RECONNECTED);
 	} else {
-		this.emit(connectionEvents.AUTHENTICATION_ERROR);
+		this.emit(ConnectionEvent.AUTHENTICATION_ERROR);
 		this.close();
 	}
 };
 
 Constructor.prototype._handleMessage = function (data) {
-	this.emit(connectionEvents.MESSAGE, data.id, data.data);
+	this.emit(ConnectionEvent.MESSAGE, data.id, data.data);
 };
 
 Constructor.prototype._handleClosed = function () {
 	if (this._token) {
 		this._reconnect();
 	} else {
-		this.emit(connectionEvents.CONNECTION_ERROR);
+		this.emit(ConnectionEvent.CONNECTION_ERROR);
 		this.close();
 	}
 };
@@ -164,4 +200,4 @@ Constructor.prototype.send = function (data, id) {
 	return result;
 };
 
-module.exports = new Constructor();
+module.exports = Constructor;

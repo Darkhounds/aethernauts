@@ -2,6 +2,7 @@ var util = require('util');
 var EventEmitter = require('events').EventEmitter;
 
 var loginTemplate = require('./../../html/authentication/logout.html');
+var AuthenticationEvent = require('./../event/authentication-event');
 
 function Constructor () {
 	this._data = {};
@@ -31,7 +32,7 @@ Constructor.prototype._updateLogout = function (context) {
 };
 
 Constructor.prototype._handleLogoutClicked = function () {
-	this.emit('disconnect');
+	this.emit(AuthenticationEvent.LOGOUT);
 };
 
 module.exports = Constructor;

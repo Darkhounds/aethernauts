@@ -24,7 +24,7 @@ Constructor.prototype._setupDataStorage = function (root) {
 };
 
 Constructor.prototype._setupServer = function (port, root) {
-	this._httpRequestRouter = new HTTPRequestRouter(this._eventManager);
+	this._httpRequestRouter = new HTTPRequestRouter(this._eventManager, this._dataStorage);
 	this._httpRequestRouter.setup(port, root);
 };
 
