@@ -8,9 +8,12 @@ describe('The Static Assets Route class', function () {
 		StaticAssetsRoute = require('./../../../../../src/server/route/statics/static-assets-route');
 	});
 
+	afterEach(function () {
+		sandbox.restore();
+	});
+
 	it('should be a function', function () {
 		StaticAssetsRoute.should.be.a('function');
-		sandbox.restore();
 	});
 
 	describe('as an instance', function () {
