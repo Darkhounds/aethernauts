@@ -61,6 +61,11 @@ Constructor.mockStart = function () {
 Constructor.mockStop = function () {
 	mock.stop('./../../../../src/server/model/abstract-model');
 	Constructor.reset();
+	this._resetResponses();
+};
+
+Constructor._resetResponses = function () {
+	_responses.length = 0;
 };
 
 module.exports = Constructor;

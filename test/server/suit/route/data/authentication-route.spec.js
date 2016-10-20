@@ -45,6 +45,7 @@ describe('The Authentication Route class', function() {
 			var expectedMessage = JSON.stringify({ command: 'authentication', valid: false});
 			var spy = sandbox.spy();
 			var data = {
+				username: username,
 				_socket: {
 					send: spy
 				}
@@ -62,6 +63,7 @@ describe('The Authentication Route class', function() {
 			var expectedMessage = JSON.stringify({ command: 'authentication', valid: true, token: user.token });
 			var spy = sandbox.spy();
 			var data = {
+				username: username,
 				_socket: {
 					send: spy
 				}

@@ -10,9 +10,13 @@ var FaviconRoute = require('./statics/favicon-route');
 var SaveFormHistoryRoute = require('./statics/save-form-history-route');
 var StaticIndexRoute = require('./statics/static-index-route');
 var WebsocketRoute = require('./statics/websocket-route');
+var RegisterRoute = require('./statics/register-route');
 
-var Constructor = function (eventManager) {
+var bodyParser = require('body-parser');
+
+var Constructor = function (eventManager, dataStorage) {
 	this._eventManager = eventManager;
+	this._dataStorage = dataStorage;
 	this._initialized = false;
 	this._server = express();
 	expressWs(this._server);
@@ -23,8 +27,10 @@ var Constructor = function (eventManager) {
 	this._saveFormHistoryRoute = new SaveFormHistoryRoute();
 	this._staticIndexRoute = new StaticIndexRoute();
 	this._websocketRoute = new WebsocketRoute(this._eventManager);
+	this._registerRoute = new RegisterRoute(this._dataStorage);
 
 	this._server.use(this._logRoute.execute.bind(this));
+	this._server.post('/register', bodyParser.urlencoded({ extended: false }), this._registerRoute.execute.bind(this._registerRoute));
 	this._server.ws('/server', this._websocketRoute.execute.bind(this._websocketRoute));
 	this._server.use('*/lib/*', this._staticAssetsRoute.execute.bind(this._staticAssetsRoute));
 	this._server.use('/favicon.ico', this._faviconRoute.execute.bind(this._faviconRoute));
