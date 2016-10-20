@@ -29,6 +29,7 @@ Constructor.prototype.register = function (email, username, password, character)
 		var params = 'email=' + email + '&username=' + username + '&password=' + password + '&character=' + character;
 
 		this._username = username;
+		this._password = password;
 		this._registerRequest = new XMLHttpRequest();
 		this._registerRequest.open('POST', '/register', true);
 		this._registerRequest.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
@@ -43,7 +44,7 @@ Constructor.prototype._handleRegisterRequest = function () {
 	this._registerRequest = null;
 
 	if (data.command === 'registration' && data.valid) {
-		this.open(this._username, null, data.token);
+		this.open(this._username, this._password);
 	} else {
 		this.emit(ConnectionEvent.REGISTRATION_ERROR, data.error)
 	}

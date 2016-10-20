@@ -84,7 +84,7 @@ describe('The Connection Service class', function () {
 			request.responseText = data;
 			request.emit('load');
 
-			spy.should.have.been.calledWith(username, null, token);
+			spy.should.have.been.calledWith(username, password);
 		});
 
 		it('should do handle a unsuccessful registration process by triggering a ConnectionEvent.REGISTRATION_ERROR event', function () {
