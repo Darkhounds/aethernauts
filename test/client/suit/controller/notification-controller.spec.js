@@ -79,16 +79,38 @@ describe('The Notification Controller class', function () {
 				instance.setContext(context);
 				broadcasterService.emit(NotificationEvent.DISCONNECTED);
 
-				spy.should.have.been.calledWith(context);
+				spy.should.have.been.calledWith(context).once;
+			});
+
+			it('should fail silently when the NotificationEvent.DISCONNECTED is fired more then once', function () {
+				var spy = sandbox.spy(DisconnectedView.getInstance(), 'render');
+
+				instance.setContext(context);
+				broadcasterService.emit(NotificationEvent.DISCONNECTED);
+				broadcasterService.emit(NotificationEvent.DISCONNECTED);
+
+				spy.should.have.been.calledWith(context).once;
 			});
 
 			it('should render the emptyView when the NotificationEvent.RECONNECTED is fired', function () {
 				var spy = sandbox.spy(EmptyView.getInstance(), 'render');
 
 				instance.setContext(context);
+				broadcasterService.emit(NotificationEvent.DISCONNECTED);
 				broadcasterService.emit(NotificationEvent.RECONNECTED);
 
-				spy.should.have.been.calledWith(context);
+				spy.should.have.been.calledWith(context).once;
+			});
+
+			it('should fail silently when the NotificationEvent.RECONNECTED is fired more then once', function () {
+				var spy = sandbox.spy(EmptyView.getInstance(), 'render');
+
+				instance.setContext(context);
+				broadcasterService.emit(NotificationEvent.DISCONNECTED);
+				broadcasterService.emit(NotificationEvent.RECONNECTED);
+				broadcasterService.emit(NotificationEvent.RECONNECTED);
+
+				spy.should.have.been.calledWith(context).once;
 			});
 		});
 	});

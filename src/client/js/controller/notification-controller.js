@@ -6,17 +6,25 @@ var DisconnectedView = require('./../view/notification/disconnected-view');
 var Constructor = function () {
 	this._context = null;
 	this._data = null;
+	this._active = null;
+
 
 	this._handleDisconnectedNotification = this._handleDisconnectedNotification.bind(this);
 	this._handleReconnectedNotification = this._handleReconnectedNotification.bind(this);
 };
 
 Constructor.prototype._handleDisconnectedNotification = function () {
-	this._disconnectedView.render(this._context);
+	if(this._active !== this._disconnectedView) {
+		this._active = this._disconnectedView;
+		this._disconnectedView.render(this._context);
+	}
 };
 
 Constructor.prototype._handleReconnectedNotification = function () {
-	this._emptyView.render(this._context);
+	if(this._active === this._disconnectedView) {
+		this._emptyView.render(this._context);
+		this._active = null;
+	}
 };
 
 Constructor.prototype.setup = function (broadcasterService) {
