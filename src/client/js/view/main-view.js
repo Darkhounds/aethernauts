@@ -1,11 +1,10 @@
 var AuthenticationController = require('./../controller/authentication-controller');
 
-function Constructor () {
-}
+function Constructor() {}
 
-Constructor.prototype.setup = function (connectionService) {
+Constructor.prototype.setup = function (broadcasterService, connectionService) {
 	this._authenticationController = new AuthenticationController();
-	this._authenticationController.setup(connectionService)
+	this._authenticationController.setup(connectionService);
 };
 
 Constructor.prototype.render = function (context) {

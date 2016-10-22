@@ -3,6 +3,7 @@ var simulant = require('simulant');
 
 var MainView = require('./../../mockups/view/main-view.mock');
 var ConnectionService = require('./../../mockups/service/connection-service.mock');
+var BroadcasterService = require('./../../mockups/service/broadcaster-service.mock');
 
 describe('The Main Controller class', function () {
 	var MainController, sandbox;
@@ -12,14 +13,16 @@ describe('The Main Controller class', function () {
 
 	beforeEach(function() {
 		sandbox = sinon.sandbox.create();
-		MainView.mockStart();
 		ConnectionService.mockStart();
+		BroadcasterService.mockStart();
+		MainView.mockStart();
 		MainController = require('./../../../../src/client/js/controller/main-controller');
 	});
 
 	afterEach(function() {
-		ConnectionService.mockStop();
 		MainView.mockStop();
+		BroadcasterService.mockStop();
+		ConnectionService.mockStop();
 		sandbox.restore();
 	});
 
@@ -28,11 +31,12 @@ describe('The Main Controller class', function () {
 	});
 
 	describe('as an instance', function () {
-		var instance, connectionService, mainView;
+		var instance, connectionService, broadcasterService, mainView;
 
 		beforeEach(function () {
 			instance = new MainController();
 			connectionService = ConnectionService.getInstance();
+			broadcasterService = BroadcasterService.getInstance();
 			mainView = MainView.getInstance();
 		});
 
@@ -60,6 +64,14 @@ describe('The Main Controller class', function () {
 			instance.setup(address, port, path);
 
 			spy.should.have.been.calledWith(expectedURL);
+		});
+
+		it('should setup the mainView with the connectionService and broadcasterService during setup', function () {
+			var spy = sandbox.spy(mainView, 'setup');
+
+			instance.setup(address, port, path);
+
+			spy.should.have.been.calledWith(broadcasterService, connectionService)
 		});
 
 		describe('after setup', function () {

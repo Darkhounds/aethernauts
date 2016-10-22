@@ -1,6 +1,7 @@
 var sinon = require('sinon');
 
 var ConnectionService = require('./../../mockups/service/connection-service.mock');
+var BroadcasterService = require('./../../mockups/service/broadcaster-service.mock');
 var AuthenticationController = require('./../../mockups/controller/authentication-controller.mock');
 
 describe('The MainView class', function () {
@@ -9,6 +10,7 @@ describe('The MainView class', function () {
 	beforeEach(function() {
 		sandbox = sinon.sandbox.create();
 		ConnectionService.mockStart();
+		BroadcasterService.mockStart();
 		AuthenticationController.mockStart();
 		MainView = require('./../../../../src/client/js/view/main-view');
 		context = document.createElement('div');
@@ -17,6 +19,7 @@ describe('The MainView class', function () {
 
 	afterEach(function() {
 		AuthenticationController.mockStop();
+		BroadcasterService.mockStop();
 		ConnectionService.mockStop();
 		sandbox.restore();
 	});
@@ -26,12 +29,13 @@ describe('The MainView class', function () {
 	});
 
 	describe('as an instance', function () {
-		var instance, connectionService, authenticationController;
+		var instance, connectionService, broadcasterService, authenticationController;
 
 		beforeEach(function () {
 			connectionService = new ConnectionService();
+			broadcasterService = new BroadcasterService();
 			instance = new MainView(connectionService);
-			instance.setup(connectionService);
+			instance.setup(broadcasterService, connectionService);
 			authenticationController = AuthenticationController.getInstance();
 		});
 
