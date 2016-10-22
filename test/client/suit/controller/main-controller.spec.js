@@ -5,6 +5,9 @@ var MainView = require('./../../mockups/view/main-view.mock');
 var ConnectionService = require('./../../mockups/service/connection-service.mock');
 var BroadcasterService = require('./../../mockups/service/broadcaster-service.mock');
 
+var ConnectionEvent = require('./../../../../src/client/js/event/connection-event');
+var NotificationEvent = require('./../../../../src/client/js/event/notification-event');
+
 describe('The Main Controller class', function () {
 	var MainController, sandbox;
 	var address = '127.0.0.1';
@@ -87,7 +90,7 @@ describe('The Main Controller class', function () {
 				instance.setup(address, port, path);
 			});
 
-			it ('should render the view after the dom is loaded with the document as argument', function () {
+			it('should render the view after the dom is loaded with the document as argument', function () {
 				var spy = sandbox.spy(mainView, 'render');
 
 				mockReadystatechangeListener();
@@ -95,13 +98,29 @@ describe('The Main Controller class', function () {
 				spy.should.have.been.calledWith(document);
 			});
 
-			it ('should not render the view if the readyStateChange is not to "complete" state', function () {
+			it('should not render the view if the readyStateChange is not to "complete" state', function () {
 				var spy = sandbox.spy(mainView, 'render');
 
 				document.readyState = 'bogus';
 				mockReadystatechangeListener();
 
 				spy.should.not.have.been.calledWith(document);
+			});
+
+			it('should trigger a NotificationEvent.DISCONNECTED on the broadcasterService when the connectionService fires a ConnectionEvent.DISCONNECTED', function () {
+				var spy = sandbox.spy(broadcasterService, 'emit');
+				
+				connectionService.emit(ConnectionEvent.DISCONNECTED);
+				
+				spy.should.have.been.calledWith(NotificationEvent.DISCONNECTED);
+			});
+
+			it('should trigger a NotificationEvent.RECONNECTED on the broadcasterService when the connectionService fires a ConnectionEvent.RECONNECTED', function () {
+				var spy = sandbox.spy(broadcasterService, 'emit');
+
+				connectionService.emit(ConnectionEvent.RECONNECTED);
+
+				spy.should.have.been.calledWith(NotificationEvent.RECONNECTED);
 			});
 		});
 	});
