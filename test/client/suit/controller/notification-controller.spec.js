@@ -2,6 +2,7 @@ var sinon = require('sinon');
 
 var BroadcasterService  = require('./../../mockups/service/broadcaster-service.mock');
 var EmptyView = require('./../../mockups/view/notification/empty-view.mock');
+var DisconnectedView = require('./../../mockups/view/notification/disconnected-view.mock');
 
 var NotificationEvent = require('./../../../../src/client/js/event/connection-event');
 
@@ -12,10 +13,12 @@ describe('The Notification Controller class', function () {
 		sandbox = sinon.sandbox.create();
 		BroadcasterService.mockStart();
 		EmptyView.mockStart();
+		DisconnectedView.mockStart();
 		NotificationController = require('./../../../../src/client/js/controller/notification-controller');
 	});
 
 	afterEach(function () {
+		DisconnectedView.mockStop();
 		EmptyView.mockStop();
 		BroadcasterService.mockStop();
 		sandbox.restore();
@@ -70,9 +73,13 @@ describe('The Notification Controller class', function () {
 				spy.should.have.been.calledWith(context);
 			});
 
-			it('should output a log when the NotificationEvent.DISCONNECTED is fired', function () {
+			it('should render the disconnectedView when the NotificationEvent.DISCONNECTED is fired', function () {
+				var spy = sandbox.spy(DisconnectedView.getInstance(), 'render');
+
+				instance.setContext(context);
 				broadcasterService.emit(NotificationEvent.DISCONNECTED);
-				consoleLog.should.have.been.calledWith('disconnected');
+
+				spy.should.have.been.calledWith(context);
 			});
 
 			it('should render the emptyView when the NotificationEvent.RECONNECTED is fired', function () {

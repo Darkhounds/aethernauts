@@ -1,6 +1,7 @@
 var NotificationEvent = require('./../event/notification-event');
 
 var EmptyView = require('./../view/notification/empty-view');
+var DisconnectedView = require('./../view/notification/disconnected-view');
 
 var Constructor = function () {
 	this._context = null;
@@ -11,7 +12,7 @@ var Constructor = function () {
 };
 
 Constructor.prototype._handleDisconnectedNotification = function () {
-	console.log('disconnected');
+	this._disconnectedView.render(this._context);
 };
 
 Constructor.prototype._handleReconnectedNotification = function () {
@@ -23,6 +24,7 @@ Constructor.prototype.setup = function (broadcasterService) {
 	this._addBroadcasterServiceEvents();
 
 	this._emptyView = new EmptyView();
+	this._disconnectedView = new DisconnectedView();
 };
 
 Constructor.prototype._addBroadcasterServiceEvents = function () {
