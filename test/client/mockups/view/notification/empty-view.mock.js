@@ -9,17 +9,17 @@ var Constructor = sinon.spy(function () {
 });
 util.inherits(Constructor, EventEmitter);
 
-Constructor.prototype.setData = function () {};
-
 Constructor.prototype.render = function () {};
 
 Constructor.mockStart = function () {
-	mock('./../../../../src/client/js/view/logout-view', Constructor);
+	mock('./../../../../../src/client/js/view/notification/empty-view', Constructor);
 };
+
 Constructor.mockStop = function () {
-	mock.stop('./../../../../src/client/js/view/logout-view');
+	mock.stop('./../../../../../src/client/js/view/notification/empty-view');
 	Constructor.reset();
 };
+
 Constructor.getInstance = function () {
 	return _instance;
 };

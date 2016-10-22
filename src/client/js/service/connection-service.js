@@ -133,7 +133,7 @@ Constructor.prototype._handleMessageReceived = function (e) {
 		case 'authentication':
 			this._handleAuthentication(data);
 			break;
-		case 'reconnected':
+		case 'reconnection':
 			this._handleReconnected(data);
 			break;
 		case 'message':

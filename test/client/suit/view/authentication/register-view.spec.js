@@ -2,7 +2,7 @@ var sinon = require('sinon');
 var simulant = require('simulant');
 var EventEmitter = require('events').EventEmitter;
 
-var AuthenticationEvent = require('./../../../../src/client/js/event/authentication-event');
+var AuthenticationEvent = require('./../../../../../src/client/js/event/authentication-event');
 
 describe('The Register View class', function () {
 	var RegisterView, sandbox, context;
@@ -13,7 +13,7 @@ describe('The Register View class', function () {
 
 	beforeEach(function() {
 		sandbox = sinon.sandbox.create();
-		RegisterView = require('./../../../../src/client/js/view/register-view');
+		RegisterView = require('./../../../../../src/client/js/view/authentication/register-view');
 		context = document.createElement('div');
 		context.id = 'REGISTRATION';
 	});

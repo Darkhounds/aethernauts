@@ -2,14 +2,14 @@ var sinon = require('sinon');
 var simulant = require('simulant');
 var EventEmitter = require('events').EventEmitter;
 
-var AuthenticationEvent = require('./../../../../src/client/js/event/authentication-event');
+var AuthenticationEvent = require('./../../../../../src/client/js/event/authentication-event');
 
 describe('The LogoutView class', function () {
 	var LogoutView, sandbox, context;
 
 	beforeEach(function() {
 		sandbox = sinon.sandbox.create();
-		LogoutView = require('./../../../../src/client/js/view/logout-view');
+		LogoutView = require('./../../../../../src/client/js/view/authentication/logout-view');
 		context = document.createElement('div');
 		context.id = 'AUTHENTICATION';
 	});

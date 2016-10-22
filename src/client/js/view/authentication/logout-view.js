@@ -1,8 +1,8 @@
 var util = require('util');
 var EventEmitter = require('events').EventEmitter;
 
-var loginTemplate = require('./../../html/authentication/logout.html');
-var AuthenticationEvent = require('./../event/authentication-event');
+var loginTemplate = require('./../../../html/authentication/logout.html');
+var AuthenticationEvent = require('./../../event/authentication-event');
 
 function Constructor () {
 	this._data = {};

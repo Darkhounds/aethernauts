@@ -9,16 +9,12 @@ var Constructor = sinon.spy(function () {
 });
 util.inherits(Constructor, EventEmitter);
 
-Constructor.prototype.setData = function () {};
-
-Constructor.prototype.render = function () {};
-
 Constructor.mockStart = function () {
-	mock('./../../../../src/client/js/view/register-view', Constructor);
+	mock('./../../../../src/client/js/service/broadcaster-service', Constructor);
 };
 
 Constructor.mockStop = function () {
-	mock.stop('./../../../../src/client/js/view/register-view');
+	mock.stop('./../../../../src/client/js/service/broadcaster-service');
 	Constructor.reset();
 };
 

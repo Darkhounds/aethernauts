@@ -2,7 +2,7 @@ var sinon = require('sinon');
 var simulant = require('simulant');
 var EventEmitter = require('events').EventEmitter;
 
-var AuthenticationEvent = require('./../../../../src/client/js/event/authentication-event');
+var AuthenticationEvent = require('./../../../../../src/client/js/event/authentication-event');
 
 describe('The Login View class', function () {
 	var LoginView, sandbox, context;
@@ -11,7 +11,7 @@ describe('The Login View class', function () {
 
 	beforeEach(function() {
 		sandbox = sinon.sandbox.create();
-		LoginView = require('./../../../../src/client/js/view/login-view');
+		LoginView = require('./../../../../../src/client/js/view/authentication/login-view');
 		context = document.createElement('div');
 		context.id = 'AUTHENTICATION';
 	});

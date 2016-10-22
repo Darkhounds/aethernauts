@@ -4,9 +4,9 @@ var AuthenticationEvent = require('./../../../../src/client/js/event/authenticat
 var ConnectionEvent = require('./../../../../src/client/js/event/connection-event');
 var ConnectionService = require('./../../mockups/service/connection-service.mock');
 
-var LoginView = require('./../../mockups/view/login-view.mock');
-var LogoutView = require('./../../mockups/view/logout-view.mock');
-var RegisterView = require('./../../mockups/view/register-view.mock');
+var LoginView = require('./../../mockups/view/authentication/login-view.mock');
+var LogoutView = require('./../../mockups/view/authentication/logout-view.mock');
+var RegisterView = require('./../../mockups/view/authentication/register-view.mock');
 
 describe('The AuthenticationController class', function () {
 	var AuthenticationController, sandbox, context;

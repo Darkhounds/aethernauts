@@ -1,26 +1,23 @@
 var AuthenticationController = require('./../controller/authentication-controller');
+var NotificationController = require('./../controller/notification-controller');
 
-function Constructor () {
-}
+function Constructor() {}
 
-Constructor.prototype.setup = function (connectionService) {
+Constructor.prototype.setup = function (broadcasterService, connectionService) {
 	this._authenticationController = new AuthenticationController();
-	this._authenticationController.setup(connectionService)
+	this._authenticationController.setup(connectionService);
+
+	this._notificationController = new NotificationController();
+	this._notificationController.setup(broadcasterService);
 };
 
 Constructor.prototype.render = function (context) {
 	var appElement = context.querySelector('#APP');
 
-	this._updateContext(appElement);
-	this._updateAuthenticationController(appElement.querySelector('#AUTHENTICATION'));
-};
+	appElement.classList.add('app');
 
-Constructor.prototype._updateContext = function (context) {
-	context.classList.add('app');
-};
-
-Constructor.prototype._updateAuthenticationController = function (context) {
-	this._authenticationController.setContext(context);
+	this._authenticationController.setContext(appElement.querySelector('#AUTHENTICATION'));
+	this._notificationController.setContext(appElement.querySelector('#NOTIFICATION'));
 };
 
 module.exports = Constructor;
