@@ -1,6 +1,7 @@
 var sinon = require('sinon');
 
 var BroadcasterService  = require('./../../mockups/service/broadcaster-service.mock');
+var EmptyView = require('./../../mockups/view/notification/empty-view.mock');
 
 var NotificationEvent = require('./../../../../src/client/js/event/connection-event');
 
@@ -10,10 +11,12 @@ describe('The Notification Controller class', function () {
 	beforeEach(function () {
 		sandbox = sinon.sandbox.create();
 		BroadcasterService.mockStart();
+		EmptyView.mockStart();
 		NotificationController = require('./../../../../src/client/js/controller/notification-controller');
 	});
 
 	afterEach(function () {
+		EmptyView.mockStop();
 		BroadcasterService.mockStop();
 		sandbox.restore();
 	});
@@ -26,7 +29,8 @@ describe('The Notification Controller class', function () {
 		var instance, broadcasterService, consoleLog, context;
 
 		beforeEach(function () {
-			context = {};
+			context = document.createElement('div');
+			context.id = 'NOTIFICATION';
 			consoleLog = sandbox.stub(console, 'log');
 			broadcasterService = new BroadcasterService();
 			instance = new NotificationController();
@@ -52,16 +56,18 @@ describe('The Notification Controller class', function () {
 			spy.should.have.been.calledWith(NotificationEvent.RECONNECTED).once;
 		});
 
-		it('should output a log when the setContext is called', function () {
-			instance.setContext(context);
-
-			consoleLog.should.have.been.calledWith(context);
-		});
-
 		describe('after the setup', function () {
 
 			beforeEach(function () {
 				instance.setup(broadcasterService);
+			});
+
+			it('should render the emptyView when the setContext is called', function () {
+				var spy = sandbox.spy(EmptyView.getInstance(), 'render');
+
+				instance.setContext(context);
+
+				spy.should.have.been.calledWith(context);
 			});
 
 			it('should output a log when the NotificationEvent.DISCONNECTED is fired', function () {
@@ -69,9 +75,13 @@ describe('The Notification Controller class', function () {
 				consoleLog.should.have.been.calledWith('disconnected');
 			});
 
-			it('should output a log when the NotificationEvent.RECONNECTED is fired', function () {
+			it('should render the emptyView when the NotificationEvent.RECONNECTED is fired', function () {
+				var spy = sandbox.spy(EmptyView.getInstance(), 'render');
+
+				instance.setContext(context);
 				broadcasterService.emit(NotificationEvent.RECONNECTED);
-				consoleLog.should.have.been.calledWith('reconnected');
+
+				spy.should.have.been.calledWith(context);
 			});
 		});
 	});
