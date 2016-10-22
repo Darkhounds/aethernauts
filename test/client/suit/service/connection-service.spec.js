@@ -329,7 +329,7 @@ describe('The Connection Service class', function () {
 
 				it('should trigger the reconnected event after reconnecting successfully', function () {
 					var spy = sandbox.spy();
-					data = JSON.stringify({command: 'reconnected', valid: true});
+					data = JSON.stringify({command: 'reconnection', valid: true});
 
 					instance.on(ConnectionEvent.RECONNECTED, spy);
 					websocket.dispatchEvent('close', {});
@@ -343,7 +343,7 @@ describe('The Connection Service class', function () {
 
 				it('should trigger the authentication error event after reconnecting unsuccessfully', function () {
 					var spy = sandbox.spy();
-					data = JSON.stringify({command: 'reconnected', valid: false});
+					data = JSON.stringify({command: 'reconnection', valid: false});
 
 					instance.on(ConnectionEvent.AUTHENTICATION_ERROR, spy);
 					websocket.dispatchEvent('close', {});
