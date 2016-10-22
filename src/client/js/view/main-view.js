@@ -14,16 +14,10 @@ Constructor.prototype.setup = function (broadcasterService, connectionService) {
 Constructor.prototype.render = function (context) {
 	var appElement = context.querySelector('#APP');
 
-	this._updateContext(appElement);
-	this._updateAuthenticationController(appElement.querySelector('#AUTHENTICATION'));
-};
+	appElement.classList.add('app');
 
-Constructor.prototype._updateContext = function (context) {
-	context.classList.add('app');
-};
-
-Constructor.prototype._updateAuthenticationController = function (context) {
-	this._authenticationController.setContext(context);
+	this._authenticationController.setContext(appElement.querySelector('#AUTHENTICATION'));
+	this._notificationController.setContext(appElement.querySelector('#NOTIFICATION'));
 };
 
 module.exports = Constructor;

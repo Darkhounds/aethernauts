@@ -16,7 +16,7 @@ describe('The Main View class', function () {
 		NotificationController.mockStart();
 		MainView = require('./../../../../src/client/js/view/main-view');
 		context = document.createElement('div');
-		context.innerHTML = '<div id="APP"><div id="AUTHENTICATION"></div></div>';
+		context.innerHTML = '<div id="APP"><div id="AUTHENTICATION"></div><div id="NOTIFICATION"></div></div>';
 	});
 
 	afterEach(function() {
@@ -87,12 +87,20 @@ describe('The Main View class', function () {
 				context.querySelector('#APP').classList.contains('app').should.be.true;
 			});
 
-			it ('should set the authenticationController context', function () {
+			it ('should set the authenticationController context when rendering', function () {
 				var spy = sandbox.spy(authenticationController, 'setContext');
 
 				instance.render(context);
 
 				spy.should.have.been.calledWith(context.querySelector('#AUTHENTICATION'));
+			});
+
+			it ('should set the notificationController context when rendering', function () {
+				var spy = sandbox.spy(notificationController, 'setContext');
+
+				instance.render(context);
+
+				spy.should.have.been.calledWith(context.querySelector('#NOTIFICATION'));
 			});
 		});
 	});
