@@ -32,7 +32,7 @@ describe('The Disconnected View class', function () {
 			context.innerHTML.should.equal(disconnectedTemplate);
 		});
 
-		it('should add the "hidden" class to the context', function () {
+		it('should remove the "hidden" class from the context when rendering', function () {
 			context.classList.add('hidden');
 
 			instance.render(context);
