@@ -1,6 +1,6 @@
-var LoginView = require('./../view/login-view');
-var LogoutView = require('./../view/logout-view');
-var RegisterView = require('./../view/register-view');
+var LoginView = require('./../view/authentication/login-view');
+var LogoutView = require('./../view/authentication/logout-view');
+var RegisterView = require('./../view/authentication/register-view');
 var AuthenticationEvent = require('./../event/authentication-event');
 var ConnectionEvent = require('./../event/connection-event');
 
