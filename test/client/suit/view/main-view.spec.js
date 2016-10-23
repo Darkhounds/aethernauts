@@ -44,21 +44,21 @@ describe('The Main View class', function () {
 			instance.should.be.an.instanceof(MainView);
 		});
 
-		it ('should create a new Authentication Controller with the expected connectionService during setup', function () {
+		it ('should create a new Authentication Controller during setup', function () {
 			instance.setup(broadcasterService, connectionService);
 
 			AuthenticationController.should.have.been.called;
 		});
 
-		it ('should setup the authenticationController with the expected connectionService during setup', function () {
+		it ('should setup the authenticationController with the expected broadcasterService and connectionService during setup', function () {
 			var spy = sandbox.spy(AuthenticationController.prototype, 'setup');
 
 			instance.setup(broadcasterService, connectionService);
 
-			spy.should.have.been.calledWith(connectionService);
+			spy.should.have.been.calledWith(broadcasterService, connectionService);
 		});
 
-		it ('should create a new Notification Controller with the expected broadcasterService during setup', function () {
+		it ('should create a new Notification Controller during setup', function () {
 			instance.setup(broadcasterService, connectionService);
 
 			NotificationController.should.have.been.called;

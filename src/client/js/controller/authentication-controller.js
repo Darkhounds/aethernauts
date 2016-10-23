@@ -3,12 +3,15 @@ var LogoutView = require('./../view/authentication/logout-view');
 var RegisterView = require('./../view/authentication/register-view');
 var AuthenticationEvent = require('./../event/authentication-event');
 var ConnectionEvent = require('./../event/connection-event');
+var NotificationEvent = require('./../event/notification-event');
 
 var Constructor = function () {
 	this._context = null;
 	this._data = null;
 
 	this._handleConnectionError = Constructor.prototype._handleConnectionError.bind(this);
+	this._handleAuthenticationError = Constructor.prototype._handleAuthenticationError.bind(this);
+	this._handleRegistrationError = Constructor.prototype._handleRegistrationError.bind(this);
 	this._handleConnectionOpened = Constructor.prototype._handleConnectionOpened.bind(this);
 	this._handleConnectionDisconnected = Constructor.prototype._handleConnectionDisconnected.bind(this);
 	this._handleConnectionReconnected = Constructor.prototype._handleConnectionReconnected.bind(this);
@@ -21,7 +24,15 @@ var Constructor = function () {
 };
 
 Constructor.prototype._handleConnectionError = function (e) {
-	console.error(e);
+	this._broadcasterService.emit(NotificationEvent.CONNECTION_FAILED);
+};
+
+Constructor.prototype._handleAuthenticationError = function () {
+	this._broadcasterService.emit(NotificationEvent.AUTHENTICATION_FAILED);
+};
+
+Constructor.prototype._handleRegistrationError = function () {
+	this._broadcasterService.emit(NotificationEvent.REGISTRATION_FAILED);
 };
 
 Constructor.prototype._handleConnectionOpened = function () {
@@ -61,7 +72,9 @@ Constructor.prototype._handleLogout = function () {
 	this._connectionService.close();
 };
 
-Constructor.prototype.setup = function (connectionService) {
+Constructor.prototype.setup = function (broadcasterService, connectionService) {
+	this._broadcasterService = broadcasterService;
+
 	this._connectionService = connectionService;
 	this._addConnectionServiceEvents();
 
@@ -77,7 +90,8 @@ Constructor.prototype.setup = function (connectionService) {
 
 Constructor.prototype._addConnectionServiceEvents = function () {
 	this._connectionService.on(ConnectionEvent.CONNECTION_ERROR, this._handleConnectionError);
-	this._connectionService.on(ConnectionEvent.AUTHENTICATION_ERROR, this._handleConnectionError);
+	this._connectionService.on(ConnectionEvent.AUTHENTICATION_ERROR, this._handleAuthenticationError);
+	this._connectionService.on(ConnectionEvent.REGISTRATION_ERROR, this._handleRegistrationError);
 	this._connectionService.on(ConnectionEvent.OPENED, this._handleConnectionOpened);
 	this._connectionService.on(ConnectionEvent.DISCONNECTED, this._handleConnectionDisconnected);
 	this._connectionService.on(ConnectionEvent.RECONNECTED, this._handleConnectionReconnected);

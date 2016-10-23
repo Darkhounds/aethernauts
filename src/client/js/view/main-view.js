@@ -5,7 +5,7 @@ function Constructor() {}
 
 Constructor.prototype.setup = function (broadcasterService, connectionService) {
 	this._authenticationController = new AuthenticationController();
-	this._authenticationController.setup(connectionService);
+	this._authenticationController.setup(broadcasterService, connectionService);
 
 	this._notificationController = new NotificationController();
 	this._notificationController.setup(broadcasterService);
