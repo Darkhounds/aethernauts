@@ -5,6 +5,7 @@ var EmptyView = require('./../../mockups/view/notification/empty-view.mock');
 var DisconnectedView = require('./../../mockups/view/notification/disconnected-view.mock');
 var WrongCredentialsView = require('./../../mockups/view/notification/wrong-credentials-view.mock');
 var ConnectionErrorView = require('./../../mockups/view/notification/connection-error-view.mock');
+var RegistrationErrorView = require('./../../mockups/view/notification/registration-error-view.mock');
 
 var NotificationEvent = require('./../../../../src/client/js/event/notification-event');
 
@@ -18,10 +19,12 @@ describe('The Notification Controller class', function () {
 		DisconnectedView.mockStart();
 		WrongCredentialsView.mockStart();
 		ConnectionErrorView.mockStart();
+		RegistrationErrorView.mockStart();
 		NotificationController = require('./../../../../src/client/js/controller/notification-controller');
 	});
 
 	afterEach(function () {
+		RegistrationErrorView.mockStop();
 		ConnectionErrorView.mockStop();
 		WrongCredentialsView.mockStop();
 		DisconnectedView.mockStop();
@@ -78,6 +81,14 @@ describe('The Notification Controller class', function () {
 			instance.setup(broadcasterService);
 
 			spy.should.have.been.calledWith(NotificationEvent.CONNECTION_FAILED).once;
+		});
+		
+		it('should register a NotificationEvent.REGISTRATION_FAILED event after the setup', function () {
+			var spy = sandbox.spy(broadcasterService, 'on');
+
+			instance.setup(broadcasterService);
+
+			spy.should.have.been.calledWith(NotificationEvent.REGISTRATION_FAILED).once;
 		});
 
 		describe('after the setup', function () {
@@ -210,6 +221,48 @@ describe('The Notification Controller class', function () {
 				broadcasterService.emit(NotificationEvent.CONNECTION_FAILED);
 				ConnectionErrorView.getInstance().emit(NotificationEvent.CLOSE);
 				ConnectionErrorView.getInstance().emit(NotificationEvent.CLOSE);
+
+				spy.should.have.been.calledWith(context).once;
+			});
+
+
+			it('should render the registrationErrorView when the NotificationEvent.REGISTRATION_FAILED is fired', function () {
+				var errors = ['email', 'user', 'character'];
+				var spy = sandbox.spy(RegistrationErrorView.getInstance(), 'render');
+
+				instance.setContext(context);
+				broadcasterService.emit(NotificationEvent.REGISTRATION_FAILED, errors);
+
+				spy.should.have.been.calledWith(context, errors).once;
+			});
+
+			it('should fail silently when the NotificationEvent.REGISTRATION_FAILED is fired more then once', function () {
+				var spy = sandbox.spy(RegistrationErrorView.getInstance(), 'render');
+
+				instance.setContext(context);
+				broadcasterService.emit(NotificationEvent.REGISTRATION_FAILED);
+				broadcasterService.emit(NotificationEvent.REGISTRATION_FAILED);
+
+				spy.should.have.been.calledWith(context).once;
+			});
+
+			it('should render the emptyView when the registrationErrorView fires a NotificationEvent.CLOSE event', function () {
+				instance.setContext(context);
+
+				var spy = sandbox.spy(EmptyView.getInstance(), 'render');
+				broadcasterService.emit(NotificationEvent.REGISTRATION_FAILED);
+				RegistrationErrorView.getInstance().emit(NotificationEvent.CLOSE);
+
+				spy.should.have.been.calledWith(context).once;
+			});
+
+			it('should fail silently when the registrationErrorView fires a NotificationEvent.CLOSE is fired more then once', function () {
+				instance.setContext(context);
+
+				var spy = sandbox.spy(EmptyView.getInstance(), 'render');
+				broadcasterService.emit(NotificationEvent.REGISTRATION_FAILED);
+				RegistrationErrorView.getInstance().emit(NotificationEvent.CLOSE);
+				RegistrationErrorView.getInstance().emit(NotificationEvent.CLOSE);
 
 				spy.should.have.been.calledWith(context).once;
 			});

@@ -31,8 +31,8 @@ Constructor.prototype._handleAuthenticationError = function () {
 	this._broadcasterService.emit(NotificationEvent.AUTHENTICATION_FAILED);
 };
 
-Constructor.prototype._handleRegistrationError = function () {
-	this._broadcasterService.emit(NotificationEvent.REGISTRATION_FAILED);
+Constructor.prototype._handleRegistrationError = function (errors) {
+	this._broadcasterService.emit(NotificationEvent.REGISTRATION_FAILED, errors);
 };
 
 Constructor.prototype._handleConnectionOpened = function () {

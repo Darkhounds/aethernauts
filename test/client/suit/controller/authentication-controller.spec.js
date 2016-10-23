@@ -142,11 +142,12 @@ describe('The AuthenticationController class', function () {
 			});
 
 			it ('should trigger a NotificationEvent.REGISTRATION_FAILED on the broadcastService on a ConnectionEvent.REGISTRATION_ERROR', function () {
+				var errors = ['email', 'user', 'character'];
 				var spy = sandbox.spy(broadcasterService, 'emit');
 
-				connectionService.emit(ConnectionEvent.REGISTRATION_ERROR);
+				connectionService.emit(ConnectionEvent.REGISTRATION_ERROR, errors);
 
-				spy.should.have.been.calledWith(NotificationEvent.REGISTRATION_FAILED);
+				spy.should.have.been.calledWith(NotificationEvent.REGISTRATION_FAILED, errors);
 			});
 
 			it ('should handle a login view AuthenticationEvent.AUTHENTICATE event', function () {
