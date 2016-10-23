@@ -1,6 +1,6 @@
 module.exports = {
 	CONNECTION_ERROR: 'connectionError',
-	REGISTRATION_ERROR: 'authenticationError',
+	REGISTRATION_ERROR: 'registrationError',
 	AUTHENTICATION_ERROR: 'authenticationError',
 	MESSAGE_ERROR: 'messageError',
 	DISCONNECTED: 'disconnected',

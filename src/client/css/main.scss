@@ -18,8 +18,8 @@
 	}
 }
 
-.disconnected {
+.disconnected, .wrong-credentials, .connection-error, .registration-error {
 	.modal-card {
-		max-width: 300px;
+		max-width: 490px;
 	}
 }

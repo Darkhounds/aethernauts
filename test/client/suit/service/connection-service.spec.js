@@ -88,8 +88,8 @@ describe('The Connection Service class', function () {
 		});
 
 		it('should do handle a unsuccessful registration process by triggering a ConnectionEvent.REGISTRATION_ERROR event', function () {
-			var error = ['email'];
-			var data = JSON.stringify({command: 'registration', valid: false, error: error});
+			var errors = ['email'];
+			var data = JSON.stringify({command: 'registration', valid: false, errors: errors});
 			var spy = sandbox.spy();
 
 			instance.on(ConnectionEvent.REGISTRATION_ERROR, spy);
@@ -99,7 +99,7 @@ describe('The Connection Service class', function () {
 			request.responseText = data;
 			request.emit('load');
 
-			spy.should.have.been.calledWith(error);
+			spy.should.have.been.calledWith(errors);
 		});
 
 		it('should create a websocket when opening a connection', function () {
