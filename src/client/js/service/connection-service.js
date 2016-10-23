@@ -29,7 +29,7 @@ Constructor.prototype._handleRegisterRequest = function () {
 	if (data.command === 'registration' && data.valid) {
 		this.open(this._username, this._password);
 	} else {
-		this.emit(ConnectionEvent.REGISTRATION_ERROR, data.error)
+		this.emit(ConnectionEvent.REGISTRATION_ERROR, data.errors);
 	}
 };
 
