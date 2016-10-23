@@ -2,6 +2,7 @@ var NotificationEvent = require('./../event/notification-event');
 
 var EmptyView = require('./../view/notification/empty-view');
 var DisconnectedView = require('./../view/notification/disconnected-view');
+var WrongCredentialsView = require('./../view/notification/wrong-credentials-view');
 
 var Constructor = function () {
 	this._context = null;
@@ -11,6 +12,8 @@ var Constructor = function () {
 
 	this._handleDisconnectedNotification = this._handleDisconnectedNotification.bind(this);
 	this._handleReconnectedNotification = this._handleReconnectedNotification.bind(this);
+	this._handleAuthenticationFailedNotification = this._handleAuthenticationFailedNotification.bind(this);
+	this._handleWrongCredentialsClose = this._handleWrongCredentialsClose.bind(this);
 };
 
 Constructor.prototype._handleDisconnectedNotification = function () {
@@ -27,17 +30,35 @@ Constructor.prototype._handleReconnectedNotification = function () {
 	}
 };
 
+Constructor.prototype._handleAuthenticationFailedNotification = function () {
+	if(this._active !== this._wrongCredentials) {
+		this._active = this._wrongCredentials;
+		this._wrongCredentials.render(this._context);
+	}
+};
+
+Constructor.prototype._handleWrongCredentialsClose = function () {
+	if(this._active === this._wrongCredentials) {
+		this._active = null;
+		this._emptyView.render(this._context);
+	}
+};
+
 Constructor.prototype.setup = function (broadcasterService) {
 	this._broadcasterService = broadcasterService;
 	this._addBroadcasterServiceEvents();
 
 	this._emptyView = new EmptyView();
 	this._disconnectedView = new DisconnectedView();
+	this._wrongCredentials = new WrongCredentialsView();
+	this._wrongCredentials.on(NotificationEvent.CLOSE, this._handleWrongCredentialsClose);
 };
 
 Constructor.prototype._addBroadcasterServiceEvents = function () {
 	this._broadcasterService.on(NotificationEvent.DISCONNECTED, this._handleDisconnectedNotification);
 	this._broadcasterService.on(NotificationEvent.RECONNECTED, this._handleReconnectedNotification);
+	this._broadcasterService.on(NotificationEvent.AUTHENTICATION_FAILED, this._handleAuthenticationFailedNotification);
+
 };
 
 Constructor.prototype.setContext = function (context) {

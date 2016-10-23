@@ -3,5 +3,6 @@ module.exports = {
 	RECONNECTED: 'reconnected',
 	CONNECTION_FAILED: 'connectionFailed',
 	AUTHENTICATION_FAILED: 'authenticationFailed',
-	REGISTRATION_FAILED: 'registrationFailed'
+	REGISTRATION_FAILED: 'registrationFailed',
+	CLOSE: 'close'
 };
