@@ -1,8 +1,18 @@
-var ServerConfig = require('./../../../../src/server/object/server-config');
+var fs = require('./../../mockups/fs.mock');
 
 describe('The Server Config class', function () {
-	var root = 'root/';
-	var port = '3000';
+	var ServerConfig, root, port;
+
+	beforeEach(function () {
+		root = 'root/';
+		port = '3000';
+		fs.mockStart();
+		ServerConfig = require('./../../../../src/server/object/server-config');
+	});
+
+	afterEach(function () {
+		fs.mockStop();
+	});
 
 	it ('should be a function', function () {
 		ServerConfig.should.be.an('function');
@@ -12,6 +22,8 @@ describe('The Server Config class', function () {
 		var instance;
 
 		beforeEach(function () {
+			fs.addResponse(true);
+			fs.addResponse('something');
 			instance = new ServerConfig(root, port);
 		});
 
