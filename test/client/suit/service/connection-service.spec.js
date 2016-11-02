@@ -38,10 +38,6 @@ describe('The Connection Service class', function () {
 			instance.setup(url);
 		});
 
-		afterEach(function () {
-
-		});
-
 		it('should be an instance of', function () {
 			instance.should.be.an.instanceOf(ConnectionService);
 		});
@@ -224,17 +220,18 @@ describe('The Connection Service class', function () {
 				spy.should.not.have.been.called;
 			});
 
-			it('should send an authentication request after the websocket is opened', function () {
+			it('should send an authentication request after the handshake is received', function () {
 				var spy = sandbox.spy(websocket, 'send');
-				var data = {
+				var data = JSON.stringify({command: 'handshake', mask: ''});
+				var expectedData = {
 					command: 'authentication',
 					username: username,
 					password: password
 				};
 
-				websocket.dispatchEvent('open', {});
+				websocket.dispatchEvent('message', {data: data});
 
-				spy.should.have.been.calledWith(JSON.stringify(data));
+				spy.should.have.been.calledWith(JSON.stringify(expectedData));
 			});
 
 			it('should trigger an authentication error after a failed authentication', function () {
@@ -292,8 +289,6 @@ describe('The Connection Service class', function () {
 					websocket.dispatchEvent('message', {data: data});
 				});
 
-				afterEach(function () {});
-
 				it('should trigger a disconnect event when the connection closes with a token', function () {
 					var spy = sandbox.spy();
 
@@ -311,20 +306,22 @@ describe('The Connection Service class', function () {
 				});
 
 				it('should send an reconnection request after the websocket is reopened', function () {
-					websocket.dispatchEvent('close', {});
-					clock.tick(ConnectionService.DEFAULT_DELAY);
-					websocket = WebSocket.getInstance();
-
-					var spy = sandbox.spy(websocket, 'send');
-					var data ={
+					var data = JSON.stringify({command: 'handshake', mask: ''});
+					var expectedData = {
 						command: 'reconnection',
 						username: username,
 						token: token
 					};
 
-					websocket.dispatchEvent('open', {});
+					websocket.dispatchEvent('close', {});
+					clock.tick(ConnectionService.DEFAULT_DELAY);
 
-					spy.should.have.been.calledWith(JSON.stringify(data));
+					var reconnectionWebsocket = WebSocket.getInstance();
+					var spy = sandbox.spy(reconnectionWebsocket, 'send');
+
+					reconnectionWebsocket.dispatchEvent('message', {data: data});
+
+					spy.should.have.been.calledWith(JSON.stringify(expectedData)).once;
 				});
 
 				it('should trigger the reconnected event after reconnecting successfully', function () {
