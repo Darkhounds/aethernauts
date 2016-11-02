@@ -6,12 +6,9 @@ var Constructor = function () {
 	_instance = this;
 };
 
-Constructor.prototype.accessSync = function () {
-	return _responses.shift();
-};
-
 Constructor.prototype.readFileSync = function () {
-	return _responses.shift();
+	if (_responses.length) return _responses.shift();
+	else throw('');
 };
 
 Constructor.mockStart = function () { mock('fs', new Constructor()); };

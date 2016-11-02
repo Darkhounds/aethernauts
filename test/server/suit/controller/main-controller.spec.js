@@ -15,7 +15,7 @@ describe('The Main Controller class', function () {
 
 	beforeEach(function () {
 		port = 999;
-		root = 'bogus/';
+		root = 'bogus';
 		sandbox = sinon.sandbox.create();
 		consoleLog = sandbox.stub(console, 'log');
 		EventManager.mockStart();
@@ -57,7 +57,7 @@ describe('The Main Controller class', function () {
 		it('should create a new WaterlineConfig when setting up', function () {
 			instance.setup(port, root);
 
-			WaterlineConfig.should.have.been.calledWith(root + 'data/').once;
+			WaterlineConfig.should.have.been.calledWith(root + '/data/').once;
 		});
 
 		it('should create a new DataStorage when setting up', function () {
@@ -83,7 +83,7 @@ describe('The Main Controller class', function () {
 		it('should create the UserModel with the expected data', function () {
 			instance.setup(port, root);
 
-			UsersModel.should.have.been.calledWith([{ type: 'god', username: 'username', password: 'password' }]).once;
+			UsersModel.should.have.been.calledWith(ServerConfig.getInstance().defaultUsers).once;
 		});
 
 		it('should register a new UserModel under "users" name with the DataStorage when setting up', function () {

@@ -15,7 +15,7 @@ var Constructor = function () {
 };
 
 Constructor.prototype.setup = function (port, root) {
-	this._waterlineConfig = new WaterlineConfig(root + 'data/');
+	this._waterlineConfig = new WaterlineConfig(root + '/data/');
 	this._serverConfig = new ServerConfig(root, port);
 
 	this._setupDataStorage();
@@ -32,8 +32,7 @@ Constructor.prototype._setupDataStorage = function () {
 };
 
 Constructor.prototype._createUsersModel = function () {
-	var defaultUser = { type: 'god', username: 'username', password: 'password' };
-	var userModel = new UsersModel([defaultUser]);
+	var userModel = new UsersModel(this._serverConfig.defaultUsers);
 	return userModel;
 };
 
