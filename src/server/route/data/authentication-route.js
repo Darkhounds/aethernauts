@@ -9,7 +9,9 @@ Constructor.prototype.setup = function (cypher) {
 };
 
 Constructor.prototype.execute = function (data) {
-	var password = this._cypher.encrypt(data.password);
+	var decoded = this._cypher.decode(data.password);
+	var unmasked = this._cypher.unmask(decoded, data._socket.mask);
+	var password = this._cypher.encrypt(unmasked);
 
 	return this._usersModel.findOne({ username: data.username.toLowerCase(), password: password })
 		.then(this._checkUserIsValid.bind(this))

@@ -1,5 +1,6 @@
 var ServerConfig = require('./../../mockups/object/server-config.mock');
 var md5 = require('md5');
+var btoa = require('abab').btoa;
 
 describe('The Cypher class', function () {
 	var Cypher;
@@ -26,6 +27,21 @@ describe('The Cypher class', function () {
 
 		it('should be an instance of Cypher', function () {
 			instance.should.be.an.instanceOf(Cypher);
+		});
+
+		it('should decode a base64 encoded message back to utf8 when using the decode methos', function () {
+			var expectedValue = 'some value';
+			var value = btoa(expectedValue);
+
+			instance.decode(value).should.equal(expectedValue);
+		});
+
+		it('should unmask value', function () {
+			var mask = 'some mask';
+			var masked = '0 0 0 0 0 1b 0 1f 1e 16';
+			var expectedValue = 'some value';
+
+			instance.unmask(masked, mask).should.equal(expectedValue);
 		});
 
 		describe('after setup', function () {

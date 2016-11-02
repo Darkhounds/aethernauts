@@ -34,6 +34,7 @@
   },
   "homepage": "https://gitlab.com/darkhounds/aethernauts#README",
   "devDependencies": {
+    "abab": "^1.0.3",
     "body-parser": "^1.15.2",
     "browserify": "^13.1.0",
     "bulma": "^0.2.1",

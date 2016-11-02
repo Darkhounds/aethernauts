@@ -1,4 +1,5 @@
 var md5 = require('md5');
+var atob = require('abab').atob;
 
 var Constructor = function () {
 	this._config = null;
@@ -20,6 +21,23 @@ Constructor.prototype.generateMask = function () {
 	}
 
 	return mask;
+};
+
+Constructor.prototype.decode = function (value) {
+	return atob(value);
+};
+
+Constructor.prototype.unmask = function (masked, mask) {
+	mask = new Buffer(mask);
+	masked = masked.split(' ');
+
+	var buffer = masked.reduce(function(reduced, value, id) {
+		reduced[id] = parseInt(value, 16) ^ mask[id%mask.length];
+
+		return reduced;
+	}.bind(this), new Buffer(masked.length));
+
+	return buffer.toString();
 };
 
 Constructor.prototype._generateRandomChar = function () {

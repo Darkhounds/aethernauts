@@ -63,6 +63,8 @@ describe('The Authentication Route class', function() {
 				};
 
 				Cypher.addResponse(expectedPassword);
+				Cypher.addResponse(expectedPassword);
+				Cypher.addResponse(expectedPassword);
 				instance.execute(data);
 
 				spy.should.have.been.calledWith({ username: username, password: expectedPassword });

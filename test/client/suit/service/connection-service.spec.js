@@ -3,6 +3,7 @@ var sinon = require('sinon');
 var ConnectionEvent = require('./../../../../src/client/js/event/connection-event');
 var Websocket = require('./../../mockups/websocket');
 var XMLHttpRequest = require('./../../mockups/http-request');
+var Cypher = require('./../../mockups/util/cypher.mock');
 
 describe('The Connection Service class', function () {
 	var ConnectionService, sandbox;
@@ -17,10 +18,12 @@ describe('The Connection Service class', function () {
 		sandbox = sinon.sandbox.create();
 		Websocket.mockStart();
 		XMLHttpRequest.mockStart();
+		Cypher.mockStart();
 		ConnectionService = require('./../../../../src/client/js/service/connection-service');
 	});
 
 	afterEach(function() {
+		Cypher.mockStop();
 		XMLHttpRequest.mockStop();
 		Websocket.mockStop();
 		sandbox.restore();
@@ -222,12 +225,16 @@ describe('The Connection Service class', function () {
 
 			it('should send an authentication request after the handshake is received', function () {
 				var spy = sandbox.spy(websocket, 'send');
-				var data = JSON.stringify({command: 'handshake', mask: ''});
+				var expectedPassword = 'someMaskedAndEncodedValue';
 				var expectedData = {
 					command: 'authentication',
 					username: username,
-					password: password
+					password: expectedPassword
 				};
+				var data = JSON.stringify({command: 'handshake', mask: ''});
+
+				Cypher.addResponse(expectedPassword);
+				Cypher.addResponse(expectedPassword);
 
 				websocket.dispatchEvent('message', {data: data});
 

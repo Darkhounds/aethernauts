@@ -13,6 +13,12 @@ Constructor.prototype.encrypt = function () {
 Constructor.prototype.generateMask = function () {
 	return _responses.shift();
 };
+Constructor.prototype.decode = function () {
+	return _responses.shift();
+};
+Constructor.prototype.unmask = function () {
+	return _responses.shift();
+};
 
 Constructor.getInstance = function () {
 	return _instance;

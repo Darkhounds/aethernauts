@@ -1,24 +1,25 @@
 var util = require('util');
 var EventEmitter = require('events').EventEmitter;
 var ConnectionEvent = require('./../event/connection-event');
+var Cypher = require('./../util/cypher');
 
 var Constructor = function () {
 	this._registerRequest = null;
 	this._url = '';
-	this._mask = '';
 	this._username = '';
 	this._password = '';
 	this._token = '';
 	this._websocket = null;
 	this._connected = false;
 	this._reconnectionTimeout = -1;
+	this._cypher = new Cypher();
 
 	this._handleRegisterRequest = this._handleRegisterRequest.bind(this);
 	this._handleRegisterRequestError = this._handleRegisterRequestError.bind(this);
-	this._handleConnectionError = Constructor.prototype._handleConnectionError.bind(this);
-	this._handleMessageReceived = Constructor.prototype._handleMessageReceived.bind(this);
-	this._handleReconnection = Constructor.prototype._handleReconnection.bind(this);
-	this._handleClosed = Constructor.prototype._handleClosed.bind(this);
+	this._handleConnectionError = this._handleConnectionError.bind(this);
+	this._handleMessageReceived = this._handleMessageReceived.bind(this);
+	this._handleReconnection = this._handleReconnection.bind(this);
+	this._handleClosed = this._handleClosed.bind(this);
 };
 util.inherits(Constructor, EventEmitter);
 
@@ -89,12 +90,13 @@ Constructor.prototype._handleMessageReceived = function (e) {
 };
 
 Constructor.prototype._resolveHandshake = function (data) {
-	this._mask = data.mask;
+	this._cypher.setMask(data.mask);
 
 	if (this._token) {
 		this._websocket.send(JSON.stringify({command:'reconnection', username: this._username, token: this._token}));
 	} else {
-		this._websocket.send(JSON.stringify({command:'authentication', username: this._username, password: this._password}))
+		var password = this._cypher.encode(this._cypher.mask(this._password));
+		this._websocket.send(JSON.stringify({command:'authentication', username: this._username, password: password}))
 	}
 };
 
