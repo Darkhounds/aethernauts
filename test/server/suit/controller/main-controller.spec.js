@@ -80,6 +80,12 @@ describe('The Main Controller class', function () {
 			UsersModel.should.have.been.calledWithNew.once;
 		});
 
+		it('should create the UserModel with the expected data', function () {
+			instance.setup(port, root);
+
+			UsersModel.should.have.been.calledWith([{ type: 'god', username: 'username', password: 'password' }]).once;
+		});
+
 		it('should register a new UserModel under "users" name with the DataStorage when setting up', function () {
 			var spy = sandbox.spy(DataStorage.prototype, 'addModel');
 

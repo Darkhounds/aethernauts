@@ -26,7 +26,15 @@ Constructor.prototype.setup = function (port, root) {
 Constructor.prototype._setupDataStorage = function () {
 	this._dataStorage = new DataStorage();
 	this._dataStorage.setup(this._waterlineConfig);
-	this._dataStorage.addModel('users', new UsersModel());
+
+	var userModel = this._createUsersModel();
+	this._dataStorage.addModel('users', userModel);
+};
+
+Constructor.prototype._createUsersModel = function () {
+	var defaultUser = { type: 'god', username: 'username', password: 'password' };
+	var userModel = new UsersModel([defaultUser]);
+	return userModel;
 };
 
 Constructor.prototype._setupHTTPRequestRouter = function () {

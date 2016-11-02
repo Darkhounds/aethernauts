@@ -4,13 +4,13 @@ var Waterline = require('./../../mockups/waterline');
 var AbstractModel = require('./../../mockups/model/abstract-model.mock');
 
 describe('The Users Model Class', function () {
-	var Users, sandbox;
+	var UsersModel, sandbox;
 
 	beforeEach(function () {
 		sandbox = sinon.sandbox.create();
 		Waterline.mockStart();
 		AbstractModel.mockStart();
-		Users = require('./../../../../src/server/model/users-model');
+		UsersModel = require('./../../../../src/server/model/users-model');
 	});
 
 	afterEach(function () {
@@ -20,33 +20,57 @@ describe('The Users Model Class', function () {
 	});
 
 	it('should be a function', function () {
-		Users.should.be.a('function');
+		UsersModel.should.be.a('function');
 	});
 
 	describe('as an instance', function () {
-		var instance;
-		var waterline;
+		var instance, defaultUsers;
 
 		beforeEach(function () {
-			waterline = new Waterline();
+			defaultUsers = [
+				{ type: 'god', username: 'username', password: 'password' },
+				{ type: 'god', username: 'bogus', password: 'foo' }
+			];
 
-			instance = new Users(waterline);
+			instance = new UsersModel(defaultUsers);
 		});
 
-		afterEach(function () {
-			instance = null;
+		it('should be an instance of "UsersModel" class', function () {
+			instance.should.be.an.instanceof(UsersModel);
 		});
 
-		it ('Should inherit the "Abstract" class', function () {
-			instance.should.be.an.instanceof(AbstractModel, 'instance is not a Abstract');
+		it('should be an instance of "Abstract" class', function () {
+			instance.should.be.an.instanceof(AbstractModel);
 		});
 
-		it ('Should created a default user when initializing', function () {
-			var spy = sandbox.spy(instance, 'findOrCreate');
+		describe('after setup', function () {
+			var waterline;
 
-			instance.initialize();
+			beforeEach(function () {
+				waterline = new Waterline();
 
-			spy.should.have.been.calledOnce;
+				instance.setup(waterline);
+			});
+
+			it('should create the first default user when initializing', function (done) {
+				var spy = sandbox.spy(instance, 'findOrCreate');
+				var defaultUser = defaultUsers[0];
+
+				instance.initialize().finally(function () {
+					spy.should.have.been.calledWith({username: defaultUser.username}, defaultUser);
+					done();
+				});
+			});
+
+			it('should create the second default user when initializing', function (done) {
+				var spy = sandbox.spy(instance, 'findOrCreate');
+				var defaultUser = defaultUsers[1];
+
+				instance.initialize().finally(function () {
+					spy.should.have.been.calledWith({username: defaultUser.username}, defaultUser);
+					done();
+				});
+			});
 		});
 	});
 });
