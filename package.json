@@ -46,6 +46,7 @@
     "font-awesome": "^4.6.3",
     "istanbul": "^0.4.5",
     "jsdom": "^9.5.0",
+    "md5": "^2.2.1",
     "minifyify": "^7.3.3",
     "mocha": "^3.0.2",
     "mocha-jsdom": "^1.1.0",
