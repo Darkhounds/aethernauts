@@ -2,11 +2,18 @@ var Constructor = function (eventManager, dataStorage) {
 	this._eventManager = eventManager;
 	this._dataStorage = dataStorage;
 	this._usersModel = this._dataStorage.getModel('users');
+};
 
+Constructor.prototype.setup = function (cypher) {
+	this._cypher = cypher;
 };
 
 Constructor.prototype.execute = function (data) {
-	return this._usersModel.findOne({ username: data.username.toLowerCase(), password: data.password })
+	var decoded = this._cypher.decode(data.password);
+	var unmasked = this._cypher.unmask(decoded, data._socket.mask);
+	var password = this._cypher.encrypt(unmasked);
+
+	return this._usersModel.findOne({ username: data.username.toLowerCase(), password: password })
 		.then(this._checkUserIsValid.bind(this))
 		.then(this._updateUserToken.bind(this))
 		.then(this._sendSuccess.bind(this, data._socket))
@@ -20,7 +27,7 @@ Constructor.prototype._checkUserIsValid = function (user) {
 };
 
 Constructor.prototype._updateUserToken = function (user) {
-	return this._usersModel.update({username: user.username}, {token: 'bogus'});
+	return this._usersModel.update({username: user.username}, {token: this._cypher.generateMask()});
 };
 
 Constructor.prototype._sendSuccess = function (socket, users) {

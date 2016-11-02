@@ -1,17 +1,19 @@
 var sinon = require('sinon');
 
+var Cypher = require('./../../../mockups/component/cypher.mock');
+
 var UsersModel = require('./../../../mockups/model/users-model.mock');
 var DataStorage = require('./../../../mockups/component/data-storage.mock');
 
 describe('The Register Route class', function () {
-	var RegisterRoute, sandbox;
-	var email = 'something@somewhere.com';
-	var username = 'username';
-	var password = 'password';
-	var character = 'character';
-	var token = 'token';
+	var RegisterRoute, sandbox, email, username, password, character, token;
 
 	beforeEach(function () {
+		email = 'something@somewhere.com';
+		username = 'username';
+		password = 'password';
+		character = 'character';
+		token = 'token';
 		sandbox = sinon.sandbox.create();
 		DataStorage.mockStart();
 		UsersModel.mockStart();
@@ -57,86 +59,120 @@ describe('The Register Route class', function () {
 		it('should be an instance of RegisterRoute', function () {
 			instance.should.be.an.instanceOf(RegisterRoute);
 		});
-		
-		it('should send a valid response with the expected values', function (done) {
-			var expected = JSON.stringify({command: 'registration', valid: true, token: token});
-			var spy = sandbox.spy();
-			var res = {
-				end: spy
-			};
 
-			UsersModel.addResponse(null, []);
-			UsersModel.addResponse(null, {token: token});
+		describe('after the setup', function () {
+			var cypher;
 
-			instance.execute(req, res)
-				.finally(function () {
-					spy.should.have.been.calledWith(expected).once;
+			beforeEach(function () {
+				cypher = new Cypher();
+				instance.setup(cypher);
+			});
+
+			it('should encrypt the password', function (done) {
+				var encryptedPassword = 'encryptedPassword';
+				var expectedData = {
+					email: email,
+					username: username,
+					password: encryptedPassword,
+					character: character,
+					type: 'user',
+					token: 'bogus'
+				};
+				var spy = sandbox.spy(UsersModel.getInstance(), 'create');
+				var res = {
+					end: function () {}
+				};
+
+				Cypher.addResponse(encryptedPassword);
+				UsersModel.addResponse(null, []);
+				UsersModel.addResponse(null, {token: token});
+
+				instance.execute(req, res).finally(function () {
+					spy.should.have.been.calledWith(expectedData);
 					done();
 				});
-		});
+			});
 
-		it('should send an invalid response with the email as error', function (done) {
-			var expected = JSON.stringify({command: 'registration', valid: false, errors: ['email']});
-			var spy = sandbox.spy();
-			var res = {
-				end: spy
-			};
+			it('should send a valid response with the expected values', function (done) {
+				var expected = JSON.stringify({command: 'registration', valid: true, token: token});
+				var spy = sandbox.spy();
+				var res = {
+					end: spy
+				};
 
-			UsersModel.addResponse(null, [{email: email}]);
+				UsersModel.addResponse(null, []);
+				UsersModel.addResponse(null, {token: token});
 
-			instance.execute(req, res)
-				.finally(function () {
-					spy.should.have.been.calledWith(expected).once;
-					done();
-				});
-		});
+				instance.execute(req, res)
+					.finally(function () {
+						spy.should.have.been.calledWith(expected).once;
+						done();
+					});
+			});
 
-		it('should send an invalid response with the username as error', function (done) {
-			var expected = JSON.stringify({command: 'registration', valid: false, errors: ['username']});
-			var spy = sandbox.spy();
-			var res = {
-				end: spy
-			};
+			it('should send an invalid response with the email as error', function (done) {
+				var expected = JSON.stringify({command: 'registration', valid: false, errors: ['email']});
+				var spy = sandbox.spy();
+				var res = {
+					end: spy
+				};
 
-			UsersModel.addResponse(null, [{username: username}]);
+				UsersModel.addResponse(null, [{email: email}]);
 
-			instance.execute(req, res)
-				.finally(function () {
-					spy.should.have.been.calledWith(expected).once;
-					done();
-				});
-		});
+				instance.execute(req, res)
+					.finally(function () {
+						spy.should.have.been.calledWith(expected).once;
+						done();
+					});
+			});
 
-		it('should send an invalid response with the character as error', function (done) {
-			var expected = JSON.stringify({command: 'registration', valid: false, errors: ['character']});
-			var spy = sandbox.spy();
-			var res = {
-				end: spy
-			};
+			it('should send an invalid response with the username as error', function (done) {
+				var expected = JSON.stringify({command: 'registration', valid: false, errors: ['username']});
+				var spy = sandbox.spy();
+				var res = {
+					end: spy
+				};
 
-			UsersModel.addResponse(null, [{character: character}]);
+				UsersModel.addResponse(null, [{username: username}]);
 
-			instance.execute(req, res)
-				.finally(function () {
-					spy.should.have.been.calledWith(expected).once;
-					done();
-				});
-		});
+				instance.execute(req, res)
+					.finally(function () {
+						spy.should.have.been.calledWith(expected).once;
+						done();
+					});
+			});
 
-		it('should send an invalid response with the email, username and character as error', function (done) {
-			var expected = JSON.stringify({command: 'registration', valid: false, errors: ['email', 'username', 'character']});
-			var spy = sandbox.spy();
-			var res = {
-				end: spy
-			};
+			it('should send an invalid response with the character as error', function (done) {
+				var expected = JSON.stringify({command: 'registration', valid: false, errors: ['character']});
+				var spy = sandbox.spy();
+				var res = {
+					end: spy
+				};
 
-			UsersModel.addResponse(null, [{email: email, username: username, character: character}]);
+				UsersModel.addResponse(null, [{character: character}]);
 
-			instance.execute(req, res)
-				.finally(function () {
-					spy.should.have.been.calledWith(expected).once;
-					done();
-				});
+				instance.execute(req, res)
+					.finally(function () {
+						spy.should.have.been.calledWith(expected).once;
+						done();
+					});
+			});
+
+			it('should send an invalid response with the email, username and character as error', function (done) {
+				var expected = JSON.stringify({command: 'registration', valid: false, errors: ['email', 'username', 'character']});
+				var spy = sandbox.spy();
+				var res = {
+					end: spy
+				};
+
+				UsersModel.addResponse(null, [{email: email, username: username, character: character}]);
+
+				instance.execute(req, res)
+					.finally(function () {
+						spy.should.have.been.calledWith(expected).once;
+						done();
+					});
+			});
 		});
 	});
 });

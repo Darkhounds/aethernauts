@@ -3,6 +3,7 @@ var sinon = require('sinon');
 var ConnectionEvent = require('./../../../../src/client/js/event/connection-event');
 var Websocket = require('./../../mockups/websocket');
 var XMLHttpRequest = require('./../../mockups/http-request');
+var Cypher = require('./../../mockups/util/cypher.mock');
 
 describe('The Connection Service class', function () {
 	var ConnectionService, sandbox;
@@ -17,10 +18,12 @@ describe('The Connection Service class', function () {
 		sandbox = sinon.sandbox.create();
 		Websocket.mockStart();
 		XMLHttpRequest.mockStart();
+		Cypher.mockStart();
 		ConnectionService = require('./../../../../src/client/js/service/connection-service');
 	});
 
 	afterEach(function() {
+		Cypher.mockStop();
 		XMLHttpRequest.mockStop();
 		Websocket.mockStop();
 		sandbox.restore();
@@ -36,10 +39,6 @@ describe('The Connection Service class', function () {
 		beforeEach(function () {
 			instance = new ConnectionService();
 			instance.setup(url);
-		});
-
-		afterEach(function () {
-
 		});
 
 		it('should be an instance of', function () {
@@ -224,17 +223,22 @@ describe('The Connection Service class', function () {
 				spy.should.not.have.been.called;
 			});
 
-			it('should send an authentication request after the websocket is opened', function () {
+			it('should send an authentication request after the handshake is received', function () {
 				var spy = sandbox.spy(websocket, 'send');
-				var data = {
+				var expectedPassword = 'someMaskedAndEncodedValue';
+				var expectedData = {
 					command: 'authentication',
 					username: username,
-					password: password
+					password: expectedPassword
 				};
+				var data = JSON.stringify({command: 'handshake', mask: ''});
 
-				websocket.dispatchEvent('open', {});
+				Cypher.addResponse(expectedPassword);
+				Cypher.addResponse(expectedPassword);
 
-				spy.should.have.been.calledWith(JSON.stringify(data));
+				websocket.dispatchEvent('message', {data: data});
+
+				spy.should.have.been.calledWith(JSON.stringify(expectedData));
 			});
 
 			it('should trigger an authentication error after a failed authentication', function () {
@@ -292,8 +296,6 @@ describe('The Connection Service class', function () {
 					websocket.dispatchEvent('message', {data: data});
 				});
 
-				afterEach(function () {});
-
 				it('should trigger a disconnect event when the connection closes with a token', function () {
 					var spy = sandbox.spy();
 
@@ -311,20 +313,22 @@ describe('The Connection Service class', function () {
 				});
 
 				it('should send an reconnection request after the websocket is reopened', function () {
-					websocket.dispatchEvent('close', {});
-					clock.tick(ConnectionService.DEFAULT_DELAY);
-					websocket = WebSocket.getInstance();
-
-					var spy = sandbox.spy(websocket, 'send');
-					var data ={
+					var data = JSON.stringify({command: 'handshake', mask: ''});
+					var expectedData = {
 						command: 'reconnection',
 						username: username,
 						token: token
 					};
 
-					websocket.dispatchEvent('open', {});
+					websocket.dispatchEvent('close', {});
+					clock.tick(ConnectionService.DEFAULT_DELAY);
 
-					spy.should.have.been.calledWith(JSON.stringify(data));
+					var reconnectionWebsocket = WebSocket.getInstance();
+					var spy = sandbox.spy(reconnectionWebsocket, 'send');
+
+					reconnectionWebsocket.dispatchEvent('message', {data: data});
+
+					spy.should.have.been.calledWith(JSON.stringify(expectedData)).once;
 				});
 
 				it('should trigger the reconnected event after reconnecting successfully', function () {

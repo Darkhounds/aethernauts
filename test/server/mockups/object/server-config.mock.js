@@ -1,17 +1,13 @@
 var mock = require('mock-require');
 var sinon = require('sinon');
-var util = require('util');
-
-var ServerConfig = require('./../../../../src/server/object/server-config');
 
 var _instance = null;
 
-var Constructor = sinon.spy(function (root, port) {
-	_instance = new ServerConfig(root, port);
-
-	return _instance;
+var Constructor = sinon.spy(function () {
+	_instance = this;
+	this.defaultUsers = _defaultUsers;
+	this.secret = _secret;
 });
-util.inherits(Constructor, ServerConfig);
 
 Constructor.getInstance = function () {
 	return _instance;
@@ -24,6 +20,18 @@ Constructor.mockStart = function () {
 Constructor.mockStop = function () {
 	mock.stop('./../../../../src/server/object/server-config');
 	Constructor.reset();
+	_defaultUsers = null;
+	_secret = null;
+};
+
+var _defaultUsers = null; 
+Constructor.setDefaultUsers = function (defaultUsers) {
+	_defaultUsers = defaultUsers;
+};
+
+var _secret = null;
+Constructor.setSecret = function (secret) {
+	_secret = secret;
 };
 
 module.exports = Constructor;

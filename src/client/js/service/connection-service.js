@@ -1,6 +1,7 @@
 var util = require('util');
 var EventEmitter = require('events').EventEmitter;
 var ConnectionEvent = require('./../event/connection-event');
+var Cypher = require('./../util/cypher');
 
 var Constructor = function () {
 	this._registerRequest = null;
@@ -11,14 +12,14 @@ var Constructor = function () {
 	this._websocket = null;
 	this._connected = false;
 	this._reconnectionTimeout = -1;
+	this._cypher = new Cypher();
 
 	this._handleRegisterRequest = this._handleRegisterRequest.bind(this);
 	this._handleRegisterRequestError = this._handleRegisterRequestError.bind(this);
-	this._handleConnectionError = Constructor.prototype._handleConnectionError.bind(this);
-	this._handleConnectionOpened = Constructor.prototype._handleConnectionOpened.bind(this);
-	this._handleMessageReceived = Constructor.prototype._handleMessageReceived.bind(this);
-	this._handleReconnection = Constructor.prototype._handleReconnection.bind(this);
-	this._handleClosed = Constructor.prototype._handleClosed.bind(this);
+	this._handleConnectionError = this._handleConnectionError.bind(this);
+	this._handleMessageReceived = this._handleMessageReceived.bind(this);
+	this._handleReconnection = this._handleReconnection.bind(this);
+	this._handleClosed = this._handleClosed.bind(this);
 };
 util.inherits(Constructor, EventEmitter);
 
@@ -59,7 +60,6 @@ Constructor.prototype._destroyConnection = function () {
 	if (this._websocket) {
 		this._websocket.removeEventListener('close', this._handleClosed);
 		this._websocket.removeEventListener('message', this._handleMessageReceived);
-		this._websocket.removeEventListener('open', this._handleConnectionOpened);
 		this._websocket.removeEventListener('error', this._handleConnectionError);
 		this._websocket.close();
 	}
@@ -68,17 +68,12 @@ Constructor.prototype._destroyConnection = function () {
 	this._connected = false;
 };
 
-Constructor.prototype._handleConnectionOpened = function () {
-	if (this._token) {
-		this._websocket.send(JSON.stringify({command:'reconnection', username: this._username, token: this._token}));
-	} else {
-		this._websocket.send(JSON.stringify({command:'authentication', username: this._username, password: this._password}))
-	}
-};
-
 Constructor.prototype._handleMessageReceived = function (e) {
 	var data = JSON.parse(e.data);
 	switch(data.command) {
+		case 'handshake':
+			this._resolveHandshake(data);
+			break;
 		case 'authentication':
 			this._resolveAuthentication(data);
 			break;
@@ -91,6 +86,17 @@ Constructor.prototype._handleMessageReceived = function (e) {
 		default:
 			this.emit(ConnectionEvent.MESSAGE_ERROR);
 			break;
+	}
+};
+
+Constructor.prototype._resolveHandshake = function (data) {
+	this._cypher.setMask(data.mask);
+
+	if (this._token) {
+		this._websocket.send(JSON.stringify({command:'reconnection', username: this._username, token: this._token}));
+	} else {
+		var password = this._cypher.encode(this._cypher.mask(this._password));
+		this._websocket.send(JSON.stringify({command:'authentication', username: this._username, password: password}))
 	}
 };
 
@@ -159,16 +165,15 @@ Constructor.prototype.open = function (username, password, token) {
 		this._token = token || this._token;
 		this._connected = false;
 		this._createConnection(password);
-
 	}
 };
 
 Constructor.prototype._createConnection = function () {
 	clearTimeout(this._reconnectionTimeout);
+
 	this._websocket = new WebSocket(this._url);
 
 	this._websocket.addEventListener('error', this._handleConnectionError);
-	this._websocket.addEventListener('open', this._handleConnectionOpened);
 	this._websocket.addEventListener('message', this._handleMessageReceived);
 	this._websocket.addEventListener('close', this._handleClosed);
 };

@@ -2,8 +2,6 @@ var express = require('express');
 var expressWs = require('express-ws');
 var when = require('when');
 
-var Config = require('./../object/server-config');
-
 var LoggerRoute = require('./statics/log-route');
 var StaticAssetsRoute = require('./statics/static-assets-route');
 var FaviconRoute = require('./statics/favicon-route');
@@ -40,8 +38,10 @@ var Constructor = function (eventManager, dataStorage) {
 Constructor.MESSAGE_START = '-------- SERVING STATICS --------';
 Constructor.ALREADY_INITIALIZED = 'AlreadyInitialized';
 
-Constructor.prototype.setup = function (port, root) {
-	this._config = new Config(root, port);
+Constructor.prototype.setup = function (config, cypher) {
+	this._config = config;
+
+	this._registerRoute.setup(cypher);
 
 	this._logRoute.setup(this._config);
 	this._websocketRoute.setup(this._config);

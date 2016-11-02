@@ -1,5 +1,6 @@
 var sinon = require('sinon');
 
+var Cypher = require('./../../../mockups/component/cypher.mock');
 var EventManager = require('./../../../mockups/component/event-manager.mock');
 var UsersModel = require('./../../../mockups/model/users-model.mock');
 var DataStorage = require('./../../../mockups/component/data-storage.mock');
@@ -14,6 +15,7 @@ describe('The Authentication Route class', function() {
 		sandbox = sinon.sandbox.create();
 		AuthenticationRoute = require('./../../../../../src/server/route/data/authentication-route');
 	});
+
 	afterEach(function () {
 		sandbox.restore();
 	});
@@ -41,40 +43,68 @@ describe('The Authentication Route class', function() {
 			instance.should.be.an.instanceOf(AuthenticationRoute);
 		});
 
-		it('should send the expected message to the data socket when authentication fails', function (done) {
-			var expectedMessage = JSON.stringify({ command: 'authentication', valid: false});
-			var spy = sandbox.spy();
-			var data = {
-				username: username,
-				_socket: {
-					send: spy
-				}
-			};
+		describe('after the setup', function () {
+			var cypher;
 
-			UsersModel.addResponse(null, null);
-
-			instance.execute(data).finally(function () {
-				spy.should.have.been.calledWith(expectedMessage);
-				done();
+			beforeEach(function () {
+				cypher = new Cypher();
+				instance.setup(cypher);
 			});
-		});
 
-		it('should send the expected message to the data socket when authentication succeeds', function (done) {
-			var expectedMessage = JSON.stringify({ command: 'authentication', valid: true, token: user.token });
-			var spy = sandbox.spy();
-			var data = {
-				username: username,
-				_socket: {
-					send: spy
-				}
-			};
+			it('should encrypt passwords before the database lookup', function () {
+				var expectedPassword = 'encryptedPassword';
+				var spy = sandbox.spy(UsersModel.getInstance(), 'findOne');
+				var data = {
+					username: username,
+					password: password,
+					_socket: {
+						send: spy
+					}
+				};
 
-			UsersModel.addResponse(null, user);
-			UsersModel.addResponse(null, [user]);
+				Cypher.addResponse(expectedPassword);
+				Cypher.addResponse(expectedPassword);
+				Cypher.addResponse(expectedPassword);
+				instance.execute(data);
 
-			instance.execute(data).finally(function () {
-				spy.should.have.been.calledWith(expectedMessage);
-				done();
+				spy.should.have.been.calledWith({ username: username, password: expectedPassword });
+			});
+
+			it('should send the expected message to the data socket when authentication fails', function (done) {
+				var expectedMessage = JSON.stringify({ command: 'authentication', valid: false});
+				var spy = sandbox.spy();
+				var data = {
+					username: username,
+					_socket: {
+						send: spy
+					}
+				};
+
+				UsersModel.addResponse(null, null);
+
+				instance.execute(data).finally(function () {
+					spy.should.have.been.calledWith(expectedMessage);
+					done();
+				});
+			});
+
+			it('should send the expected message to the data socket when authentication succeeds', function (done) {
+				var expectedMessage = JSON.stringify({ command: 'authentication', valid: true, token: user.token });
+				var spy = sandbox.spy();
+				var data = {
+					username: username,
+					_socket: {
+						send: spy
+					}
+				};
+
+				UsersModel.addResponse(null, user);
+				UsersModel.addResponse(null, [user]);
+
+				instance.execute(data).finally(function () {
+					spy.should.have.been.calledWith(expectedMessage);
+					done();
+				});
 			});
 		});
 	});
