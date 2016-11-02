@@ -27,7 +27,7 @@ Constructor.prototype._checkUserIsValid = function (user) {
 };
 
 Constructor.prototype._updateUserToken = function (user) {
-	return this._usersModel.update({username: user.username}, {token: 'bogus'});
+	return this._usersModel.update({username: user.username}, {token: this._cypher.generateMask()});
 };
 
 Constructor.prototype._sendSuccess = function (socket, users) {
