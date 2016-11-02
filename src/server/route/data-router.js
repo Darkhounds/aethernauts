@@ -25,6 +25,7 @@ Constructor.MESSAGE_RECEIVED = 'WEBSOCKET MESSAGE RECEIVED:';
 Constructor.CONNECTION_CLOSED = 'WEBSOCKET CONNECTION CLOSED:';
 
 Constructor.prototype.setup = function (cypher) {
+	this._cypher = cypher;
 	this._authenticationRoute.setup(cypher);
 
 	this._dataRouter.register('command', 'authentication', this._authenticationRoute.execute);
@@ -38,6 +39,9 @@ Constructor.prototype.setup = function (cypher) {
 
 Constructor.prototype._handleConnectionOpened = function (socket) {
 	console.log(Constructor.CONNECTION_OPENED, socket.upgradeReq.connection.remoteAddress);
+
+	socket.mask = this._cypher.generateMask();
+	socket.send(JSON.stringify({command: 'handshake', mask: socket.mask}));
 };
 
 Constructor.prototype._handleNewMessage = function (socket, msg) {

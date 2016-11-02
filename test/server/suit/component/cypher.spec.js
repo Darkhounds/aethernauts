@@ -43,6 +43,11 @@ describe('The Cypher class', function () {
 
 				instance.encrypt(value).should.equal(expectedValue);
 			});
+
+			it('should generate a new mask', function () {
+				var mask = instance.generateMask();
+				mask.should.be.a('string').with.lengthOf(32);
+			});
 		});
 	});
 });

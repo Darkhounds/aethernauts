@@ -10,6 +10,9 @@ Constructor.prototype.setup = function () {};
 Constructor.prototype.encrypt = function () {
 	return _responses.shift();
 };
+Constructor.prototype.generateMask = function () {
+	return _responses.shift();
+};
 
 Constructor.getInstance = function () {
 	return _instance;

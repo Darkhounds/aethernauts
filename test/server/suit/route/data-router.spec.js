@@ -92,6 +92,26 @@ describe('The Data Router class', function () {
 				consoleLog.should.have.been.calledWith(DataRouter.CONNECTION_OPENED, socket.upgradeReq.connection.remoteAddress);
 			});
 
+			it('should create and register a new mask on it self when a socket is opened', function () {
+				var expectedMask = 'bogusMask';
+
+				Cypher.addResponse(expectedMask);
+				eventManager.emit(SocketEvent.OPENED, socket);
+
+				socket.mask.should.equal(expectedMask);
+			});
+
+			it('should send an handshake command with the degenerated mask when a socket is opened', function () {
+				var spy = sandbox.spy(socket, 'send');
+				var mask = 'bogusMask';
+				var expectedMessage = JSON.stringify({command: 'handshake', mask: mask});
+
+				Cypher.addResponse(mask);
+				eventManager.emit(SocketEvent.OPENED, socket);
+
+				spy.should.have.been.calledWith(expectedMessage).once;
+			});
+
 			it('should output the expected message when a socket receives a message', function () {
 				var message = JSON.stringify({type: 'bogus'});
 				eventManager.emit(SocketEvent.MESSAGE, socket, message);
