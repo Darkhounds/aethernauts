@@ -24,8 +24,8 @@ Constructor.CONNECTION_OPENED = 'WEBSOCKET CONNECTION OPENED:';
 Constructor.MESSAGE_RECEIVED = 'WEBSOCKET MESSAGE RECEIVED:';
 Constructor.CONNECTION_CLOSED = 'WEBSOCKET CONNECTION CLOSED:';
 
-Constructor.prototype.setup = function (config) {
-	this._config = config;
+Constructor.prototype.setup = function (cypher) {
+	this._authenticationRoute.setup(cypher);
 
 	this._dataRouter.register('command', 'authentication', this._authenticationRoute.execute);
 	this._dataRouter.register('command', 'reconnection', this._reconnectionRoute.execute);

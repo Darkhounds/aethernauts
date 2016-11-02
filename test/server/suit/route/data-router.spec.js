@@ -4,7 +4,7 @@ var Socket = require('./../../mockups/socket.mock');
 var EventManager = require('./../../mockups/component/event-manager.mock');
 var UsersModel = require('./../../mockups/model/users-model.mock');
 var DataStorage = require('./../../mockups/component/data-storage.mock');
-var ServerConfig = require('./../../mockups/object/server-config.mock');
+var Cypher = require('./../../mockups/component/cypher.mock');
 
 var AuthenticationRoute = require('./../../mockups/route/data/authentication-route.mock');
 var ReconnectionRoute = require('./../../mockups/route/data/reconnection-route.mock');
@@ -13,15 +13,21 @@ var UnknownRoute = require('./../../mockups/route/data/unknown-route.mock');
 var SocketEvent = require('./../../../../src/server/event/socket-event');
 
 describe('The Data Router class', function () {
-	var DataRouter, sandbox, consoleLog, config;
+	var DataRouter, sandbox, consoleLog, cypher, eventManager, dataStorage, usersModel;
 
 	beforeEach(function () {
-		config = new ServerConfig();
+		cypher = new Cypher();
 		sandbox = sinon.sandbox.create();
 		consoleLog = sandbox.stub(console, 'log');
 		AuthenticationRoute.mockStart();
 		ReconnectionRoute.mockStart();
 		UnknownRoute.mockStart();
+		eventManager = new EventManager();
+		usersModel = new UsersModel();
+		dataStorage = new DataStorage();
+		dataStorage.getModel = function () {
+			return usersModel;
+		};
 		DataRouter = require('./../../../../src/server/route/data-router');
 	});
 
@@ -36,17 +42,29 @@ describe('The Data Router class', function () {
 		DataRouter.should.be.a('function');
 	});
 
+	it('should create an AuthenticationRoute when created', function () {
+		var instance = new DataRouter(eventManager, dataStorage);
+
+		AuthenticationRoute.should.have.been.calledOnce;
+	});
+
+	it('should create an ReconnectionRoute when created', function () {
+		var instance = new DataRouter(eventManager, dataStorage);
+
+		ReconnectionRoute.should.have.been.calledOnce;
+	});
+
+	it('should create an UnknownRoute when created', function () {
+		var instance = new DataRouter(eventManager, dataStorage);
+
+		UnknownRoute.should.have.been.calledOnce;
+	});
+
 	describe('as an instance', function () {
-		var instance, eventManager, dataStorage, usersModel, socket;
+		var instance, socket;
 
 		beforeEach(function () {
 			socket = new Socket();
-			eventManager = new EventManager();
-			usersModel = new UsersModel();
-			dataStorage = new DataStorage();
-			dataStorage.getModel = function () {
-				return usersModel;
-			};
 			instance = new DataRouter(eventManager, dataStorage);
 		});
 
@@ -54,10 +72,18 @@ describe('The Data Router class', function () {
 			instance.should.be.an.instanceOf(DataRouter);
 		});
 
+		it('should setup the AuthenticationRoute with the Cypher instance on setup', function () {
+			var spy = sandbox.spy(AuthenticationRoute.prototype, 'setup');
+
+			instance.setup(cypher);
+
+			spy.should.have.been.calledWith(cypher);
+		});
+
 		describe('after setup', function () {
 
 			beforeEach(function () {
-				instance.setup(config);
+				instance.setup(cypher);
 			});
 
 			it('should output the expected message when a socket is opened', function () {

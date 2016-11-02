@@ -4,6 +4,7 @@ var EventManager = require('./../../mockups/component/event-manager.mock');
 
 var WaterlineConfig = require('./../../mockups/object/waterline-config.mock');
 var ServerConfig = require('./../../mockups/object/server-config.mock');
+var Cypher = require('./../../mockups/component/cypher.mock');
 var DataStorage = require('./../../mockups/component/data-storage.mock');
 var UsersModel = require('./../../mockups/model/users-model.mock');
 
@@ -21,6 +22,7 @@ describe('The Main Controller class', function () {
 		EventManager.mockStart();
 		WaterlineConfig.mockStart();
 		ServerConfig.mockStart();
+		Cypher.mockStart();
 		DataStorage.mockStart();
 		UsersModel.mockStart();
 		HTTPRequestRouter.mockStart();
@@ -29,13 +31,14 @@ describe('The Main Controller class', function () {
 	});
 
 	afterEach(function () {
+		DataRouter.mockStop();
+		HTTPRequestRouter.mockStop();
 		UsersModel.mockStop();
 		DataStorage.mockStop();
+		Cypher.mockStop();
 		ServerConfig.mockStop();
 		WaterlineConfig.mockStop();
 		EventManager.mockStop();
-		HTTPRequestRouter.mockStop();
-		DataRouter.mockStop();
 		sandbox.restore();
 	});
 
@@ -100,6 +103,41 @@ describe('The Main Controller class', function () {
 			ServerConfig.should.have.been.calledWith(root, port).once;
 		});
 
+		it('should create a new Cypher when setting up', function () {
+			instance.setup(port, root);
+
+			Cypher.should.have.been.calledOnce;
+		});
+
+		it('should encrypt all the default users passwords when setting up', function (done) {
+			var defaultUsersBeforeCypher = [
+				{password: 'bogus1'},
+				{password: 'bogus2'}
+			];
+			var defaultUsersAfterCypher = [
+				{password: 'encryptedBogus1'},
+				{password: 'encryptedBogus2'}
+			];
+
+			ServerConfig.setDefaultUsers(defaultUsersBeforeCypher);
+			Cypher.addResponse('encryptedBogus1');
+			Cypher.addResponse('encryptedBogus2');
+			instance.setup(port, root);
+
+			var test = ServerConfig.getInstance();
+
+			test.defaultUsers.should.eql(defaultUsersAfterCypher);
+			done();
+		});
+
+		it('should setup the new Cypher with the ServerConfig instance when setting up', function () {
+			var spy = sandbox.spy(Cypher.prototype, 'setup');
+
+			instance.setup(port, root);
+
+			spy.should.have.been.calledWith(ServerConfig.getInstance()).once;
+		});
+
 		it('should create a new HTTPRequestRouter when setting up', function () {
 			instance.setup(port, root);
 
@@ -112,12 +150,12 @@ describe('The Main Controller class', function () {
 			HTTPRequestRouter.should.have.been.calledWith(EventManager.getInstance(), DataStorage.getInstance()).once;
 		});
 
-		it('should setup the new HTTPRequestRouter with the ServerConfig when setting up', function () {
+		it('should setup the new HTTPRequestRouter with the ServerConfig and Cypher when setting up', function () {
 			var spy = sandbox.spy(HTTPRequestRouter.prototype, 'setup');
 
 			instance.setup(port, root);
 
-			spy.should.have.been.calledWith(ServerConfig.getInstance()).once;
+			spy.should.have.been.calledWith(ServerConfig.getInstance(), Cypher.getInstance()).once;
 		});
 
 		it('should create a new DataRouter when setting up', function () {
@@ -126,12 +164,12 @@ describe('The Main Controller class', function () {
 			DataRouter.should.have.been.calledWithNew.once;
 		});
 
-		it('should setup the new DataRouter with the ServerConfig when setting up', function () {
+		it('should setup the new DataRouter with the Cypher instance when setting up', function () {
 			var spy = sandbox.spy(DataRouter.prototype, 'setup');
 
 			instance.setup(port, root);
 
-			spy.should.have.been.calledWith(ServerConfig.getInstance());
+			spy.should.have.been.calledWith(Cypher.getInstance());
 		});
 
 		describe('after the setup', function () {

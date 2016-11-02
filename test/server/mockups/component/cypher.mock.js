@@ -7,7 +7,9 @@ var Constructor = sinon.spy(function () {
 });
 
 Constructor.prototype.setup = function () {};
-Constructor.prototype.encrypt = function () {};
+Constructor.prototype.encrypt = function () {
+	return _responses.shift();
+};
 
 Constructor.getInstance = function () {
 	return _instance;
@@ -20,6 +22,12 @@ Constructor.mockStart = function () {
 Constructor.mockStop = function () {
 	mock.stop('./../../../../src/server/component/cypher');
 	Constructor.reset();
+	_responses.length = 0;
+};
+
+var _responses = [];
+Constructor.addResponse = function (response) {
+	_responses.push(response);
 };
 
 module.exports = Constructor;

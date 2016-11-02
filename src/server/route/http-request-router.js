@@ -38,8 +38,10 @@ var Constructor = function (eventManager, dataStorage) {
 Constructor.MESSAGE_START = '-------- SERVING STATICS --------';
 Constructor.ALREADY_INITIALIZED = 'AlreadyInitialized';
 
-Constructor.prototype.setup = function (config) {
+Constructor.prototype.setup = function (config, cypher) {
 	this._config = config;
+
+	this._registerRoute.setup(cypher);
 
 	this._logRoute.setup(this._config);
 	this._websocketRoute.setup(this._config);

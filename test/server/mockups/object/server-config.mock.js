@@ -20,6 +20,8 @@ Constructor.mockStart = function () {
 Constructor.mockStop = function () {
 	mock.stop('./../../../../src/server/object/server-config');
 	Constructor.reset();
+	_defaultUsers = null;
+	_secret = null;
 };
 
 var _defaultUsers = null; 

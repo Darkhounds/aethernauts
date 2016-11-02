@@ -7,11 +7,15 @@ var Constructor = function (dataStorage) {
 };
 util.inherits(Constructor, AbstractRoute);
 
+Constructor.prototype.setup = function (cypher) {
+	this._cypher = cypher;
+};
+
 Constructor.prototype.execute = function (req, res) {
 	var data = {
 		email: req.body.email.toLowerCase(),
 		username: req.body.username.toLowerCase(),
-		password: req.body.password,
+		password: this._cypher.encrypt(req.body.password),
 		character: req.body.character
 	};
 

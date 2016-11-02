@@ -3,6 +3,7 @@ var sinon = require('sinon');
 var express = require('./../../mockups/express.mock');
 var expressWs = require('./../../mockups/express-ws.mock');
 var ServerConfig = require('./../../mockups/object/server-config.mock');
+var Cypher = require('./../../mockups/component/cypher.mock');
 
 var LoggerRoute = require('./../../mockups/route/statics/log-route.mock');
 var StaticAssetsRoute = require('./../../mockups/route/statics/static-assets-route.mock');
@@ -15,7 +16,6 @@ var RegisterRoute = require('./../../mockups/route/statics/register-route.mock')
 describe('The HTTP Request Router class', function () {
 	var HTTPRequestRouter, sandbox, consoleLog;
 	var port = 999;
-	var root = 'bogus';
 
 	beforeEach(function () {
 		sandbox = sinon.sandbox.create();
@@ -50,10 +50,11 @@ describe('The HTTP Request Router class', function () {
 	});
 
 	describe('as an instance', function () {
-		var instance, config;
+		var instance, config, cypher;
 
 		beforeEach(function () {
 			config = new ServerConfig();
+			cypher = new Cypher();
 			instance = new HTTPRequestRouter();
 		});
 
@@ -109,7 +110,15 @@ describe('The HTTP Request Router class', function () {
 			spy.should.have.been.calledWith(config);
 		});
 
-		it('should set the server t listen on the expected port when initializing', function (done) {
+		it('should setup the RegisterRoute with the Cypher instance while setting up', function () {
+			var spy = sandbox.spy(RegisterRoute.getInstance(), 'setup');
+
+			instance.setup(config, cypher);
+
+			spy.should.have.been.calledWith(cypher);
+		});
+
+		it('should set the server to listen on the expected port when initializing', function (done) {
 			var spy = sandbox.spy(express.getInstance(), 'listen');
 
 			instance.setup(config);

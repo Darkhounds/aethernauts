@@ -2,11 +2,16 @@ var Constructor = function (eventManager, dataStorage) {
 	this._eventManager = eventManager;
 	this._dataStorage = dataStorage;
 	this._usersModel = this._dataStorage.getModel('users');
+};
 
+Constructor.prototype.setup = function (cypher) {
+	this._cypher = cypher;
 };
 
 Constructor.prototype.execute = function (data) {
-	return this._usersModel.findOne({ username: data.username.toLowerCase(), password: data.password })
+	var password = this._cypher.encrypt(data.password);
+
+	return this._usersModel.findOne({ username: data.username.toLowerCase(), password: password })
 		.then(this._checkUserIsValid.bind(this))
 		.then(this._updateUserToken.bind(this))
 		.then(this._sendSuccess.bind(this, data._socket))
