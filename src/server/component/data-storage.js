@@ -1,16 +1,14 @@
 var when = require('when');
 var Waterline = require('waterline');
 
-var WaterlineConfig = require('./../object/waterline-config');
-
 var Constructor = function () {
 	this._initialized = false;
 	this._waterline = new Waterline();
 	this._models = [];
 };
 
-Constructor.prototype.setup = function (storageLocation) {
-	this._config = new WaterlineConfig(storageLocation);
+Constructor.prototype.setup = function (config) {
+	this._config = config;
 };
 
 Constructor.prototype.addModel = function (name, model) {

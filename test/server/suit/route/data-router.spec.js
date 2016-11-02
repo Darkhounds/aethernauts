@@ -4,6 +4,8 @@ var Socket = require('./../../mockups/socket.mock');
 var EventManager = require('./../../mockups/component/event-manager.mock');
 var UsersModel = require('./../../mockups/model/users-model.mock');
 var DataStorage = require('./../../mockups/component/data-storage.mock');
+var ServerConfig = require('./../../mockups/object/server-config.mock');
+
 var AuthenticationRoute = require('./../../mockups/route/data/authentication-route.mock');
 var ReconnectionRoute = require('./../../mockups/route/data/reconnection-route.mock');
 var UnknownRoute = require('./../../mockups/route/data/unknown-route.mock');
@@ -11,9 +13,10 @@ var UnknownRoute = require('./../../mockups/route/data/unknown-route.mock');
 var SocketEvent = require('./../../../../src/server/event/socket-event');
 
 describe('The Data Router class', function () {
-	var DataRouter, sandbox, consoleLog;
+	var DataRouter, sandbox, consoleLog, config;
 
 	beforeEach(function () {
+		config = new ServerConfig();
 		sandbox = sinon.sandbox.create();
 		consoleLog = sandbox.stub(console, 'log');
 		AuthenticationRoute.mockStart();
@@ -21,6 +24,7 @@ describe('The Data Router class', function () {
 		UnknownRoute.mockStart();
 		DataRouter = require('./../../../../src/server/route/data-router');
 	});
+
 	afterEach(function () {
 		UnknownRoute.mockStop();
 		ReconnectionRoute.mockStop();
@@ -50,21 +54,30 @@ describe('The Data Router class', function () {
 			instance.should.be.an.instanceOf(DataRouter);
 		});
 
-		it('should output the expected message when a socket is opened', function () {
-			eventManager.emit(SocketEvent.OPENED, socket);
+		describe('after setup', function () {
 
-			consoleLog.should.have.been.calledWith(DataRouter.CONNECTION_OPENED, socket.upgradeReq.connection.remoteAddress);
-		});
-		it('should output the expected message when a socket receives a message', function () {
-			var message = JSON.stringify({type: 'bogus'});
-			eventManager.emit(SocketEvent.MESSAGE, socket, message);
+			beforeEach(function () {
+				instance.setup(config);
+			});
 
-			consoleLog.should.have.been.calledWith(DataRouter.MESSAGE_RECEIVED, socket.upgradeReq.connection.remoteAddress, message);
-		});
-		it('should output the expected message when a socket is closed', function () {
-			eventManager.emit(SocketEvent.CLOSED, socket);
+			it('should output the expected message when a socket is opened', function () {
+				eventManager.emit(SocketEvent.OPENED, socket);
 
-			consoleLog.should.have.been.calledWith(DataRouter.CONNECTION_CLOSED, socket.upgradeReq.connection.remoteAddress);
+				consoleLog.should.have.been.calledWith(DataRouter.CONNECTION_OPENED, socket.upgradeReq.connection.remoteAddress);
+			});
+
+			it('should output the expected message when a socket receives a message', function () {
+				var message = JSON.stringify({type: 'bogus'});
+				eventManager.emit(SocketEvent.MESSAGE, socket, message);
+
+				consoleLog.should.have.been.calledWith(DataRouter.MESSAGE_RECEIVED, socket.upgradeReq.connection.remoteAddress, message);
+			});
+
+			it('should output the expected message when a socket is closed', function () {
+				eventManager.emit(SocketEvent.CLOSED, socket);
+
+				consoleLog.should.have.been.calledWith(DataRouter.CONNECTION_CLOSED, socket.upgradeReq.connection.remoteAddress);
+			});
 		});
 	});
 });

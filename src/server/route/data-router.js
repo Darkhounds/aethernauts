@@ -5,23 +5,36 @@ var ReconnectionRoute = require('./data/reconnection-route');
 var UnknownRoute = require('./data/unknown-route');
 
 var Constructor = function (eventsManager, dataStorage) {
+	this._eventManager = eventsManager;
+	this._dataRouter = new DataRouter();
+
 	this._authenticationRoute = new AuthenticationRoute(eventsManager, dataStorage);
 	this._reconnectionRoute = new ReconnectionRoute(eventsManager, dataStorage);
 	this._unknownRoute = new UnknownRoute(eventsManager, dataStorage);
 
-	this._dataRouter = new DataRouter();
-	this._dataRouter.register('command', 'authentication', this._authenticationRoute.execute.bind(this._authenticationRoute));
-	this._dataRouter.register('command', 'reconnection', this._reconnectionRoute.execute.bind(this._reconnectionRoute));
-	this._dataRouter.register(this._unknownRoute.execute.bind(this._unknownRoute));
+	this._authenticationRoute.execute = this._authenticationRoute.execute.bind(this._authenticationRoute);
+	this._reconnectionRoute.execute = this._reconnectionRoute.execute.bind(this._reconnectionRoute);
+	this._unknownRoute.execute = this._unknownRoute.execute.bind(this._unknownRoute);
 
-	this._eventManager = eventsManager;
-	this._eventManager.on('socket.opened', this._handleConnectionOpened.bind(this));
-	this._eventManager.on('socket.message', this._handleNewMessage.bind(this));
-	this._eventManager.on('socket.closed', this._handleConnectionClosed.bind(this));
+	this._handleConnectionOpened = this._handleConnectionOpened.bind(this);
+	this._handleNewMessage = this._handleNewMessage.bind(this);
+	this._handleConnectionClosed = this._handleConnectionClosed.bind(this);
 };
 Constructor.CONNECTION_OPENED = 'WEBSOCKET CONNECTION OPENED:';
 Constructor.MESSAGE_RECEIVED = 'WEBSOCKET MESSAGE RECEIVED:';
 Constructor.CONNECTION_CLOSED = 'WEBSOCKET CONNECTION CLOSED:';
+
+Constructor.prototype.setup = function (config) {
+	this._config = config;
+
+	this._dataRouter.register('command', 'authentication', this._authenticationRoute.execute);
+	this._dataRouter.register('command', 'reconnection', this._reconnectionRoute.execute);
+	this._dataRouter.register(this._unknownRoute.execute);
+
+	this._eventManager.on('socket.opened', this._handleConnectionOpened);
+	this._eventManager.on('socket.message', this._handleNewMessage);
+	this._eventManager.on('socket.closed', this._handleConnectionClosed);
+};
 
 Constructor.prototype._handleConnectionOpened = function (socket) {
 	console.log(Constructor.CONNECTION_OPENED, socket.upgradeReq.connection.remoteAddress);

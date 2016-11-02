@@ -6,6 +6,8 @@ var Constructor = sinon.spy(function () {
 	_instance = this;
 });
 
+Constructor.prototype.setup = function () {};
+
 Constructor.getInstance = function () {
 	return _instance;
 };

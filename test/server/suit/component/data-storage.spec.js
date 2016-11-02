@@ -5,17 +5,17 @@ var Waterline = require('./../../mockups/waterline');
 var WaterlineConfig = require('./../../mockups/object/waterline-config.mock');
 
 describe('The Data Storage class', function () {
-	var DataStorage, sandbox;
+	var DataStorage, sandbox, config;
 
 	beforeEach(function () {
+		config = new WaterlineConfig();
 		sandbox = sinon.sandbox.create();
 		Waterline.mockStart();
-		WaterlineConfig.mockStart();
 		DataStorage = require('./../../../../src/server/component/data-storage');
 	});
+	
 	afterEach(function () {
 		DataStorage = null;
-		WaterlineConfig.mockStop();
 		Waterline.mockStop();
 		sandbox.restore();
 	});
@@ -34,14 +34,6 @@ describe('The Data Storage class', function () {
 
 		it('should be an instance of DataStorage', function () {
 			instance.should.be.an.instanceOf(DataStorage);
-		});
-
-		it('should create a WaterlineConfig instance with the expected arguments', function () {
-			var storageLocation = 'bogus';
-
-			instance.setup(storageLocation);
-
-			WaterlineConfig.should.have.been.calledWith(storageLocation).once;
 		});
 
 		it('should setup the model being added', function () {
@@ -74,10 +66,9 @@ describe('The Data Storage class', function () {
 
 		it('should initialize waterline with the expected config', function (done) {
 			var waterline = Waterline.getInstance();
-			var config = WaterlineConfig.getInstance();
 			var spy = sandbox.spy(waterline, 'initialize');
 
-			instance.setup('bogus');
+			instance.setup(config);
 			instance.initialize().then(function () {
 				spy.should.have.been.calledWith(config);
 
@@ -89,7 +80,7 @@ describe('The Data Storage class', function () {
 			var spy = sandbox.spy();
 			var model = { setup: function () {}, initialize: spy };
 
-			instance.setup('bogus');
+			instance.setup(config);
 			instance.addModel('foo', model);
 			instance.initialize()
 				.then(function () {
@@ -98,8 +89,8 @@ describe('The Data Storage class', function () {
 				});
 		});
 
-		it('should reject mode then one initialization', function (done) {
-			instance.setup('bogus');
+		it('should reject more then one initialization', function (done) {
+			instance.setup(config);
 			instance.initialize()
 				.then(instance.initialize.bind(instance))
 				.catch(function (error) {

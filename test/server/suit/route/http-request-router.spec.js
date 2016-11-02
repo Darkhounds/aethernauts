@@ -22,7 +22,6 @@ describe('The HTTP Request Router class', function () {
 		consoleLog = sandbox.stub(console, 'log');
 		express.mockStart();
 		expressWs.mockStart();
-		ServerConfig.mockStart();
 		LoggerRoute.mockStart();
 		StaticAssetsRoute.mockStart();
 		FaviconRoute.mockStart();
@@ -41,7 +40,6 @@ describe('The HTTP Request Router class', function () {
 		FaviconRoute.mockStop();
 		StaticAssetsRoute.mockStop();
 		LoggerRoute.mockStop();
-		ServerConfig.mockStop();
 		expressWs.mockStop();
 		express.mockStop();
 		sandbox.restore();
@@ -52,9 +50,10 @@ describe('The HTTP Request Router class', function () {
 	});
 
 	describe('as an instance', function () {
-		var instance;
+		var instance, config;
 
 		beforeEach(function () {
+			config = new ServerConfig();
 			instance = new HTTPRequestRouter();
 		});
 
@@ -62,17 +61,10 @@ describe('The HTTP Request Router class', function () {
 			instance.should.be.an.instanceOf(HTTPRequestRouter);
 		});
 
-		it('should create a new ServerConfig with the expected arguments when invoking the setup', function () {
-			instance.setup(port, root);
-
-			ServerConfig.should.have.been.calledWith(root, port);
-		});
-
 		it('should setup the LoggerRoute with the config created by the setup', function () {
 			var spy = sandbox.spy(LoggerRoute.getInstance(), 'setup');
 
-			instance.setup(port, root);
-			var config = ServerConfig.getInstance();
+			instance.setup(config);
 
 			spy.should.have.been.calledWith(config);
 		});
@@ -80,8 +72,7 @@ describe('The HTTP Request Router class', function () {
 		it('should setup the StaticAssetsRoute with the config created by the setup', function () {
 			var spy = sandbox.spy(StaticAssetsRoute.getInstance(), 'setup');
 
-			instance.setup(port, root);
-			var config = ServerConfig.getInstance();
+			instance.setup(config);
 
 			spy.should.have.been.calledWith(config);
 		});
@@ -89,8 +80,7 @@ describe('The HTTP Request Router class', function () {
 		it('should setup the FaviconRoute with the config created by the setup', function () {
 			var spy = sandbox.spy(FaviconRoute.getInstance(), 'setup');
 
-			instance.setup(port, root);
-			var config = ServerConfig.getInstance();
+			instance.setup(config);
 
 			spy.should.have.been.calledWith(config);
 		});
@@ -98,8 +88,7 @@ describe('The HTTP Request Router class', function () {
 		it('should setup the SaveFormHistoryRoute with the config created by the setup', function () {
 			var spy = sandbox.spy(SaveFormHistoryRoute.getInstance(), 'setup');
 
-			instance.setup(port, root);
-			var config = ServerConfig.getInstance();
+			instance.setup(config);
 
 			spy.should.have.been.calledWith(config);
 		});
@@ -107,8 +96,7 @@ describe('The HTTP Request Router class', function () {
 		it('should setup the StaticIndexRoute with the config created by the setup', function () {
 			var spy = sandbox.spy(StaticIndexRoute.getInstance(), 'setup');
 
-			instance.setup(port, root);
-			var config = ServerConfig.getInstance();
+			instance.setup(config);
 
 			spy.should.have.been.calledWith(config);
 		});
@@ -116,25 +104,15 @@ describe('The HTTP Request Router class', function () {
 		it('should setup the WebsocketRoute with the config created by the setup', function () {
 			var spy = sandbox.spy(WebsocketRoute.getInstance(), 'setup');
 
-			instance.setup(port, root);
-			var config = ServerConfig.getInstance();
+			instance.setup(config);
 
 			spy.should.have.been.calledWith(config);
-		});
-
-		it('should setup the RegisterRoute with the config created by the setup', function () {
-			// var spy = sandbox.spy(RegisterRoute.getInstance(), 'setup');
-			//
-			// instance.setup(port, root);
-			// var config = ServerConfig.getInstance();
-			//
-			// spy.should.have.been.calledWith(config);
 		});
 
 		it('should set the server t listen on the expected port when initializing', function (done) {
 			var spy = sandbox.spy(express.getInstance(), 'listen');
 
-			instance.setup(port, root);
+			instance.setup(config);
 			instance.initialize().finally(function () {
 				var config = ServerConfig.getInstance();
 				spy.should.have.been.calledWith(config.port);
@@ -143,7 +121,7 @@ describe('The HTTP Request Router class', function () {
 		});
 
 		it('should fail silently when initializing multiple times', function (done) {
-			instance.setup(port, root);
+			instance.setup(config);
 			instance.initialize().then(instance.initialize.bind(instance)).catch(function (error) {
 				error.should.equal(HTTPRequestRouter.ALREADY_INITIALIZED);
 				done();
