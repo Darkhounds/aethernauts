@@ -30,6 +30,15 @@ var Constructor = function (port, root) {
 	this._sessionsController.initialize();
 };
 
+Constructor.prototype.connect = function () {
+	return this._dataStorage.initialize()
+		.then(this._httpRequestRouter.initialize.bind(this._httpRequestRouter))
+		.catch(function (error) {
+			console.log(error.message +'\n\n'+ error.stack);
+			throw(error);
+		});
+};
+
 Constructor.prototype._createCypher = function ()  {
 	this._cypher = new Cypher();
 	this._cypher.setup(this._serverConfig);
@@ -59,15 +68,6 @@ Constructor.prototype._setupHTTPRequestRouter = function () {
 Constructor.prototype._setupCommandsRouter = function () {
 	this._commandsRouter = new CommandsRouter(this._eventManager, this._dataStorage, this._cypher);
 	this._commandsRouter.initialize();
-};
-
-Constructor.prototype.connect = function () {
-	return this._dataStorage.initialize()
-		.then(this._httpRequestRouter.initialize.bind(this._httpRequestRouter))
-		.catch(function (error) {
-			console.log(error.message +'\n\n'+ error.stack);
-			throw(error);
-		});
 };
 
 module.exports = Constructor;
