@@ -52,13 +52,13 @@ Constructor.prototype._setupDataStorage = function () {
 };
 
 Constructor.prototype._setupHTTPRequestRouter = function () {
-	this._httpRequestRouter = new HTTPRequestRouter(this._eventManager, this._dataStorage);
-	this._httpRequestRouter.setup(this._serverConfig, this._cypher);
+	this._httpRequestRouter = new HTTPRequestRouter(this._eventManager, this._dataStorage, this._cypher);
+	this._httpRequestRouter.setup(this._serverConfig);
 };
 
 Constructor.prototype._setupDataRouter = function () {
-	this._dataRouter = new DataRouter(this._eventManager, this._dataStorage);
-	this._dataRouter.setup(this._cypher);
+	this._dataRouter = new DataRouter(this._eventManager, this._dataStorage, this._cypher);
+	this._dataRouter.initialize();
 };
 
 Constructor.prototype.connect = function () {

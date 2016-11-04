@@ -1,15 +1,12 @@
 var util = require('util');
 var AbstractRoute = require('./abstract-route');
 
-var Constructor = function (dataStorage) {
+var Constructor = function (dataStorage, cypher) {
 	this._dataStorage = dataStorage;
+	this._cypher = cypher;
 	this._usersModel = this._dataStorage.getModel('users');
 };
 util.inherits(Constructor, AbstractRoute);
-
-Constructor.prototype.setup = function (cypher) {
-	this._cypher = cypher;
-};
 
 Constructor.prototype.execute = function (req, res) {
 	var data = {

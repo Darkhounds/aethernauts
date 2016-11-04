@@ -10,12 +10,16 @@ describe('The Pong Route class', function() {
 
 	beforeEach(function () {
 		sandbox = sinon.sandbox.create();
+
 		PongRoute = require('./../../../../../src/server/route/data/pong-route');
+	});
+
+	afterEach(function () {
+		sandbox.restore();
 	});
 
 	it('should be a function', function () {
 		PongRoute.should.be.a('function');
-		sandbox.restore();
 	});
 
 	describe('as an instance', function () {

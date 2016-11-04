@@ -2,9 +2,9 @@ var sinon = require('sinon');
 
 var Socket = require('./../../mockups/socket.mock');
 var EventManager = require('./../../mockups/component/event-manager.mock');
-var UsersModel = require('./../../mockups/model/users-model.mock');
 var DataStorage = require('./../../mockups/component/data-storage.mock');
 var Cypher = require('./../../mockups/component/cypher.mock');
+var UsersModel = require('./../../mockups/model/users-model.mock');
 var DataRouterModule = require('./../../mockups/data-router.mock');
 
 var PongRoute = require('./../../mockups/route/data/pong-route.mock');
@@ -15,22 +15,26 @@ var UnknownRoute = require('./../../mockups/route/data/unknown-route.mock');
 var SocketEvent = require('./../../../../src/server/event/socket-event');
 
 describe('The Data Router class', function () {
-	var DataRouter, sandbox, cypher, eventManager, dataStorage, usersModel;
+	var DataRouter, sandbox, eventManager, dataStorage, cypher, usersModel, socket;
 
 	beforeEach(function () {
 		sandbox = sinon.sandbox.create();
-		cypher = new Cypher();
+
 		eventManager = new EventManager();
-		usersModel = new UsersModel();
 		dataStorage = new DataStorage();
+		cypher = new Cypher();
+		usersModel = new UsersModel();
+		socket = new Socket();
 		dataStorage.getModel = function () {
 			return usersModel;
 		};
+
 		PongRoute.mockStart();
 		AuthenticationRoute.mockStart();
 		ReconnectionRoute.mockStart();
 		UnknownRoute.mockStart();
 		DataRouterModule.mockStart();
+
 		DataRouter = require('./../../../../src/server/route/data-router');
 	});
 
@@ -40,6 +44,7 @@ describe('The Data Router class', function () {
 		ReconnectionRoute.mockStop();
 		AuthenticationRoute.mockStop();
 		PongRoute.mockStop();
+
 		sandbox.restore();
 	});
 
@@ -48,55 +53,54 @@ describe('The Data Router class', function () {
 	});
 
 	it('should create a PongRoute when created', function () {
-		var instance = new DataRouter(eventManager, dataStorage);
+		var instance = new DataRouter(eventManager, dataStorage, cypher);
 
 		PongRoute.should.have.been.calledOnce;
 	});
 
-
 	it('should create an AuthenticationRoute when created', function () {
-		var instance = new DataRouter(eventManager, dataStorage);
+		var instance = new DataRouter(eventManager, dataStorage, cypher);
 
 		AuthenticationRoute.should.have.been.calledOnce;
 	});
 
 	it('should create an ReconnectionRoute when created', function () {
-		var instance = new DataRouter(eventManager, dataStorage);
+		var instance = new DataRouter(eventManager, dataStorage, cypher);
 
 		ReconnectionRoute.should.have.been.calledOnce;
 	});
 
 	it('should create an UnknownRoute when created', function () {
-		var instance = new DataRouter(eventManager, dataStorage);
+		var instance = new DataRouter(eventManager, dataStorage, cypher);
 
 		UnknownRoute.should.have.been.calledOnce;
 	});
 
 	describe('as an instance', function () {
-		var instance, socket;
+		var instance;
 
 		beforeEach(function () {
-			socket = new Socket();
-			instance = new DataRouter(eventManager, dataStorage);
+			instance = new DataRouter(eventManager, dataStorage, cypher);
 		});
 
 		it('should be an instance of DataRouter', function () {
 			instance.should.be.an.instanceOf(DataRouter);
 		});
 
-		it('should setup the AuthenticationRoute with the Cypher instance on setup', function () {
-			var spy = sandbox.spy(AuthenticationRoute.prototype, 'setup');
+		it('should only initialize once', function () {
+			var spy = sandbox.spy(eventManager, 'on');
 
-			instance.setup(cypher);
+			instance.initialize();
+			instance.initialize();
 
-			spy.should.have.been.calledWith(cypher);
+			spy.should.have.been.calledWith('socket.message').and.calledOnce;
 		});
 
 		it('should register the PongRoute with the expected command', function () {
 			var spy = sandbox.spy(DataRouterModule.getInstance(), 'register');
 			var expectedCommand = 'pong';
 
-			instance.setup(cypher);
+			instance.initialize();
 
 			spy.should.have.been.calledWith('command', expectedCommand, PongRoute.getInstance().execute);
 		});
@@ -105,7 +109,7 @@ describe('The Data Router class', function () {
 			var spy = sandbox.spy(DataRouterModule.getInstance(), 'register');
 			var expectedCommand = 'authentication';
 
-			instance.setup(cypher);
+			instance.initialize();
 
 			spy.should.have.been.calledWith('command', expectedCommand, AuthenticationRoute.getInstance().execute);
 		});
@@ -114,7 +118,7 @@ describe('The Data Router class', function () {
 			var spy = sandbox.spy(DataRouterModule.getInstance(), 'register');
 			var expectedCommand = 'reconnection';
 
-			instance.setup(cypher);
+			instance.initialize();
 
 			spy.should.have.been.calledWith('command', expectedCommand, ReconnectionRoute.getInstance().execute);
 		});
@@ -122,15 +126,15 @@ describe('The Data Router class', function () {
 		it('should register the UnknownRoute', function () {
 			var spy = sandbox.spy(DataRouterModule.getInstance(), 'register');
 
-			instance.setup(cypher);
+			instance.initialize();
 
 			spy.should.have.been.calledWith(UnknownRoute.getInstance().execute);
 		});
 
-		describe('after setup', function () {
+		describe('after initializing', function () {
 
 			beforeEach(function () {
-				instance.setup(cypher);
+				instance.initialize();
 			});
 
 			it('should use the DataRouter to resolve commands from a message when a socket receives a it', function () {

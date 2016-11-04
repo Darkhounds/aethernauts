@@ -6,10 +6,13 @@ var EventManager = require('./../../../mockups/component/event-manager.mock');
 var SocketEvent = require('./../../../../../src/server/event/socket-event');
 
 describe('The Websocket Route class', function () {
-	var WebsocketRoute, sandbox;
+	var WebsocketRoute, sandbox, eventManager;
 
 	beforeEach(function () {
 		sandbox = sinon.sandbox.create();
+
+		eventManager = new EventManager();
+
 		WebsocketRoute = require('./../../../../../src/server/route/statics/websocket-route');
 	});
 
@@ -22,10 +25,9 @@ describe('The Websocket Route class', function () {
 	});
 
 	describe('as an instance', function () {
-		var instance, eventManager;
+		var instance;
 
 		beforeEach(function () {
-			eventManager = new EventManager();
 			instance = new WebsocketRoute(eventManager);
 		});
 

@@ -9,6 +9,7 @@ describe('The Log Route class', function () {
 
 	beforeEach(function () {
 		sandbox = sinon.sandbox.create();
+
 		consoleLog = sandbox.stub(console, 'log');
 
 		LogRoute = require('./../../../../../src/server/route/statics/log-route');

@@ -58,7 +58,7 @@ describe('The Main Controller class', function () {
 		DataStorage.should.have.been.calledOnce;
 	});
 
-	it('should instance the new DataStorage with the WaterlineConfig instance', function () {
+	it('should create a new DataStorage with the WaterlineConfig instance', function () {
 		var spy = sandbox.spy(DataStorage.prototype, 'setup');
 		var instance = new MainController(port, root);
 
@@ -114,7 +114,7 @@ describe('The Main Controller class', function () {
 		ServerConfig.getInstance().defaultUsers.should.eql(defaultUsersAfterCypher);
 	});
 
-	it('should instance the new Cypher with the ServerConfig instance', function () {
+	it('should create a new Cypher with the ServerConfig instance', function () {
 		var spy = sandbox.spy(Cypher.prototype, 'setup');
 		var instance = new MainController(port, root);
 
@@ -130,27 +130,20 @@ describe('The Main Controller class', function () {
 	it('should inject the EventManager and DataStorage into the new HTTPRequestRouter', function () {
 		var instance = new MainController(port, root);
 
-		HTTPRequestRouter.should.have.been.calledWith(EventManager.getInstance(), DataStorage.getInstance());
+		HTTPRequestRouter.should.have.been.calledWith(EventManager.getInstance(), DataStorage.getInstance(), Cypher.getInstance());
 	});
 
-	it('should instance the new HTTPRequestRouter with the ServerConfig and Cypher', function () {
+	it('should create a new HTTPRequestRouter with the ServerConfig and Cypher', function () {
 		var spy = sandbox.spy(HTTPRequestRouter.prototype, 'setup');
 		var instance = new MainController(port, root);
 
-		spy.should.have.been.calledWith(ServerConfig.getInstance(), Cypher.getInstance());
+		spy.should.have.been.calledWith(ServerConfig.getInstance());
 	});
 
 	it('should create a new DataRouter', function () {
 		var instance = new MainController(port, root);
 
-		DataRouter.should.have.been.calledWithNew;
-	});
-
-	it('should instance the new DataRouter with the Cypher instance', function () {
-		var spy = sandbox.spy(DataRouter.prototype, 'setup');
-		var instance = new MainController(port, root);
-
-		spy.should.have.been.calledWith(Cypher.getInstance());
+		DataRouter.should.have.been.calledWith(EventManager.getInstance(), DataStorage.getInstance(), Cypher.getInstance());
 	});
 
 	describe('as an instance', function () {

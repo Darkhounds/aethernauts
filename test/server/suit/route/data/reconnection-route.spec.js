@@ -12,6 +12,7 @@ describe('The Reconnection Route class', function () {
 
 	beforeEach(function () {
 		sandbox = sinon.sandbox.create();
+
 		ReconnectionRoute = require('./../../../../../src/server/route/data/reconnection-route');
 	});
 	afterEach(function () {

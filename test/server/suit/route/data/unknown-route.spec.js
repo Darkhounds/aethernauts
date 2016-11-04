@@ -5,12 +5,16 @@ describe('The Data Route class', function() {
 
 	beforeEach(function () {
 		sandbox = sinon.sandbox.create();
+
 		DataRoute = require('./../../../../../src/server/route/data/unknown-route');
+	});
+
+	afterEach(function () {
+		sandbox.restore();
 	});
 
 	it('should be a function', function () {
 		DataRoute.should.be.a('function');
-		sandbox.restore();
 	});
 
 	describe('as an instance', function () {

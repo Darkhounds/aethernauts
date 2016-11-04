@@ -12,10 +12,6 @@ Constructor.prototype.setup = function (waterline) {
 	this._waterline.loadCollection(this._collection);
 };
 
-Constructor.prototype._getInstance = function () {
-	return this._waterline.collections[this._schema.identity];
-};
-
 Constructor.prototype.find = function (criteria) {
 	return this._getInstance().find(criteria);
 };
@@ -45,5 +41,9 @@ Constructor.prototype.query = function (query, data) {
 };
 
 Constructor.prototype.initialize = function () { };
+
+Constructor.prototype._getInstance = function () {
+	return this._waterline.collections[this._schema.identity];
+};
 
 module.exports = Constructor;
