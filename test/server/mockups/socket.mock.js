@@ -16,6 +16,7 @@ function Constructor() {
 util.inherits(Constructor, EventEmitter);
 
 Constructor.prototype.send = function () {};
+Constructor.prototype.close = function () {};
 
 Constructor.mockStart = function () {
 	mock('socket', Constructor);
