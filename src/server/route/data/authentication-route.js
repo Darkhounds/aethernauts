@@ -1,3 +1,5 @@
+var SocketEvent = require('./../../event/socket-event');
+
 var Constructor = function (eventManager, dataStorage) {
 	this._eventManager = eventManager;
 	this._dataStorage = dataStorage;
@@ -37,6 +39,8 @@ Constructor.prototype._sendSuccess = function (socket, users) {
 	socket.user = { username: user.username };
 
 	socket.send(message);
+
+	this._eventManager.emit(SocketEvent.AUTHENTICATED, socket);
 };
 
 Constructor.prototype._sendFailure = function (socket, error) {

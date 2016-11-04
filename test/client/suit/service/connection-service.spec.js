@@ -6,16 +6,20 @@ var XMLHttpRequest = require('./../../mockups/http-request');
 var Cypher = require('./../../mockups/util/cypher.mock');
 
 describe('The Connection Service class', function () {
-	var ConnectionService, sandbox;
-	var url = 'localhost:3001/server';
-	var email = 'something@somewhere.com';
-	var username = 'foo';
-	var password = 'bar';
-	var character = 'bogus';
-	var token = 'bogus';
+	var ConnectionService, sandbox, clock, url, email, username, password, character, token, mask, timeout, handshakeData;
 
 	beforeEach(function() {
+		url = 'localhost:3001/server';
+		email = 'something@somewhere.com';
+		username = 'foo';
+		password = 'bar';
+		character = 'bogus';
+		token = 'bogus';
+		mask = 'bogus';
+		timeout = 10;
 		sandbox = sinon.sandbox.create();
+		clock = sandbox.useFakeTimers();
+		handshakeData = {data: JSON.stringify({command: 'handshake', mask: mask, timeout: timeout})};
 		Websocket.mockStart();
 		XMLHttpRequest.mockStart();
 		Cypher.mockStart();
@@ -138,11 +142,10 @@ describe('The Connection Service class', function () {
 		});
 
 		describe('after opening a connection', function () {
-			var websocket, clock;
+			var websocket;
 
 			beforeEach(function () {
 				instance.open(username, password);
-				clock = sandbox.useFakeTimers();
 
 				websocket = Websocket.getInstance();
 			});
@@ -186,6 +189,10 @@ describe('The Connection Service class', function () {
 
 			it('should try to reconnect on a connection error with a token after the default delay', function () {
 				var spy = sandbox.spy(instance, 'open');
+
+				websocket.dispatchEvent('open', {});
+				websocket.dispatchEvent('message', handshakeData);
+
 				var token = 'bogus';
 				var data = JSON.stringify({command: 'authentication', valid: true, token: token});
 
@@ -289,10 +296,11 @@ describe('The Connection Service class', function () {
 				var token, data;
 
 				beforeEach(function () {
+					websocket.dispatchEvent('open', {});
+					websocket.dispatchEvent('message', handshakeData);
+
 					token = 'bogus';
 					data = JSON.stringify({command: 'authentication', valid: true, token: token});
-
-					websocket.dispatchEvent('open', {});
 					websocket.dispatchEvent('message', {data: data});
 				});
 
@@ -393,6 +401,26 @@ describe('The Connection Service class', function () {
 					websocket.dispatchEvent('message', {data: JSON.stringify(package)});
 
 					spy.should.have.been.calledWith(id, data);
+				});
+
+				it('should send the expected message back to the server on a ping message', function () {
+					var spy = sandbox.spy(websocket, 'send');
+					var expectedMessage = JSON.stringify({command:'pong'});
+					var data = {data: JSON.stringify({
+						command: 'ping'
+					})};
+
+					websocket.dispatchEvent('message', data);
+
+					spy.should.have.been.calledWith(expectedMessage);
+				});
+
+				it('should close a websocket when a connection timesout', function () {
+					var spy = sandbox.spy(websocket, 'close');
+
+					clock.tick(timeout * 1000 * 2);
+
+					spy.should.have.been.calledOnce;
 				});
 			});
 		});

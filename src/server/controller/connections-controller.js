@@ -32,7 +32,7 @@ Constructor.prototype.initialize = function () {
 
 Constructor.prototype._handleSocketOpened = function (socket) {
 	socket.mask = this._cypher.generateMask();
-	socket.send(JSON.stringify({command: 'handshake', mask: socket.mask}));
+	socket.send(JSON.stringify({command: 'handshake', mask: socket.mask, timeout: Constructor.SOCKET_CHECK_INTERVAL}));
 };
 
 Constructor.prototype._handleSocketAuthenticated = function (socket) {

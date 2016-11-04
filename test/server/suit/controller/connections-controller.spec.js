@@ -81,7 +81,7 @@ describe('The Connections Controller class', function () {
 			it('should send the expected message to the socket after opening a new connection', function () {
 				var spy = sandbox.spy(socket, 'send');
 				var mask = 'bogus';
-				var data = {command: 'handshake', mask: mask};
+				var data = {command: 'handshake', mask: mask, timeout: ConnectionsController.SOCKET_CHECK_INTERVAL};
 				var expectedMessage = JSON.stringify(data);
 
 				sandbox.stub(console, 'log');
