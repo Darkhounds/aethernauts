@@ -14,26 +14,20 @@ var DataRouter = require('./../route/data-router');
 
 var ConnectionsController = require('./connections-controller');
 
-var Constructor = function () {
+var Constructor = function (port, root) {
+	this._waterlineConfig = new WaterlineConfig(root + '/data/');
+	this._serverConfig = new ServerConfig(root, port);
+
 	this._connections = new Connections();
 	this._eventManager = new EventManager();
-	this._initialized = false;
-};
 
-Constructor.prototype.initialize = function (port, root) {
-	if (!this._initialized) {
-		this._initialized = true;
-		this._waterlineConfig = new WaterlineConfig(root + '/data/');
-		this._serverConfig = new ServerConfig(root, port);
+	this._createCypher();
+	this._setupDataStorage();
+	this._setupHTTPRequestRouter();
+	this._setupDataRouter();
 
-		this._createCypher();
-		this._setupDataStorage();
-		this._setupHTTPRequestRouter();
-		this._setupDataRouter();
-
-		this._connectionsController = new ConnectionsController(this._eventManager, this._connections, this._cypher);
-		this._connectionsController.initialize();
-	}
+	this._connectionsController = new ConnectionsController(this._eventManager, this._connections, this._cypher);
+	this._connectionsController.initialize();
 };
 
 Constructor.prototype._createCypher = function ()  {

@@ -46,170 +46,151 @@ describe('The Main Controller class', function () {
 		MainController.should.be.a('function');
 	});
 
+	it('should create a new WaterlineConfig', function () {
+		var instance = new MainController(port, root);
+
+		WaterlineConfig.should.have.been.calledWith(root + '/data/');
+	});
+
+	it('should create a new DataStorage', function () {
+		var instance = new MainController(port, root);
+
+		DataStorage.should.have.been.calledOnce;
+	});
+
+	it('should instance the new DataStorage with the WaterlineConfig instance', function () {
+		var spy = sandbox.spy(DataStorage.prototype, 'setup');
+		var instance = new MainController(port, root);
+
+		spy.should.have.been.calledWith(WaterlineConfig.getInstance());
+	});
+
+	it('should create a new UserModel', function () {
+		var instance = new MainController(port, root);
+
+		UsersModel.should.have.been.calledWithNew;
+	});
+
+	it('should create the UserModel with the expected data', function () {
+		var instance = new MainController(port, root);
+
+		UsersModel.should.have.been.calledWith(ServerConfig.getInstance().defaultUsers);
+	});
+
+	it('should register a new UserModel under "users" name with the DataStorage', function () {
+		var spy = sandbox.spy(DataStorage.prototype, 'addModel');
+		var instance = new MainController(port, root);
+
+		spy.should.have.been.calledWith('users', UsersModel.getInstance());
+	});
+
+	it('should create a new ServerConfig', function () {
+		var instance = new MainController(port, root);
+
+		ServerConfig.should.have.been.calledWith(root, port);
+	});
+
+	it('should create a new Cypher', function () {
+		var instance = new MainController(port, root);
+
+		Cypher.should.have.been.calledOnce;
+	});
+
+	it('should encrypt all the default users passwords', function () {
+		var defaultUsersBeforeCypher = [
+			{password: 'bogus1'},
+			{password: 'bogus2'}
+		];
+		var defaultUsersAfterCypher = [
+			{password: 'encryptedBogus1'},
+			{password: 'encryptedBogus2'}
+		];
+
+		ServerConfig.setDefaultUsers(defaultUsersBeforeCypher);
+		Cypher.addResponse('encryptedBogus1');
+		Cypher.addResponse('encryptedBogus2');
+		var instance = new MainController(port, root);
+
+		ServerConfig.getInstance().defaultUsers.should.eql(defaultUsersAfterCypher);
+	});
+
+	it('should instance the new Cypher with the ServerConfig instance', function () {
+		var spy = sandbox.spy(Cypher.prototype, 'setup');
+		var instance = new MainController(port, root);
+
+		spy.should.have.been.calledWith(ServerConfig.getInstance());
+	});
+
+	it('should create a new HTTPRequestRouter', function () {
+		var instance = new MainController(port, root);
+
+		HTTPRequestRouter.should.have.been.calledWithNew
+	});
+
+	it('should inject the EventManager and DataStorage into the new HTTPRequestRouter', function () {
+		var instance = new MainController(port, root);
+
+		HTTPRequestRouter.should.have.been.calledWith(EventManager.getInstance(), DataStorage.getInstance());
+	});
+
+	it('should instance the new HTTPRequestRouter with the ServerConfig and Cypher', function () {
+		var spy = sandbox.spy(HTTPRequestRouter.prototype, 'setup');
+		var instance = new MainController(port, root);
+
+		spy.should.have.been.calledWith(ServerConfig.getInstance(), Cypher.getInstance());
+	});
+
+	it('should create a new DataRouter', function () {
+		var instance = new MainController(port, root);
+
+		DataRouter.should.have.been.calledWithNew;
+	});
+
+	it('should instance the new DataRouter with the Cypher instance', function () {
+		var spy = sandbox.spy(DataRouter.prototype, 'setup');
+		var instance = new MainController(port, root);
+
+		spy.should.have.been.calledWith(Cypher.getInstance());
+	});
+
 	describe('as an instance', function () {
 		var instance;
 
 		beforeEach(function () {
-			instance = new MainController();
+			instance = new MainController(port, root);
 		});
 
 		it('should be an instance of', function () {
 			instance.should.be.an.instanceOf(MainController);
 		});
 
-		it('should only initialize once', function() {
-			instance.initialize(port, root);
-			instance.initialize(port, root);
+		it('should connect', function () {
+			DataStorage.addResponse(null, {});
+			HTTPRequestRouter.addResponse(null, {});
 
-			ServerConfig.should.have.been.calledOnce;
+			return instance.connect();
 		});
 
-		it('should create a new WaterlineConfig when initialiazing', function () {
-			instance.initialize(port, root);
+		it('should output DataStorage errors thrown when connecting', function (done) {
+			var expectedError = new Error('BogusError');
 
-			WaterlineConfig.should.have.been.calledWith(root + '/data/');
-		});
+			DataStorage.addResponse(expectedError);
 
-		it('should create a new DataStorage when initialiazing', function () {
-			instance.initialize(port, root);
-
-			DataStorage.should.have.been.calledOnce;
-		});
-
-		it('should instance the new DataStorage with the WaterlineConfig instance when initialiazing', function () {
-			var spy = sandbox.spy(DataStorage.prototype, 'setup');
-
-			instance.initialize(port, root);
-
-			spy.should.have.been.calledWith(WaterlineConfig.getInstance());
-		});
-
-		it('should create a new UserModel when initialiazing', function () {
-			instance.initialize(port, root);
-
-			UsersModel.should.have.been.calledWithNew;
-		});
-
-		it('should create the UserModel with the expected data', function () {
-			instance.initialize(port, root);
-
-			UsersModel.should.have.been.calledWith(ServerConfig.getInstance().defaultUsers);
-		});
-
-		it('should register a new UserModel under "users" name with the DataStorage when initialiazing', function () {
-			var spy = sandbox.spy(DataStorage.prototype, 'addModel');
-
-			instance.initialize(port, root);
-
-			spy.should.have.been.calledWith('users', UsersModel.getInstance());
-		});
-
-		it('should create a new ServerConfig when initialiazing', function () {
-			instance.initialize(port, root);
-
-			ServerConfig.should.have.been.calledWith(root, port);
-		});
-
-		it('should create a new Cypher when initialiazing', function () {
-			instance.initialize(port, root);
-
-			Cypher.should.have.been.calledOnce;
-		});
-
-		it('should encrypt all the default users passwords when initialiazing', function () {
-			var defaultUsersBeforeCypher = [
-				{password: 'bogus1'},
-				{password: 'bogus2'}
-			];
-			var defaultUsersAfterCypher = [
-				{password: 'encryptedBogus1'},
-				{password: 'encryptedBogus2'}
-			];
-
-			ServerConfig.setDefaultUsers(defaultUsersBeforeCypher);
-			Cypher.addResponse('encryptedBogus1');
-			Cypher.addResponse('encryptedBogus2');
-			instance.initialize(port, root);
-
-			ServerConfig.getInstance().defaultUsers.should.eql(defaultUsersAfterCypher);
-		});
-
-		it('should instance the new Cypher with the ServerConfig instance when initialiazing', function () {
-			var spy = sandbox.spy(Cypher.prototype, 'setup');
-
-			instance.initialize(port, root);
-
-			spy.should.have.been.calledWith(ServerConfig.getInstance());
-		});
-
-		it('should create a new HTTPRequestRouter when initialiazing', function () {
-			instance.initialize(port, root);
-
-			HTTPRequestRouter.should.have.been.calledWithNew
-		});
-
-		it('should inject the EventManager and DataStorage into the new HTTPRequestRouter when initialiazing', function () {
-			instance.initialize(port, root);
-
-			HTTPRequestRouter.should.have.been.calledWith(EventManager.getInstance(), DataStorage.getInstance());
-		});
-
-		it('should instance the new HTTPRequestRouter with the ServerConfig and Cypher when initialiazing', function () {
-			var spy = sandbox.spy(HTTPRequestRouter.prototype, 'setup');
-
-			instance.initialize(port, root);
-
-			spy.should.have.been.calledWith(ServerConfig.getInstance(), Cypher.getInstance());
-		});
-
-		it('should create a new DataRouter when initialiazing', function () {
-			instance.initialize(port, root);
-
-			DataRouter.should.have.been.calledWithNew;
-		});
-
-		it('should instance the new DataRouter with the Cypher instance when initialiazing', function () {
-			var spy = sandbox.spy(DataRouter.prototype, 'setup');
-
-			instance.initialize(port, root);
-
-			spy.should.have.been.calledWith(Cypher.getInstance());
-		});
-
-		describe('after the instance', function () {
-
-			beforeEach(function () {
-				instance.initialize(port, root);
+			instance.connect().catch(function (error) {
+				expectedError.should.equal(error);
+				done();
 			});
+		});
 
-			it('should connect', function () {
-				DataStorage.addResponse(null, {});
-				HTTPRequestRouter.addResponse(null, {});
+		it('should output HTTPRequestRouter errors thrown when connecting', function (done) {
+			var expectedError = new Error('BogusError');
 
-				return instance.connect();
-			});
+			DataStorage.addResponse(null, {});
+			HTTPRequestRouter.addResponse(expectedError);
 
-			it('should output DataStorage errors thrown when connecting', function (done) {
-				var expectedError = new Error('BogusError');
-
-				DataStorage.addResponse(expectedError);
-
-				instance.connect().catch(function (error) {
-					expectedError.should.equal(error);
-					done();
-				});
-			});
-
-			it('should output HTTPRequestRouter errors thrown when connecting', function (done) {
-				var expectedError = new Error('BogusError');
-
-				DataStorage.addResponse(null, {});
-				HTTPRequestRouter.addResponse(expectedError);
-
-				instance.connect().catch(function (error) {
-					expectedError.should.equal(error);
-					done();
-				});
+			instance.connect().catch(function (error) {
+				expectedError.should.equal(error);
+				done();
 			});
 		});
 	});
