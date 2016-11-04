@@ -11,7 +11,7 @@ describe('The Pong Route class', function() {
 	beforeEach(function () {
 		sandbox = sinon.sandbox.create();
 
-		PongRoute = require('./../../../../../src/server/route/data/pong-route');
+		PongRoute = require('./../../../../../src/server/route/commands/pong-route');
 	});
 
 	afterEach(function () {

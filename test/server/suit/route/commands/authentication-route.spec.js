@@ -23,7 +23,7 @@ describe('The Authentication Route class', function() {
 		};
 		user = { username: username, password: password, token: token};
 
-		AuthenticationRoute = require('./../../../../../src/server/route/data/authentication-route');
+		AuthenticationRoute = require('./../../../../../src/server/route/commands/authentication-route');
 	});
 
 	afterEach(function () {

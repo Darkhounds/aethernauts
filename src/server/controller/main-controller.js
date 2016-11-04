@@ -10,7 +10,7 @@ var UsersModel = require('./../model/users-model');
 var Connections = require('./../component/connections');
 
 var HTTPRequestRouter = require('./../route/http-request-router');
-var DataRouter = require('./../route/data-router');
+var CommandsRouter = require('./../route/commands-router');
 
 var ConnectionsController = require('./connections-controller');
 
@@ -24,7 +24,7 @@ var Constructor = function (port, root) {
 	this._createCypher();
 	this._setupDataStorage();
 	this._setupHTTPRequestRouter();
-	this._setupDataRouter();
+	this._setupCommandsRouter();
 
 	this._connectionsController = new ConnectionsController(this._eventManager, this._connections, this._cypher);
 	this._connectionsController.initialize();
@@ -56,9 +56,9 @@ Constructor.prototype._setupHTTPRequestRouter = function () {
 	this._httpRequestRouter.setup(this._serverConfig);
 };
 
-Constructor.prototype._setupDataRouter = function () {
-	this._dataRouter = new DataRouter(this._eventManager, this._dataStorage, this._cypher);
-	this._dataRouter.initialize();
+Constructor.prototype._setupCommandsRouter = function () {
+	this._commandsRouter = new CommandsRouter(this._eventManager, this._dataStorage, this._cypher);
+	this._commandsRouter.initialize();
 };
 
 Constructor.prototype.connect = function () {

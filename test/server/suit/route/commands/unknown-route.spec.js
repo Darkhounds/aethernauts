@@ -6,7 +6,7 @@ describe('The Data Route class', function() {
 	beforeEach(function () {
 		sandbox = sinon.sandbox.create();
 
-		DataRoute = require('./../../../../../src/server/route/data/unknown-route');
+		DataRoute = require('./../../../../../src/server/route/commands/unknown-route');
 	});
 
 	afterEach(function () {

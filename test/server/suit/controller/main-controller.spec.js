@@ -9,16 +9,18 @@ var DataStorage = require('./../../mockups/component/data-storage.mock');
 var UsersModel = require('./../../mockups/model/users-model.mock');
 
 var HTTPRequestRouter = require('./../../mockups/route/http-request-router.mock');
-var DataRouter = require('./../../mockups/route/data-router.mock');
+var CommandRouter = require('./../../mockups/route/command-router.mock');
 
 describe('The Main Controller class', function () {
 	var MainController, sandbox, consoleLog, port, root;
 
 	beforeEach(function () {
+		sandbox = sinon.sandbox.create();
+
 		port = 999;
 		root = 'bogus';
-		sandbox = sinon.sandbox.create();
 		consoleLog = sandbox.stub(console, 'log');
+
 		EventManager.mockStart();
 		WaterlineConfig.mockStart();
 		ServerConfig.mockStart();
@@ -26,12 +28,13 @@ describe('The Main Controller class', function () {
 		DataStorage.mockStart();
 		UsersModel.mockStart();
 		HTTPRequestRouter.mockStart();
-		DataRouter.mockStart();
+		CommandRouter.mockStart();
+
 		MainController = require('./../../../../src/server/controller/main-controller');
 	});
 
 	afterEach(function () {
-		DataRouter.mockStop();
+		CommandRouter.mockStop();
 		HTTPRequestRouter.mockStop();
 		UsersModel.mockStop();
 		DataStorage.mockStop();
@@ -39,6 +42,7 @@ describe('The Main Controller class', function () {
 		ServerConfig.mockStop();
 		WaterlineConfig.mockStop();
 		EventManager.mockStop();
+
 		sandbox.restore();
 	});
 
@@ -140,10 +144,10 @@ describe('The Main Controller class', function () {
 		spy.should.have.been.calledWith(ServerConfig.getInstance());
 	});
 
-	it('should create a new DataRouter', function () {
+	it('should create a new CommandRouter', function () {
 		var instance = new MainController(port, root);
 
-		DataRouter.should.have.been.calledWith(EventManager.getInstance(), DataStorage.getInstance(), Cypher.getInstance());
+		CommandRouter.should.have.been.calledWith(EventManager.getInstance(), DataStorage.getInstance(), Cypher.getInstance());
 	});
 
 	describe('as an instance', function () {

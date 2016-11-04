@@ -1,9 +1,9 @@
 var DataRouter = require('data-router');
 
-var PongRoute = require('./data/pong-route');
-var AuthenticationRoute = require('./data/authentication-route');
-var ReconnectionRoute = require('./data/reconnection-route');
-var UnknownRoute = require('./data/unknown-route');
+var PongRoute = require('./commands/pong-route');
+var AuthenticationRoute = require('./commands/authentication-route');
+var ReconnectionRoute = require('./commands/reconnection-route');
+var UnknownRoute = require('./commands/unknown-route');
 
 var Constructor = function (eventsManager, dataStorage, cypher) {
 	this._eventManager = eventsManager;

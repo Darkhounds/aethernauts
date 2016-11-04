@@ -13,11 +13,11 @@ Constructor.getInstance = function () {
 };
 
 Constructor.mockStart = function () {
-	mock('./../../../../../src/server/route/data/reconnection-route', Constructor);
+	mock('./../../../../../src/server/route/commands/pong-route', Constructor);
 };
 
 Constructor.mockStop = function () {
-	mock.stop('./../../../../../src/server/route/data/reconnection-route');
+	mock.stop('./../../../../../src/server/route/commands/pong-route');
 	Constructor.reset();
 };
 
