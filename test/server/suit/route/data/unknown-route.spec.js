@@ -24,16 +24,15 @@ describe('The Data Route class', function() {
 			instance.should.be.an.instanceOf(DataRoute);
 		});
 
-		it('should invoke the send method of the data socket', function (done) {
+		it('should invoke the send method of the data socket', function () {
 			var spy = sandbox.spy();
 			var data = {
 				_socket: {
 					send: spy
 				}
 			};
-			instance.execute(data).then(function () {
+			return instance.execute(data).then(function () {
 				spy.should.have.been.called;
-				done();
 			});
 		});
 	});

@@ -70,7 +70,7 @@ describe('The Authentication Route class', function() {
 				spy.should.have.been.calledWith({ username: username, password: expectedPassword });
 			});
 
-			it('should send the expected message to the data socket when authentication fails', function (done) {
+			it('should send the expected message to the data socket when authentication fails', function () {
 				var expectedMessage = JSON.stringify({ command: 'authentication', valid: false});
 				var spy = sandbox.spy();
 				var data = {
@@ -82,13 +82,12 @@ describe('The Authentication Route class', function() {
 
 				UsersModel.addResponse(null, null);
 
-				instance.execute(data).finally(function () {
+				return instance.execute(data).then(function () {
 					spy.should.have.been.calledWith(expectedMessage);
-					done();
 				});
 			});
 
-			it('should send the expected message to the data socket when authentication succeeds', function (done) {
+			it('should send the expected message to the data socket when authentication succeeds', function () {
 				var expectedMessage = JSON.stringify({ command: 'authentication', valid: true, token: user.token });
 				var spy = sandbox.spy();
 				var data = {
@@ -101,9 +100,8 @@ describe('The Authentication Route class', function() {
 				UsersModel.addResponse(null, user);
 				UsersModel.addResponse(null, [user]);
 
-				instance.execute(data).finally(function () {
+				return instance.execute(data).then(function () {
 					spy.should.have.been.calledWith(expectedMessage);
-					done();
 				});
 			});
 		});

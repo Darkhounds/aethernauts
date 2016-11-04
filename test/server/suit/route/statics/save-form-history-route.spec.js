@@ -33,7 +33,7 @@ describe('The Save Form History Route class', function () {
 
 			instance.execute({}, res)
 
-			spy.should.have.been.called;
+			spy.should.have.been.calledOnce;
 		});
 	});
 });

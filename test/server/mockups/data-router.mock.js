@@ -4,9 +4,9 @@ var mock = require('mock-require');
 
 var _instance = null;
 
-function Constructor() {
+var Constructor = function () {
 	_instance = this;
-}
+};
 util.inherits(Constructor, EventEmitter);
 
 Constructor.prototype.register = function () {};

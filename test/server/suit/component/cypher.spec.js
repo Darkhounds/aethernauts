@@ -6,12 +6,7 @@ describe('The Cypher class', function () {
 	var Cypher;
 
 	beforeEach(function () {
-		ServerConfig.mockStart();
 		Cypher = require('./../../../../src/server/component/cypher');
-	});
-
-	afterEach(function () {
-		ServerConfig.mockStop();
 	});
 
 	it('should be a function', function () {

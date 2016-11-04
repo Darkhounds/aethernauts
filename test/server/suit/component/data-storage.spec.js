@@ -64,39 +64,34 @@ describe('The Data Storage class', function () {
 			expect(instance.getModel('bogus')).to.not.exist;
 		});
 
-		it('should initialize waterline with the expected config', function (done) {
+		it('should initialize waterline with the expected config', function () {
 			var waterline = Waterline.getInstance();
 			var spy = sandbox.spy(waterline, 'initialize');
 
 			instance.setup(config);
-			instance.initialize().then(function () {
-				spy.should.have.been.calledWith(config);
 
-				done();
+			return instance.initialize().then(function () {
+				spy.should.have.been.calledWith(config);
 			});
 		});
 
-		it('should initialize registered models', function (done) {
+		it('should initialize registered models', function () {
 			var spy = sandbox.spy();
 			var model = { setup: function () {}, initialize: spy };
 
 			instance.setup(config);
 			instance.addModel('foo', model);
-			instance.initialize()
-				.then(function () {
-					spy.should.have.been.calledOnce;
-					done();
-				});
+			return instance.initialize().then(function () {
+				spy.should.have.been.calledOnce;
+			});
 		});
 
 		it('should reject more then one initialization', function (done) {
 			instance.setup(config);
-			instance.initialize()
-				.then(instance.initialize.bind(instance))
-				.catch(function (error) {
-					error.should.equal(DataStorage.ALREADY_INITIALIZED);
-					done();
-				});
+			instance.initialize().then(instance.initialize.bind(instance)).catch(function (error) {
+				error.should.equal(DataStorage.ALREADY_INITIALIZED);
+				done();
+			});
 		});
 	});
 });

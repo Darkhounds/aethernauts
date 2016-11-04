@@ -68,7 +68,7 @@ describe('The Register Route class', function () {
 				instance.setup(cypher);
 			});
 
-			it('should encrypt the password', function (done) {
+			it('should encrypt the password', function () {
 				var encryptedPassword = 'encryptedPassword';
 				var expectedData = {
 					email: email,
@@ -87,13 +87,12 @@ describe('The Register Route class', function () {
 				UsersModel.addResponse(null, []);
 				UsersModel.addResponse(null, {token: token});
 
-				instance.execute(req, res).finally(function () {
+				return instance.execute(req, res).finally(function () {
 					spy.should.have.been.calledWith(expectedData);
-					done();
 				});
 			});
 
-			it('should send a valid response with the expected values', function (done) {
+			it('should send a valid response with the expected values', function () {
 				var expected = JSON.stringify({command: 'registration', valid: true, token: token});
 				var spy = sandbox.spy();
 				var res = {
@@ -103,14 +102,12 @@ describe('The Register Route class', function () {
 				UsersModel.addResponse(null, []);
 				UsersModel.addResponse(null, {token: token});
 
-				instance.execute(req, res)
-					.finally(function () {
-						spy.should.have.been.calledWith(expected).once;
-						done();
-					});
+				return instance.execute(req, res).then(function () {
+					spy.should.have.been.calledWith(expected);
+				});
 			});
 
-			it('should send an invalid response with the email as error', function (done) {
+			it('should send an invalid response with the email as error', function () {
 				var expected = JSON.stringify({command: 'registration', valid: false, errors: ['email']});
 				var spy = sandbox.spy();
 				var res = {
@@ -119,14 +116,12 @@ describe('The Register Route class', function () {
 
 				UsersModel.addResponse(null, [{email: email}]);
 
-				instance.execute(req, res)
-					.finally(function () {
-						spy.should.have.been.calledWith(expected).once;
-						done();
-					});
+				return instance.execute(req, res).then(function () {
+					spy.should.have.been.calledWith(expected);
+				});
 			});
 
-			it('should send an invalid response with the username as error', function (done) {
+			it('should send an invalid response with the username as error', function () {
 				var expected = JSON.stringify({command: 'registration', valid: false, errors: ['username']});
 				var spy = sandbox.spy();
 				var res = {
@@ -135,14 +130,12 @@ describe('The Register Route class', function () {
 
 				UsersModel.addResponse(null, [{username: username}]);
 
-				instance.execute(req, res)
-					.finally(function () {
-						spy.should.have.been.calledWith(expected).once;
-						done();
-					});
+				instance.execute(req, res).then(function () {
+					spy.should.have.been.calledWith(expected);
+				});
 			});
 
-			it('should send an invalid response with the character as error', function (done) {
+			it('should send an invalid response with the character as error', function () {
 				var expected = JSON.stringify({command: 'registration', valid: false, errors: ['character']});
 				var spy = sandbox.spy();
 				var res = {
@@ -151,14 +144,12 @@ describe('The Register Route class', function () {
 
 				UsersModel.addResponse(null, [{character: character}]);
 
-				instance.execute(req, res)
-					.finally(function () {
-						spy.should.have.been.calledWith(expected).once;
-						done();
-					});
+				instance.execute(req, res).then(function () {
+					spy.should.have.been.calledWith(expected);
+				});
 			});
 
-			it('should send an invalid response with the email, username and character as error', function (done) {
+			it('should send an invalid response with the email, username and character as error', function () {
 				var expected = JSON.stringify({command: 'registration', valid: false, errors: ['email', 'username', 'character']});
 				var spy = sandbox.spy();
 				var res = {
@@ -167,11 +158,9 @@ describe('The Register Route class', function () {
 
 				UsersModel.addResponse(null, [{email: email, username: username, character: character}]);
 
-				instance.execute(req, res)
-					.finally(function () {
-						spy.should.have.been.calledWith(expected).once;
-						done();
-					});
+				instance.execute(req, res).then(function () {
+					spy.should.have.been.calledWith(expected);
+				});
 			});
 		});
 	});

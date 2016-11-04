@@ -118,22 +118,22 @@ describe('The HTTP Request Router class', function () {
 			spy.should.have.been.calledWith(cypher);
 		});
 
-		it('should set the server to listen on the expected port when initializing', function (done) {
+		it('should set the server to listen on the expected port when initializing', function () {
 			var spy = sandbox.spy(express.getInstance(), 'listen');
 
 			instance.setup(config);
-			instance.initialize().finally(function () {
+
+			return instance.initialize().then(function () {
 				var config = ServerConfig.getInstance();
 				spy.should.have.been.calledWith(config.port);
-				done();
 			});
 		});
 
-		it('should fail silently when initializing multiple times', function (done) {
+		it('should fail silently when initializing multiple times', function () {
 			instance.setup(config);
-			instance.initialize().then(instance.initialize.bind(instance)).catch(function (error) {
+
+			return instance.initialize().then(instance.initialize.bind(instance)).catch(function (error) {
 				error.should.equal(HTTPRequestRouter.ALREADY_INITIALIZED);
-				done();
 			});
 		});
 	});

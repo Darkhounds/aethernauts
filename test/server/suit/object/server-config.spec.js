@@ -28,7 +28,7 @@ describe('The Server Config class', function () {
 
 		var instance = new ServerConfig(root, port);
 
-		spy.should.have.been.calledWith(expectedWarning).once;
+		spy.should.have.been.calledWith(expectedWarning);
 	});
 
 	it('should output a warning when failing to load the secret data file', function () {
@@ -38,7 +38,7 @@ describe('The Server Config class', function () {
 
 		var instance = new ServerConfig(root, port);
 
-		spy.should.have.been.calledWith(expectedWarning).once;
+		spy.should.have.been.calledWith(expectedWarning);
 	});
 
 	describe('as an instance', function () {

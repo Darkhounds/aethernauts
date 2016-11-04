@@ -67,7 +67,7 @@ describe('The Main Controller class', function () {
 		it('should create a new WaterlineConfig when initialiazing', function () {
 			instance.initialize(port, root);
 
-			WaterlineConfig.should.have.been.calledWith(root + '/data/').once;
+			WaterlineConfig.should.have.been.calledWith(root + '/data/');
 		});
 
 		it('should create a new DataStorage when initialiazing', function () {
@@ -81,19 +81,19 @@ describe('The Main Controller class', function () {
 
 			instance.initialize(port, root);
 
-			spy.should.have.been.calledWith(WaterlineConfig.getInstance()).once;
+			spy.should.have.been.calledWith(WaterlineConfig.getInstance());
 		});
 
 		it('should create a new UserModel when initialiazing', function () {
 			instance.initialize(port, root);
 
-			UsersModel.should.have.been.calledWithNew.once;
+			UsersModel.should.have.been.calledWithNew;
 		});
 
 		it('should create the UserModel with the expected data', function () {
 			instance.initialize(port, root);
 
-			UsersModel.should.have.been.calledWith(ServerConfig.getInstance().defaultUsers).once;
+			UsersModel.should.have.been.calledWith(ServerConfig.getInstance().defaultUsers);
 		});
 
 		it('should register a new UserModel under "users" name with the DataStorage when initialiazing', function () {
@@ -107,7 +107,7 @@ describe('The Main Controller class', function () {
 		it('should create a new ServerConfig when initialiazing', function () {
 			instance.initialize(port, root);
 
-			ServerConfig.should.have.been.calledWith(root, port).once;
+			ServerConfig.should.have.been.calledWith(root, port);
 		});
 
 		it('should create a new Cypher when initialiazing', function () {
@@ -116,7 +116,7 @@ describe('The Main Controller class', function () {
 			Cypher.should.have.been.calledOnce;
 		});
 
-		it('should encrypt all the default users passwords when initialiazing', function (done) {
+		it('should encrypt all the default users passwords when initialiazing', function () {
 			var defaultUsersBeforeCypher = [
 				{password: 'bogus1'},
 				{password: 'bogus2'}
@@ -131,10 +131,7 @@ describe('The Main Controller class', function () {
 			Cypher.addResponse('encryptedBogus2');
 			instance.initialize(port, root);
 
-			var test = ServerConfig.getInstance();
-
-			test.defaultUsers.should.eql(defaultUsersAfterCypher);
-			done();
+			ServerConfig.getInstance().defaultUsers.should.eql(defaultUsersAfterCypher);
 		});
 
 		it('should instance the new Cypher with the ServerConfig instance when initialiazing', function () {
@@ -142,19 +139,19 @@ describe('The Main Controller class', function () {
 
 			instance.initialize(port, root);
 
-			spy.should.have.been.calledWith(ServerConfig.getInstance()).once;
+			spy.should.have.been.calledWith(ServerConfig.getInstance());
 		});
 
 		it('should create a new HTTPRequestRouter when initialiazing', function () {
 			instance.initialize(port, root);
 
-			HTTPRequestRouter.should.have.been.calledWithNew.once
+			HTTPRequestRouter.should.have.been.calledWithNew
 		});
 
 		it('should inject the EventManager and DataStorage into the new HTTPRequestRouter when initialiazing', function () {
 			instance.initialize(port, root);
 
-			HTTPRequestRouter.should.have.been.calledWith(EventManager.getInstance(), DataStorage.getInstance()).once;
+			HTTPRequestRouter.should.have.been.calledWith(EventManager.getInstance(), DataStorage.getInstance());
 		});
 
 		it('should instance the new HTTPRequestRouter with the ServerConfig and Cypher when initialiazing', function () {
@@ -162,13 +159,13 @@ describe('The Main Controller class', function () {
 
 			instance.initialize(port, root);
 
-			spy.should.have.been.calledWith(ServerConfig.getInstance(), Cypher.getInstance()).once;
+			spy.should.have.been.calledWith(ServerConfig.getInstance(), Cypher.getInstance());
 		});
 
 		it('should create a new DataRouter when initialiazing', function () {
 			instance.initialize(port, root);
 
-			DataRouter.should.have.been.calledWithNew.once;
+			DataRouter.should.have.been.calledWithNew;
 		});
 
 		it('should instance the new DataRouter with the Cypher instance when initialiazing', function () {
@@ -185,13 +182,11 @@ describe('The Main Controller class', function () {
 				instance.initialize(port, root);
 			});
 
-			it('should connect', function (done) {
+			it('should connect', function () {
 				DataStorage.addResponse(null, {});
 				HTTPRequestRouter.addResponse(null, {});
 
-				instance.connect().then(function () {
-					done();
-				});
+				return instance.connect();
 			});
 
 			it('should output DataStorage errors thrown when connecting', function (done) {
