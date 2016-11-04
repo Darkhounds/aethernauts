@@ -57,59 +57,66 @@ describe('The Main Controller class', function () {
 			instance.should.be.an.instanceOf(MainController);
 		});
 
-		it('should create a new WaterlineConfig when setting up', function () {
-			instance.setup(port, root);
+		it('should only initialize once', function() {
+			instance.initialize(port, root);
+			instance.initialize(port, root);
+
+			ServerConfig.should.have.been.calledOnce;
+		});
+
+		it('should create a new WaterlineConfig when initialiazing', function () {
+			instance.initialize(port, root);
 
 			WaterlineConfig.should.have.been.calledWith(root + '/data/').once;
 		});
 
-		it('should create a new DataStorage when setting up', function () {
-			instance.setup(port, root);
+		it('should create a new DataStorage when initialiazing', function () {
+			instance.initialize(port, root);
 
 			DataStorage.should.have.been.calledOnce;
 		});
 
-		it('should setup the new DataStorage with the WaterlineConfig instance when setting up', function () {
+		it('should instance the new DataStorage with the WaterlineConfig instance when initialiazing', function () {
 			var spy = sandbox.spy(DataStorage.prototype, 'setup');
 
-			instance.setup(port, root);
+			instance.initialize(port, root);
 
 			spy.should.have.been.calledWith(WaterlineConfig.getInstance()).once;
 		});
 
-		it('should create a new UserModel when setting up', function () {
-			instance.setup(port, root);
+		it('should create a new UserModel when initialiazing', function () {
+			instance.initialize(port, root);
 
 			UsersModel.should.have.been.calledWithNew.once;
 		});
 
 		it('should create the UserModel with the expected data', function () {
-			instance.setup(port, root);
+			instance.initialize(port, root);
 
 			UsersModel.should.have.been.calledWith(ServerConfig.getInstance().defaultUsers).once;
 		});
 
-		it('should register a new UserModel under "users" name with the DataStorage when setting up', function () {
+		it('should register a new UserModel under "users" name with the DataStorage when initialiazing', function () {
 			var spy = sandbox.spy(DataStorage.prototype, 'addModel');
 
-			instance.setup(port, root);
+			instance.initialize(port, root);
 
 			spy.should.have.been.calledWith('users', UsersModel.getInstance());
 		});
 
-		it('should create a new ServerConfig when setting up', function () {
-			instance.setup(port, root);
+		it('should create a new ServerConfig when initialiazing', function () {
+			instance.initialize(port, root);
 
 			ServerConfig.should.have.been.calledWith(root, port).once;
 		});
 
-		it('should create a new Cypher when setting up', function () {
-			instance.setup(port, root);
+		it('should create a new Cypher when initialiazing', function () {
+			instance.initialize(port, root);
 
 			Cypher.should.have.been.calledOnce;
 		});
 
-		it('should encrypt all the default users passwords when setting up', function (done) {
+		it('should encrypt all the default users passwords when initialiazing', function (done) {
 			var defaultUsersBeforeCypher = [
 				{password: 'bogus1'},
 				{password: 'bogus2'}
@@ -122,7 +129,7 @@ describe('The Main Controller class', function () {
 			ServerConfig.setDefaultUsers(defaultUsersBeforeCypher);
 			Cypher.addResponse('encryptedBogus1');
 			Cypher.addResponse('encryptedBogus2');
-			instance.setup(port, root);
+			instance.initialize(port, root);
 
 			var test = ServerConfig.getInstance();
 
@@ -130,52 +137,52 @@ describe('The Main Controller class', function () {
 			done();
 		});
 
-		it('should setup the new Cypher with the ServerConfig instance when setting up', function () {
+		it('should instance the new Cypher with the ServerConfig instance when initialiazing', function () {
 			var spy = sandbox.spy(Cypher.prototype, 'setup');
 
-			instance.setup(port, root);
+			instance.initialize(port, root);
 
 			spy.should.have.been.calledWith(ServerConfig.getInstance()).once;
 		});
 
-		it('should create a new HTTPRequestRouter when setting up', function () {
-			instance.setup(port, root);
+		it('should create a new HTTPRequestRouter when initialiazing', function () {
+			instance.initialize(port, root);
 
 			HTTPRequestRouter.should.have.been.calledWithNew.once
 		});
 
-		it('should inject the EventManager and DataStorage into the new HTTPRequestRouter when setting up', function () {
-			instance.setup(port, root);
+		it('should inject the EventManager and DataStorage into the new HTTPRequestRouter when initialiazing', function () {
+			instance.initialize(port, root);
 
 			HTTPRequestRouter.should.have.been.calledWith(EventManager.getInstance(), DataStorage.getInstance()).once;
 		});
 
-		it('should setup the new HTTPRequestRouter with the ServerConfig and Cypher when setting up', function () {
+		it('should instance the new HTTPRequestRouter with the ServerConfig and Cypher when initialiazing', function () {
 			var spy = sandbox.spy(HTTPRequestRouter.prototype, 'setup');
 
-			instance.setup(port, root);
+			instance.initialize(port, root);
 
 			spy.should.have.been.calledWith(ServerConfig.getInstance(), Cypher.getInstance()).once;
 		});
 
-		it('should create a new DataRouter when setting up', function () {
-			instance.setup(port, root);
+		it('should create a new DataRouter when initialiazing', function () {
+			instance.initialize(port, root);
 
 			DataRouter.should.have.been.calledWithNew.once;
 		});
 
-		it('should setup the new DataRouter with the Cypher instance when setting up', function () {
+		it('should instance the new DataRouter with the Cypher instance when initialiazing', function () {
 			var spy = sandbox.spy(DataRouter.prototype, 'setup');
 
-			instance.setup(port, root);
+			instance.initialize(port, root);
 
 			spy.should.have.been.calledWith(Cypher.getInstance());
 		});
 
-		describe('after the setup', function () {
+		describe('after the instance', function () {
 
 			beforeEach(function () {
-				instance.setup(port, root);
+				instance.initialize(port, root);
 			});
 
 			it('should connect', function (done) {

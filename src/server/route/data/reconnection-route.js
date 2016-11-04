@@ -1,3 +1,5 @@
+var SocketEvent = require('./../../event/socket-event');
+
 var Constructor = function (eventManager, dataStorage) {
 	this._eventManager = eventManager;
 	this._dataStorage = dataStorage;
@@ -16,13 +18,16 @@ Constructor.prototype._checkUserIsValid = function (user) {
 	else throw('ReconnectionFailed');
 };
 
-Constructor.prototype._sendSuccess = function (socket) {
+Constructor.prototype._sendSuccess = function (socket, user) {
 	var message = JSON.stringify({ command: 'reconnection', valid: true });
 
+	socket.user = user;
 	socket.send(message);
+
+	this._eventManager.emit(SocketEvent.AUTHENTICATED, socket);
 };
 
-Constructor.prototype._sendFailure = function (socket) {
+Constructor.prototype._sendFailure = function (socket, error) {
 	var message = JSON.stringify({ command: 'reconnection', valid: false });
 
 	socket.send(message);

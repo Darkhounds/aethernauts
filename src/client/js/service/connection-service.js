@@ -13,6 +13,7 @@ var Constructor = function () {
 	this._connected = false;
 	this._reconnectionTimeout = -1;
 	this._cypher = new Cypher();
+	this._timeoutInterval = -1;
 
 	this._handleRegisterRequest = this._handleRegisterRequest.bind(this);
 	this._handleRegisterRequestError = this._handleRegisterRequestError.bind(this);
@@ -20,6 +21,7 @@ var Constructor = function () {
 	this._handleMessageReceived = this._handleMessageReceived.bind(this);
 	this._handleReconnection = this._handleReconnection.bind(this);
 	this._handleClosed = this._handleClosed.bind(this);
+	this._handleTimeout = this._handleTimeout.bind(this);
 };
 util.inherits(Constructor, EventEmitter);
 
@@ -71,6 +73,11 @@ Constructor.prototype._destroyConnection = function () {
 Constructor.prototype._handleMessageReceived = function (e) {
 	var data = JSON.parse(e.data);
 	switch(data.command) {
+		case 'ping':
+			this._connectionChecked = true;
+			this._websocket.send(JSON.stringify({command:'pong'}));
+			this._handleTimeout();
+			break;
 		case 'handshake':
 			this._resolveHandshake(data);
 			break;
@@ -90,6 +97,7 @@ Constructor.prototype._handleMessageReceived = function (e) {
 };
 
 Constructor.prototype._resolveHandshake = function (data) {
+	this._timeout = data.timeout * 1000 * 2;
 	this._cypher.setMask(data.mask);
 
 	if (this._token) {
@@ -104,9 +112,11 @@ Constructor.prototype._resolveAuthentication = function (data) {
 	this._password = null;
 
 	if (data.valid) {
+		this._connectionChecked = true;
 		this._connected = true;
 		this._token = data.token;
 		this.emit(ConnectionEvent.OPENED, this._username, this._token);
+		this._handleTimeout();
 	} else {
 		this.emit(ConnectionEvent.AUTHENTICATION_ERROR, ConnectionEvent.AUTHENTICATION_ERROR);
 		this.close();
@@ -115,7 +125,9 @@ Constructor.prototype._resolveAuthentication = function (data) {
 
 Constructor.prototype._resolveReconnected = function (data) {
 	if (data.valid) {
+		this._connectionChecked = true;
 		this.emit(ConnectionEvent.RECONNECTED);
+		this._handleTimeout();
 	} else {
 		this.emit(ConnectionEvent.AUTHENTICATION_ERROR);
 		this.close();
@@ -137,6 +149,18 @@ Constructor.prototype._handleClosed = function () {
 		this.emit(ConnectionEvent.CONNECTION_ERROR);
 		this.close();
 	}
+};
+
+Constructor.prototype._handleTimeout = function () {
+	clearTimeout(this._timeoutInterval);
+
+	if (this._connectionChecked) {
+		this._timeoutInterval = setTimeout(this._handleTimeout, this._timeout);
+	} else {
+		this._handleClosed();
+	}
+
+	this._connectionChecked = false;
 };
 
 Constructor.prototype.register = function (email, username, password, character) {
