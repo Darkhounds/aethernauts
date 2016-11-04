@@ -23,15 +23,11 @@ describe('The AuthenticationController class', function () {
 		LoginView.mockStart();
 		LogoutView.mockStart();
 		RegisterView.mockStart();
-		BroadcasterService.mockStart();
-		ConnectionService.mockStart();
 		AuthenticationController = require('./../../../../src/client/js/controller/authentication-controller');
 		context = document.createElement('div');
 	});
 
 	afterEach(function() {
-		ConnectionService.mockStop();
-		BroadcasterService.mockStop();
 		RegisterView.mockStop();
 		LogoutView.mockStop();
 		LoginView.mockStop();
@@ -60,7 +56,7 @@ describe('The AuthenticationController class', function () {
 
 			instance.setup(broadcasterService, connectionService);
 
-			spy.should.have.been.calledWith(ConnectionEvent.REGISTRATION_ERROR).once;
+			spy.should.have.been.calledWith(ConnectionEvent.REGISTRATION_ERROR);
 		});
 
 		it('should register to the ConnectionEvent.CONNECTION_ERROR event on the connectionService during setup', function () {
@@ -68,7 +64,7 @@ describe('The AuthenticationController class', function () {
 
 			instance.setup(broadcasterService, connectionService);
 
-			spy.should.have.been.calledWith(ConnectionEvent.CONNECTION_ERROR).once;
+			spy.should.have.been.calledWith(ConnectionEvent.CONNECTION_ERROR);
 		});
 
 		it('should register to the ConnectionEvent.AUTHENTICATION_ERROR event on the connectionService during setup', function () {
@@ -76,7 +72,7 @@ describe('The AuthenticationController class', function () {
 
 			instance.setup(broadcasterService, connectionService);
 
-			spy.should.have.been.calledWith(ConnectionEvent.AUTHENTICATION_ERROR).once;
+			spy.should.have.been.calledWith(ConnectionEvent.AUTHENTICATION_ERROR);
 		});
 
 		it('should register to the ConnectionEvent.OPENED event on the connectionService during setup', function () {
@@ -84,7 +80,7 @@ describe('The AuthenticationController class', function () {
 
 			instance.setup(broadcasterService, connectionService);
 
-			spy.should.have.been.calledWith(ConnectionEvent.OPENED).once;
+			spy.should.have.been.calledWith(ConnectionEvent.OPENED);
 		});
 
 		it('should register to the ConnectionEvent.DISCONNECTED event on the connectionService during setup', function () {
@@ -92,7 +88,7 @@ describe('The AuthenticationController class', function () {
 
 			instance.setup(broadcasterService, connectionService);
 
-			spy.should.have.been.calledWith(ConnectionEvent.DISCONNECTED).once;
+			spy.should.have.been.calledWith(ConnectionEvent.DISCONNECTED);
 		});
 
 		it('should register to the ConnectionEvent.RECONNECTED event on the connectionService during setup', function () {
@@ -100,7 +96,7 @@ describe('The AuthenticationController class', function () {
 
 			instance.setup(broadcasterService, connectionService);
 
-			spy.should.have.been.calledWith(ConnectionEvent.RECONNECTED).once;
+			spy.should.have.been.calledWith(ConnectionEvent.RECONNECTED);
 		});
 
 		it('should register to the ConnectionEvent.CLOSED event on the connectionService during setup', function () {
@@ -108,7 +104,7 @@ describe('The AuthenticationController class', function () {
 
 			instance.setup(broadcasterService, connectionService);
 
-			spy.should.have.been.calledWith(ConnectionEvent.CLOSED).once;
+			spy.should.have.been.calledWith(ConnectionEvent.CLOSED);
 		});
 
 		describe('after the setup', function () {

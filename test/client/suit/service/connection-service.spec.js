@@ -336,7 +336,7 @@ describe('The Connection Service class', function () {
 
 					reconnectionWebsocket.dispatchEvent('message', {data: data});
 
-					spy.should.have.been.calledWith(JSON.stringify(expectedData)).once;
+					spy.should.have.been.calledWith(JSON.stringify(expectedData));
 				});
 
 				it('should trigger the reconnected event after reconnecting successfully', function () {

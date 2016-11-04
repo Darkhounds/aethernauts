@@ -14,7 +14,6 @@ describe('The Notification Controller class', function () {
 
 	beforeEach(function () {
 		sandbox = sinon.sandbox.create();
-		BroadcasterService.mockStart();
 		EmptyView.mockStart();
 		DisconnectedView.mockStart();
 		WrongCredentialsView.mockStart();
@@ -29,7 +28,6 @@ describe('The Notification Controller class', function () {
 		WrongCredentialsView.mockStop();
 		DisconnectedView.mockStop();
 		EmptyView.mockStop();
-		BroadcasterService.mockStop();
 		sandbox.restore();
 	});
 
@@ -56,7 +54,7 @@ describe('The Notification Controller class', function () {
 
 			instance.setup(broadcasterService);
 
-			spy.should.have.been.calledWith(NotificationEvent.DISCONNECTED).once;
+			spy.should.have.been.calledWith(NotificationEvent.DISCONNECTED);
 		});
 
 		it('should register a NotificationEvent.RECONNECTED event after the setup', function () {
@@ -64,7 +62,7 @@ describe('The Notification Controller class', function () {
 
 			instance.setup(broadcasterService);
 
-			spy.should.have.been.calledWith(NotificationEvent.RECONNECTED).once;
+			spy.should.have.been.calledWith(NotificationEvent.RECONNECTED);
 		});
 
 		it('should register a NotificationEvent.AUTHENTICATION_FAILED event after the setup', function () {
@@ -72,7 +70,7 @@ describe('The Notification Controller class', function () {
 
 			instance.setup(broadcasterService);
 
-			spy.should.have.been.calledWith(NotificationEvent.AUTHENTICATION_FAILED).once;
+			spy.should.have.been.calledWith(NotificationEvent.AUTHENTICATION_FAILED);
 		});
 
 		it('should register a NotificationEvent.CONNECTION_FAILED event after the setup', function () {
@@ -80,7 +78,7 @@ describe('The Notification Controller class', function () {
 
 			instance.setup(broadcasterService);
 
-			spy.should.have.been.calledWith(NotificationEvent.CONNECTION_FAILED).once;
+			spy.should.have.been.calledWith(NotificationEvent.CONNECTION_FAILED);
 		});
 		
 		it('should register a NotificationEvent.REGISTRATION_FAILED event after the setup', function () {
@@ -88,7 +86,7 @@ describe('The Notification Controller class', function () {
 
 			instance.setup(broadcasterService);
 
-			spy.should.have.been.calledWith(NotificationEvent.REGISTRATION_FAILED).once;
+			spy.should.have.been.calledWith(NotificationEvent.REGISTRATION_FAILED);
 		});
 
 		describe('after the setup', function () {
@@ -111,7 +109,7 @@ describe('The Notification Controller class', function () {
 				instance.setContext(context);
 				broadcasterService.emit(NotificationEvent.DISCONNECTED);
 
-				spy.should.have.been.calledWith(context).once;
+				spy.should.have.been.calledWith(context);
 			});
 
 			it('should fail silently when the NotificationEvent.DISCONNECTED is fired more then once', function () {
@@ -121,7 +119,7 @@ describe('The Notification Controller class', function () {
 				broadcasterService.emit(NotificationEvent.DISCONNECTED);
 				broadcasterService.emit(NotificationEvent.DISCONNECTED);
 
-				spy.should.have.been.calledWith(context).once;
+				spy.should.have.been.calledWith(context);
 			});
 
 			it('should render the emptyView when the NotificationEvent.RECONNECTED is fired', function () {
@@ -131,7 +129,7 @@ describe('The Notification Controller class', function () {
 				broadcasterService.emit(NotificationEvent.DISCONNECTED);
 				broadcasterService.emit(NotificationEvent.RECONNECTED);
 
-				spy.should.have.been.calledWith(context).once;
+				spy.should.have.been.calledWith(context);
 			});
 
 			it('should fail silently when the NotificationEvent.RECONNECTED is fired more then once', function () {
@@ -142,7 +140,7 @@ describe('The Notification Controller class', function () {
 				broadcasterService.emit(NotificationEvent.RECONNECTED);
 				broadcasterService.emit(NotificationEvent.RECONNECTED);
 
-				spy.should.have.been.calledWith(context).once;
+				spy.should.have.been.calledWith(context);
 			});
 
 			it('should render the wrongCredentialsView when the NotificationEvent.AUTHENTICATION_FAILED is fired', function () {
@@ -151,7 +149,7 @@ describe('The Notification Controller class', function () {
 				instance.setContext(context);
 				broadcasterService.emit(NotificationEvent.AUTHENTICATION_FAILED);
 
-				spy.should.have.been.calledWith(context).once;
+				spy.should.have.been.calledWith(context);
 			});
 
 			it('should fail silently when the NotificationEvent.AUTHENTICATION_FAILED is fired more then once', function () {
@@ -161,7 +159,7 @@ describe('The Notification Controller class', function () {
 				broadcasterService.emit(NotificationEvent.AUTHENTICATION_FAILED);
 				broadcasterService.emit(NotificationEvent.AUTHENTICATION_FAILED);
 
-				spy.should.have.been.calledWith(context).once;
+				spy.should.have.been.calledWith(context);
 			});
 
 			it('should render the emptyView when the wrongCredentialsView fires a NotificationEvent.CLOSE event', function () {
@@ -171,7 +169,7 @@ describe('The Notification Controller class', function () {
 				broadcasterService.emit(NotificationEvent.AUTHENTICATION_FAILED);
 				WrongCredentialsView.getInstance().emit(NotificationEvent.CLOSE);
 
-				spy.should.have.been.calledWith(context).once;
+				spy.should.have.been.calledWith(context);
 			});
 
 			it('should fail silently when the wrongCredentialsView fires a NotificationEvent.CLOSE is fired more then once', function () {
@@ -182,7 +180,7 @@ describe('The Notification Controller class', function () {
 				WrongCredentialsView.getInstance().emit(NotificationEvent.CLOSE);
 				WrongCredentialsView.getInstance().emit(NotificationEvent.CLOSE);
 
-				spy.should.have.been.calledWith(context).once;
+				spy.should.have.been.calledWith(context);
 			});
 
 			it('should render the connectionErrorView when the NotificationEvent.CONNECTION_FAILED is fired', function () {
@@ -191,7 +189,7 @@ describe('The Notification Controller class', function () {
 				instance.setContext(context);
 				broadcasterService.emit(NotificationEvent.CONNECTION_FAILED);
 
-				spy.should.have.been.calledWith(context).once;
+				spy.should.have.been.calledWith(context);
 			});
 
 			it('should fail silently when the NotificationEvent.CONNECTION_FAILED is fired more then once', function () {
@@ -201,7 +199,7 @@ describe('The Notification Controller class', function () {
 				broadcasterService.emit(NotificationEvent.CONNECTION_FAILED);
 				broadcasterService.emit(NotificationEvent.CONNECTION_FAILED);
 
-				spy.should.have.been.calledWith(context).once;
+				spy.should.have.been.calledWith(context);
 			});
 
 			it('should render the emptyView when the connectionErrorView fires a NotificationEvent.CLOSE event', function () {
@@ -211,7 +209,7 @@ describe('The Notification Controller class', function () {
 				broadcasterService.emit(NotificationEvent.CONNECTION_FAILED);
 				ConnectionErrorView.getInstance().emit(NotificationEvent.CLOSE);
 
-				spy.should.have.been.calledWith(context).once;
+				spy.should.have.been.calledWith(context);
 			});
 
 			it('should fail silently when the connectionErrorView fires a NotificationEvent.CLOSE is fired more then once', function () {
@@ -222,9 +220,8 @@ describe('The Notification Controller class', function () {
 				ConnectionErrorView.getInstance().emit(NotificationEvent.CLOSE);
 				ConnectionErrorView.getInstance().emit(NotificationEvent.CLOSE);
 
-				spy.should.have.been.calledWith(context).once;
+				spy.should.have.been.calledWith(context);
 			});
-
 
 			it('should render the registrationErrorView when the NotificationEvent.REGISTRATION_FAILED is fired', function () {
 				var errors = ['email', 'user', 'character'];
@@ -233,7 +230,7 @@ describe('The Notification Controller class', function () {
 				instance.setContext(context);
 				broadcasterService.emit(NotificationEvent.REGISTRATION_FAILED, errors);
 
-				spy.should.have.been.calledWith(context, errors).once;
+				spy.should.have.been.calledWith(context, errors);
 			});
 
 			it('should fail silently when the NotificationEvent.REGISTRATION_FAILED is fired more then once', function () {
@@ -243,7 +240,7 @@ describe('The Notification Controller class', function () {
 				broadcasterService.emit(NotificationEvent.REGISTRATION_FAILED);
 				broadcasterService.emit(NotificationEvent.REGISTRATION_FAILED);
 
-				spy.should.have.been.calledWith(context).once;
+				spy.should.have.been.calledWith(context);
 			});
 
 			it('should render the emptyView when the registrationErrorView fires a NotificationEvent.CLOSE event', function () {
@@ -253,7 +250,7 @@ describe('The Notification Controller class', function () {
 				broadcasterService.emit(NotificationEvent.REGISTRATION_FAILED);
 				RegistrationErrorView.getInstance().emit(NotificationEvent.CLOSE);
 
-				spy.should.have.been.calledWith(context).once;
+				spy.should.have.been.calledWith(context);
 			});
 
 			it('should fail silently when the registrationErrorView fires a NotificationEvent.CLOSE is fired more then once', function () {
@@ -264,7 +261,7 @@ describe('The Notification Controller class', function () {
 				RegistrationErrorView.getInstance().emit(NotificationEvent.CLOSE);
 				RegistrationErrorView.getInstance().emit(NotificationEvent.CLOSE);
 
-				spy.should.have.been.calledWith(context).once;
+				spy.should.have.been.calledWith(context);
 			});
 		});
 	});
