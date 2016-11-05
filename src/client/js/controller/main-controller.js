@@ -1,8 +1,10 @@
-var MainView = require('./../view/main-view');
-var ConnectionService = require('./../service/connection-service');
-var BroadcasterService = require('./../service/broadcaster-service');
 var ConnectionEvent = require('./../event/connection-event');
 var NotificationEvent = require('./../event/notification-event');
+
+var BroadcasterService = require('./../service/broadcaster-service');
+var ConnectionService = require('./../service/connection-service');
+
+var MainView = require('./../view/main-view');
 
 function Constructor () {
 	this._broadcasterService = new BroadcasterService();

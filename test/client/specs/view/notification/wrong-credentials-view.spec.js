@@ -1,14 +1,19 @@
 var sinon  = require('sinon');
 var simulant = require('simulant');
 
-var wrongCredentialsTemplate = require('./../../../../../src/client/html/notification/wrong-credentials.html');
 var NotifictionEvent = require('./../../../../../src/client/js/event/notification-event');
 
+var wrongCredentialsTemplate = require('./../../../../../src/client/html/notification/wrong-credentials.html');
+
 describe('The Wrong Credentials View class', function () {
-	var WrongCredentialsView, sandbox;
+	var WrongCredentialsView, sandbox, context;
 
 	beforeEach(function () {
 		sandbox = sinon.sandbox.create();
+
+		context = document.createElement('div');
+		context.id = 'NOTIFICATION';
+
 		WrongCredentialsView = require('./../../../../../src/client/js/view/notification/wrong-credentials-view');
 	});
 
@@ -21,11 +26,9 @@ describe('The Wrong Credentials View class', function () {
 	});
 
 	describe('as an instance', function () {
-		var instance, context;
+		var instance;
 
 		beforeEach(function () {
-			context = document.createElement('div');
-			context.id = 'NOTIFICATION';
 			instance = new WrongCredentialsView();
 		});
 

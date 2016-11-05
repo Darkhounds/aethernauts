@@ -1,24 +1,29 @@
 var sinon = require('sinon');
 var simulant = require('simulant');
 
-var MainView = require('./../../mockups/view/main-view.mock');
-var ConnectionService = require('./../../mockups/service/connection-service.mock');
-var BroadcasterService = require('./../../mockups/service/broadcaster-service.mock');
-
 var ConnectionEvent = require('./../../../../src/client/js/event/connection-event');
 var NotificationEvent = require('./../../../../src/client/js/event/notification-event');
 
+var BroadcasterService = require('./../../mockups/service/broadcaster-service.mock');
+var ConnectionService = require('./../../mockups/service/connection-service.mock');
+
+var MainView = require('./../../mockups/view/main-view.mock');
+
 describe('The Main Controller class', function () {
-	var MainController, sandbox;
-	var address = '127.0.0.1';
-	var port = '999';
-	var path = '/bogus';
+	var MainController, address, port, path, sandbox, connectionService, broadcasterService, mainView;
+
 
 	beforeEach(function() {
 		sandbox = sinon.sandbox.create();
+
+		address = '127.0.0.1';
+		port = '999';
+		path = '/bogus';
+
 		ConnectionService.mockStart();
 		BroadcasterService.mockStart();
 		MainView.mockStart();
+
 		MainController = require('./../../../../src/client/js/controller/main-controller');
 	});
 
@@ -26,6 +31,7 @@ describe('The Main Controller class', function () {
 		MainView.mockStop();
 		BroadcasterService.mockStop();
 		ConnectionService.mockStop();
+
 		sandbox.restore();
 	});
 
@@ -34,17 +40,13 @@ describe('The Main Controller class', function () {
 	});
 
 	describe('as an instance', function () {
-		var instance, connectionService, broadcasterService, mainView;
+		var instance;
 
 		beforeEach(function () {
 			instance = new MainController();
 			connectionService = ConnectionService.getInstance();
 			broadcasterService = BroadcasterService.getInstance();
 			mainView = MainView.getInstance();
-		});
-
-		afterEach(function () {
-			instance = null;
 		});
 
 		it ('should be an instance of "MainController"', function () {
@@ -109,9 +111,9 @@ describe('The Main Controller class', function () {
 
 			it('should trigger a NotificationEvent.DISCONNECTED on the broadcasterService when the connectionService fires a ConnectionEvent.DISCONNECTED', function () {
 				var spy = sandbox.spy(broadcasterService, 'emit');
-				
+
 				connectionService.emit(ConnectionEvent.DISCONNECTED);
-				
+
 				spy.should.have.been.calledWith(NotificationEvent.DISCONNECTED);
 			});
 

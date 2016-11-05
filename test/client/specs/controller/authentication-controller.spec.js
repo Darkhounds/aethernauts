@@ -12,25 +12,34 @@ var LogoutView = require('./../../mockups/view/authentication/logout-view.mock')
 var RegisterView = require('./../../mockups/view/authentication/register-view.mock');
 
 describe('The AuthenticationController class', function () {
-	var AuthenticationController, sandbox, context;
-	var email = 'something@somewhere.com';
-	var username = 'foo';
-	var password = 'bar';
-	var character = 'bogus';
+	var AuthenticationController, sandbox, email, username, password, character, context
+		, broadcasterService, connectionService;
 
 	beforeEach(function() {
 		sandbox = sinon.sandbox.create();
+
+		email = 'something@somewhere.com';
+		username = 'foo';
+		password = 'bar';
+		character = 'bogus';
+		context = document.createElement('div');
+		broadcasterService = new BroadcasterService();
+		connectionService = new ConnectionService();
+
 		LoginView.mockStart();
 		LogoutView.mockStart();
 		RegisterView.mockStart();
+
 		AuthenticationController = require('./../../../../src/client/js/controller/authentication-controller');
-		context = document.createElement('div');
 	});
 
 	afterEach(function() {
 		RegisterView.mockStop();
 		LogoutView.mockStop();
 		LoginView.mockStop();
+
+		BroadcasterService.restore();
+		ConnectionService.restore()
 		sandbox.restore();
 	});
 
@@ -39,11 +48,9 @@ describe('The AuthenticationController class', function () {
 	});
 
 	describe('as an instance', function () {
-		var instance, broadcasterService, connectionService;
+		var instance;
 
 		beforeEach(function () {
-			broadcasterService = new BroadcasterService();
-			connectionService = new ConnectionService();
 			instance = new AuthenticationController();
 		});
 

@@ -6,20 +6,26 @@ var AuthenticationController = require('./../../mockups/controller/authenticatio
 var NotificationController = require('./../../mockups/controller/notification-controller.mock');
 
 describe('The Main View class', function () {
-	var MainView, sandbox, context;
+	var MainView, sandbox, context, connectionService, broadcasterService;
 
 	beforeEach(function() {
 		sandbox = sinon.sandbox.create();
-		AuthenticationController.mockStart();
-		NotificationController.mockStart();
-		MainView = require('./../../../../src/client/js/view/main-view');
+
+		connectionService = new ConnectionService();
+		broadcasterService = new BroadcasterService();
 		context = document.createElement('div');
 		context.innerHTML = '<div id="APP"><div id="AUTHENTICATION"></div><div id="NOTIFICATION"></div></div>';
+
+		AuthenticationController.mockStart();
+		NotificationController.mockStart();
+
+		MainView = require('./../../../../src/client/js/view/main-view');
 	});
 
 	afterEach(function() {
 		NotificationController.mockStop();
 		AuthenticationController.mockStop();
+
 		sandbox.restore();
 	});
 
@@ -28,11 +34,9 @@ describe('The Main View class', function () {
 	});
 
 	describe('as an instance', function () {
-		var instance, connectionService, broadcasterService;
+		var instance;
 
 		beforeEach(function () {
-			connectionService = new ConnectionService();
-			broadcasterService = new BroadcasterService();
 			instance = new MainView(connectionService);
 		});
 
@@ -69,12 +73,8 @@ describe('The Main View class', function () {
 		});
 
 		describe('after the setup', function () {
-			var authenticationController, notificationController;
-
 			beforeEach(function () {
 				instance.setup(broadcasterService, connectionService);
-				authenticationController = AuthenticationController.getInstance();
-				notificationController = NotificationController.getInstance();
 			});
 
 			it ('should render', function () {
@@ -84,7 +84,7 @@ describe('The Main View class', function () {
 			});
 
 			it ('should set the authenticationController context when rendering', function () {
-				var spy = sandbox.spy(authenticationController, 'setContext');
+				var spy = sandbox.spy(AuthenticationController.getInstance(), 'setContext');
 
 				instance.render(context);
 
@@ -92,7 +92,7 @@ describe('The Main View class', function () {
 			});
 
 			it ('should set the notificationController context when rendering', function () {
-				var spy = sandbox.spy(notificationController, 'setContext');
+				var spy = sandbox.spy(NotificationController.getInstance(), 'setContext');
 
 				instance.render(context);
 

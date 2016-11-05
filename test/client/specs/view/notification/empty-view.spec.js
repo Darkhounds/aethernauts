@@ -1,7 +1,10 @@
 describe('The Empty View class', function () {
-	var EmptyView;
+	var EmptyView, context;
 
 	beforeEach(function () {
+		context = document.createElement('div');
+		context.id = 'NOTIFICATION';
+
 		EmptyView = require('./../../../../../src/client/js/view/notification/empty-view');
 	});
 
@@ -10,11 +13,9 @@ describe('The Empty View class', function () {
 	});
 
 	describe('as an instance', function () {
-		var instance, context;
+		var instance;
 
 		beforeEach(function () {
-			context = document.createElement('div');
-			context.id = 'NOTIFICATION';
 			instance = new EmptyView();
 		});
 

@@ -1,14 +1,20 @@
 var sinon  = require('sinon');
 var simulant = require('simulant');
 
-var registrationErrorTemplate = require('./../../../../../src/client/html/notification/registration-error.html');
 var NotificationEvent = require('./../../../../../src/client/js/event/notification-event');
 
+var registrationErrorTemplate = require('./../../../../../src/client/html/notification/registration-error.html');
+
 describe('The Registration Error View class', function () {
-	var RegistrationErrorView, sandbox;
+	var RegistrationErrorView, sandbox, errors, context;
 
 	beforeEach(function () {
 		sandbox = sinon.sandbox.create();
+
+		errors = ['email', 'username', 'character'];
+		context = document.createElement('div');
+		context.id = 'NOTIFICATION';
+
 		RegistrationErrorView = require('./../../../../../src/client/js/view/notification/registration-error-view');
 	});
 
@@ -21,12 +27,9 @@ describe('The Registration Error View class', function () {
 	});
 
 	describe('as an instance', function () {
-		var instance, context, errors;
+		var instance;
 
 		beforeEach(function () {
-			errors = ['email', 'username', 'character'];
-			context = document.createElement('div');
-			context.id = 'NOTIFICATION';
 			instance = new RegistrationErrorView();
 		});
 

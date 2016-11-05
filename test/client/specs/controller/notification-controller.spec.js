@@ -1,6 +1,7 @@
 var sinon = require('sinon');
 
 var BroadcasterService  = require('./../../mockups/service/broadcaster-service.mock');
+
 var EmptyView = require('./../../mockups/view/notification/empty-view.mock');
 var DisconnectedView = require('./../../mockups/view/notification/disconnected-view.mock');
 var WrongCredentialsView = require('./../../mockups/view/notification/wrong-credentials-view.mock');
@@ -10,15 +11,21 @@ var RegistrationErrorView = require('./../../mockups/view/notification/registrat
 var NotificationEvent = require('./../../../../src/client/js/event/notification-event');
 
 describe('The Notification Controller class', function () {
-	var NotificationController, sandbox;
+	var NotificationController, sandbox, broadcasterService, context;
 
 	beforeEach(function () {
 		sandbox = sinon.sandbox.create();
+
+		context = document.createElement('div');
+		context.id = 'NOTIFICATION';
+		broadcasterService = new BroadcasterService();
+
 		EmptyView.mockStart();
 		DisconnectedView.mockStart();
 		WrongCredentialsView.mockStart();
 		ConnectionErrorView.mockStart();
 		RegistrationErrorView.mockStart();
+
 		NotificationController = require('./../../../../src/client/js/controller/notification-controller');
 	});
 
@@ -28,6 +35,8 @@ describe('The Notification Controller class', function () {
 		WrongCredentialsView.mockStop();
 		DisconnectedView.mockStop();
 		EmptyView.mockStop();
+
+		BroadcasterService.restore();
 		sandbox.restore();
 	});
 
@@ -36,12 +45,9 @@ describe('The Notification Controller class', function () {
 	});
 	
 	describe('as an instance', function () {
-		var instance, broadcasterService, context;
+		var instance;
 
 		beforeEach(function () {
-			context = document.createElement('div');
-			context.id = 'NOTIFICATION';
-			broadcasterService = new BroadcasterService();
 			instance = new NotificationController();
 		});
 

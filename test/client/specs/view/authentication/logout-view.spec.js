@@ -1,5 +1,6 @@
 var sinon = require('sinon');
 var simulant = require('simulant');
+
 var EventEmitter = require('events').EventEmitter;
 
 var AuthenticationEvent = require('./../../../../../src/client/js/event/authentication-event');
@@ -9,9 +10,11 @@ describe('The LogoutView class', function () {
 
 	beforeEach(function() {
 		sandbox = sinon.sandbox.create();
-		LogoutView = require('./../../../../../src/client/js/view/authentication/logout-view');
+
 		context = document.createElement('div');
 		context.id = 'AUTHENTICATION';
+
+		LogoutView = require('./../../../../../src/client/js/view/authentication/logout-view');
 	});
 	
 	afterEach(function() {

@@ -1,7 +1,9 @@
 describe('The Cypher Class', function () {
-	var Cypher;
+	var Cypher, mask;
 
 	beforeEach(function () {
+		mask = 'some mask';
+
 		Cypher = require('./../../../../src/client/js/util/cypher');
 	});
 
@@ -28,10 +30,7 @@ describe('The Cypher Class', function () {
 		});
 
 		describe('after setting a mask', function () {
-			var mask;
-
 			beforeEach(function () {
-				mask = 'some mask';
 				instance.setMask(mask);
 			});
 

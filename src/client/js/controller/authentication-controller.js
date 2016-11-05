@@ -1,9 +1,10 @@
-var LoginView = require('./../view/authentication/login-view');
-var LogoutView = require('./../view/authentication/logout-view');
-var RegisterView = require('./../view/authentication/register-view');
 var AuthenticationEvent = require('./../event/authentication-event');
 var ConnectionEvent = require('./../event/connection-event');
 var NotificationEvent = require('./../event/notification-event');
+
+var LoginView = require('./../view/authentication/login-view');
+var LogoutView = require('./../view/authentication/logout-view');
+var RegisterView = require('./../view/authentication/register-view');
 
 var Constructor = function () {
 	this._context = null;
