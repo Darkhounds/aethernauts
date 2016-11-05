@@ -1,24 +1,27 @@
 var mock = require('mock-require');
 var sinon = require('sinon');
-var util = require('util');
-var EventEmitter = require('events').EventEmitter;
 
 var _instance = null;
 var Constructor = sinon.spy(function () {
 	_instance = this;
 });
-util.inherits(Constructor, EventEmitter);
+
+Constructor.prototype.execute = function () {};
 
 Constructor.getInstance = function () {
 	return _instance;
 };
 
 Constructor.mockStart = function () {
-	mock('./../../../../src/server/component/event-manager', Constructor);
+	mock('./../../../../../src/server/route/commands/unknown-route', Constructor);
 };
 
 Constructor.mockStop = function () {
-	mock.stop('./../../../../src/server/component/event-manager');
+	mock.stop('./../../../../../src/server/route/commands/unknown-route');
+	Constructor.restore();
+};
+
+Constructor.restore = function () {
 	Constructor.reset();
 };
 

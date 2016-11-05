@@ -2,30 +2,31 @@ var express = require('express');
 var expressWs = require('express-ws');
 var when = require('when');
 
+var RegisterRoute = require('./statics/register-route');
 var LoggerRoute = require('./statics/log-route');
 var StaticAssetsRoute = require('./statics/static-assets-route');
 var FaviconRoute = require('./statics/favicon-route');
 var SaveFormHistoryRoute = require('./statics/save-form-history-route');
 var StaticIndexRoute = require('./statics/static-index-route');
 var WebsocketRoute = require('./statics/websocket-route');
-var RegisterRoute = require('./statics/register-route');
 
 var bodyParser = require('body-parser');
 
-var Constructor = function (eventManager, dataStorage) {
+var Constructor = function (eventManager, dataStorage, cypher) {
 	this._eventManager = eventManager;
 	this._dataStorage = dataStorage;
+	this._cypher = cypher;
 	this._initialized = false;
 	this._server = express();
 	expressWs(this._server);
 
+	this._registerRoute = new RegisterRoute(this._dataStorage, this._cypher);
 	this._logRoute = new LoggerRoute();
 	this._staticAssetsRoute = new StaticAssetsRoute();
 	this._faviconRoute = new FaviconRoute();
 	this._saveFormHistoryRoute = new SaveFormHistoryRoute();
 	this._staticIndexRoute = new StaticIndexRoute();
 	this._websocketRoute = new WebsocketRoute(this._eventManager);
-	this._registerRoute = new RegisterRoute(this._dataStorage);
 
 	this._server.use(this._logRoute.execute.bind(this));
 	this._server.post('/register', bodyParser.urlencoded({ extended: false }), this._registerRoute.execute.bind(this._registerRoute));
@@ -38,10 +39,8 @@ var Constructor = function (eventManager, dataStorage) {
 Constructor.MESSAGE_START = '-------- SERVING STATICS --------';
 Constructor.ALREADY_INITIALIZED = 'AlreadyInitialized';
 
-Constructor.prototype.setup = function (config, cypher) {
+Constructor.prototype.setup = function (config) {
 	this._config = config;
-
-	this._registerRoute.setup(cypher);
 
 	this._logRoute.setup(this._config);
 	this._websocketRoute.setup(this._config);

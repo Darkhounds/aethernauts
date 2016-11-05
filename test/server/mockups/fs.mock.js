@@ -24,4 +24,8 @@ Constructor.addResponse = function (response) {
 	_responses.push(response);
 };
 
+Constructor.restore = function () {
+	_responses.length = 0
+};
+
 module.exports = Constructor;

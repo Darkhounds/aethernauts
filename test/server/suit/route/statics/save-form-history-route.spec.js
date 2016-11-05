@@ -5,6 +5,7 @@ describe('The Save Form History Route class', function () {
 
 	beforeEach(function () {
 		sandbox = sinon.sandbox.create();
+
 		SaveHistoryRoute = require('./../../../../../src/server/route/statics/save-form-history-route');
 	});
 
@@ -33,7 +34,7 @@ describe('The Save Form History Route class', function () {
 
 			instance.execute({}, res)
 
-			spy.should.have.been.called;
+			spy.should.have.been.calledOnce;
 		});
 	});
 });

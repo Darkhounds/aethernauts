@@ -1,16 +1,17 @@
 var DataRouter = require('data-router');
 
-var PongRoute = require('./data/pong-route');
-var AuthenticationRoute = require('./data/authentication-route');
-var ReconnectionRoute = require('./data/reconnection-route');
-var UnknownRoute = require('./data/unknown-route');
+var PongRoute = require('./commands/pong-route');
+var AuthenticationRoute = require('./commands/authentication-route');
+var ReconnectionRoute = require('./commands/reconnection-route');
+var UnknownRoute = require('./commands/unknown-route');
 
-var Constructor = function (eventsManager, dataStorage) {
+var Constructor = function (eventsManager, dataStorage, cypher) {
 	this._eventManager = eventsManager;
 	this._dataRouter = new DataRouter();
+	this._initialized = false;
 
 	this._pongRoute = new PongRoute(eventsManager);
-	this._authenticationRoute = new AuthenticationRoute(eventsManager, dataStorage);
+	this._authenticationRoute = new AuthenticationRoute(eventsManager, dataStorage, cypher);
 	this._reconnectionRoute = new ReconnectionRoute(eventsManager, dataStorage);
 	this._unknownRoute = new UnknownRoute(eventsManager, dataStorage);
 
@@ -22,15 +23,17 @@ var Constructor = function (eventsManager, dataStorage) {
 	this._handleNewMessage = this._handleNewMessage.bind(this);
 };
 
-Constructor.prototype.setup = function (cypher) {
-	this._authenticationRoute.setup(cypher);
+Constructor.prototype.initialize = function () {
+	if (!this._initialized) {
+		this._initialized = true;
 
-	this._dataRouter.register('command', 'pong', this._pongRoute.execute);
-	this._dataRouter.register('command', 'authentication', this._authenticationRoute.execute);
-	this._dataRouter.register('command', 'reconnection', this._reconnectionRoute.execute);
-	this._dataRouter.register(this._unknownRoute.execute);
+		this._dataRouter.register('command', 'pong', this._pongRoute.execute);
+		this._dataRouter.register('command', 'authentication', this._authenticationRoute.execute);
+		this._dataRouter.register('command', 'reconnection', this._reconnectionRoute.execute);
+		this._dataRouter.register(this._unknownRoute.execute);
 
-	this._eventManager.on('socket.message', this._handleNewMessage);
+		this._eventManager.on('socket.message', this._handleNewMessage);
+	}
 };
 
 Constructor.prototype._handleNewMessage = function (socket, msg) {

@@ -1,10 +1,15 @@
 var sinon = require('sinon');
 
 describe('The Static Assets Route class', function () {
-	var StaticAssetsRoute, sandbox;
+	var StaticAssetsRoute, sandbox, config;
 
 	beforeEach(function () {
 		sandbox = sinon.sandbox.create();
+
+		config = {
+			statics: 'bogus'
+		};
+
 		StaticAssetsRoute = require('./../../../../../src/server/route/statics/static-assets-route');
 	});
 
@@ -17,13 +22,10 @@ describe('The Static Assets Route class', function () {
 	});
 
 	describe('as an instance', function () {
-		var instance, config;
+		var instance;
 
 		beforeEach(function () {
 			instance = new StaticAssetsRoute();
-			config = {
-				statics: 'bogus'
-			};
 			instance.setup(config);
 		});
 

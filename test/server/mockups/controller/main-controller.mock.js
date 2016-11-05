@@ -6,7 +6,7 @@ var Constructor = sinon.spy(function () {
 	_instance = this;
 });
 
-Constructor.prototype.initialize = function () {};
+Constructor.prototype.connect = function () {};
 
 Constructor.getInstance = function () {
 	return _instance;
@@ -18,6 +18,10 @@ Constructor.mockStart = function () {
 
 Constructor.mockStop = function () {
 	mock.stop('./../../../../src/server/controller/main-controller');
+	Constructor.restore();
+};
+
+Constructor.restore = function () {
 	Constructor.reset();
 };
 

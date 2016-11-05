@@ -8,14 +8,17 @@ describe('The Users Model Class', function () {
 
 	beforeEach(function () {
 		sandbox = sinon.sandbox.create();
+
 		Waterline.mockStart();
 		AbstractModel.mockStart();
+
 		UsersModel = require('./../../../../src/server/model/users-model');
 	});
 
 	afterEach(function () {
 		AbstractModel.mockStop();
 		Waterline.mockStop();
+
 		sandbox.restore();
 	});
 
@@ -52,23 +55,21 @@ describe('The Users Model Class', function () {
 				instance.setup(waterline);
 			});
 
-			it('should create the first default user when initializing', function (done) {
+			it('should create the first default user when initializing', function () {
 				var spy = sandbox.spy(instance, 'findOrCreate');
 				var defaultUser = defaultUsers[0];
 
-				instance.initialize().finally(function () {
+				return instance.initialize().then(function () {
 					spy.should.have.been.calledWith({username: defaultUser.username}, defaultUser);
-					done();
 				});
 			});
 
-			it('should create the second default user when initializing', function (done) {
+			it('should create the second default user when initializing', function () {
 				var spy = sandbox.spy(instance, 'findOrCreate');
 				var defaultUser = defaultUsers[1];
 
-				instance.initialize().finally(function () {
+				return instance.initialize().then(function () {
 					spy.should.have.been.calledWith({username: defaultUser.username}, defaultUser);
-					done();
 				});
 			});
 		});

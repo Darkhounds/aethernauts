@@ -6,18 +6,22 @@ var Constructor = sinon.spy(function () {
 	_instance = this;
 });
 
-Constructor.prototype.setup = function () {};
+Constructor.prototype.execute = function () {};
 
 Constructor.getInstance = function () {
 	return _instance;
 };
 
 Constructor.mockStart = function () {
-	mock('./../../../../src/server/route/data-router', Constructor);
+	mock('./../../../../../src/server/route/commands/reconnection-route', Constructor);
 };
 
 Constructor.mockStop = function () {
-	mock.stop('./../../../../src/server/route/data-router');
+	mock.stop('./../../../../../src/server/route/commands/reconnection-route');
+	Constructor.restore();
+};
+
+Constructor.restore = function () {
 	Constructor.reset();
 };
 

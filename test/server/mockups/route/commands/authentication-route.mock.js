@@ -14,11 +14,15 @@ Constructor.getInstance = function () {
 };
 
 Constructor.mockStart = function () {
-	mock('./../../../../../src/server/route/data/authentication-route', Constructor);
+	mock('./../../../../../src/server/route/commands/authentication-route', Constructor);
 };
 
 Constructor.mockStop = function () {
-	mock.stop('./../../../../../src/server/route/data/authentication-route');
+	mock.stop('./../../../../../src/server/route/commands/authentication-route');
+	Constructor.restore();
+};
+
+Constructor.restore = function () {
 	Constructor.reset();
 };
 

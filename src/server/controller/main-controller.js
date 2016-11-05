@@ -1,39 +1,33 @@
 var when = require('when');
 
-var EventManager = require('./../component/event-manager');
+var EventManager = require('./../service/event-manager');
 
 var WaterlineConfig = require('./../object/waterline-config');
 var ServerConfig = require('./../object/server-config');
-var Cypher = require('./../component/cypher');
-var DataStorage = require('./../component/data-storage');
+var Cypher = require('./../service/cypher');
+var DataStorage = require('./../service/data-storage');
 var UsersModel = require('./../model/users-model');
-var Connections = require('./../component/connections');
+var Connections = require('./../service/connections');
 
 var HTTPRequestRouter = require('./../route/http-request-router');
-var DataRouter = require('./../route/data-router');
+var CommandsRouter = require('./../route/commands-router');
 
 var ConnectionsController = require('./connections-controller');
 
-var Constructor = function () {
+var Constructor = function (port, root) {
+	this._waterlineConfig = new WaterlineConfig(root + '/data/');
+	this._serverConfig = new ServerConfig(root, port);
+
 	this._connections = new Connections();
 	this._eventManager = new EventManager();
-	this._initialized = false;
-};
 
-Constructor.prototype.initialize = function (port, root) {
-	if (!this._initialized) {
-		this._initialized = true;
-		this._waterlineConfig = new WaterlineConfig(root + '/data/');
-		this._serverConfig = new ServerConfig(root, port);
+	this._createCypher();
+	this._setupDataStorage();
+	this._setupHTTPRequestRouter();
+	this._setupCommandsRouter();
 
-		this._createCypher();
-		this._setupDataStorage();
-		this._setupHTTPRequestRouter();
-		this._setupDataRouter();
-
-		this._connectionsController = new ConnectionsController(this._eventManager, this._connections, this._cypher);
-		this._connectionsController.initialize();
-	}
+	this._connectionsController = new ConnectionsController(this._eventManager, this._connections, this._cypher);
+	this._connectionsController.initialize();
 };
 
 Constructor.prototype._createCypher = function ()  {
@@ -58,13 +52,13 @@ Constructor.prototype._setupDataStorage = function () {
 };
 
 Constructor.prototype._setupHTTPRequestRouter = function () {
-	this._httpRequestRouter = new HTTPRequestRouter(this._eventManager, this._dataStorage);
-	this._httpRequestRouter.setup(this._serverConfig, this._cypher);
+	this._httpRequestRouter = new HTTPRequestRouter(this._eventManager, this._dataStorage, this._cypher);
+	this._httpRequestRouter.setup(this._serverConfig);
 };
 
-Constructor.prototype._setupDataRouter = function () {
-	this._dataRouter = new DataRouter(this._eventManager, this._dataStorage);
-	this._dataRouter.setup(this._cypher);
+Constructor.prototype._setupCommandsRouter = function () {
+	this._commandsRouter = new CommandsRouter(this._eventManager, this._dataStorage, this._cypher);
+	this._commandsRouter.initialize();
 };
 
 Constructor.prototype.connect = function () {

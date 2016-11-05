@@ -1,20 +1,33 @@
 var sinon = require('sinon');
 
-var EventManager = require('./../../../mockups/component/event-manager.mock');
+var EventManager = require('./../../../mockups/service/event-manager.mock');
 var UsersModel = require('./../../../mockups/model/users-model.mock');
-var DataStorage = require('./../../../mockups/component/data-storage.mock');
+var DataStorage = require('./../../../mockups/service/data-storage.mock');
 
 describe('The Reconnection Route class', function () {
-	var ReconnectionRoute, sandbox;
-	var username =  'username';
-	var password = 'password';
-	var token = 'token';
+	var ReconnectionRoute, sandbox, username, password, token, eventManager, dataStorage, usersModel, user;
 
 	beforeEach(function () {
 		sandbox = sinon.sandbox.create();
-		ReconnectionRoute = require('./../../../../../src/server/route/data/reconnection-route');
+
+		username =  'username';
+		password = 'password';
+		token = 'token';
+
+		eventManager = new EventManager();
+		usersModel = new UsersModel();
+		dataStorage = new DataStorage();
+		dataStorage.getModel = function () {
+			return usersModel;
+		};
+
+		ReconnectionRoute = require('./../../../../../src/server/route/commands/reconnection-route');
 	});
+
 	afterEach(function () {
+		EventManager.restore();
+		UsersModel.restore();
+		DataStorage.restore();
 		sandbox.restore();
 	});
 
@@ -23,16 +36,10 @@ describe('The Reconnection Route class', function () {
 	});
 
 	describe('as an instance', function () {
-		var instance, eventManager, dataStorage, usersModel, user;
+		var instance;
 
 		beforeEach(function () {
 			user = { username: username, password: password, token: token};
-			eventManager = new EventManager();
-			usersModel = new UsersModel();
-			dataStorage = new DataStorage();
-			dataStorage.getModel = function () {
-				return usersModel;
-			};
 			instance = new ReconnectionRoute(eventManager, dataStorage);
 		});
 
@@ -40,7 +47,7 @@ describe('The Reconnection Route class', function () {
 			instance.should.be.an.instanceOf(ReconnectionRoute);
 		});
 
-		it('should send the expected message to the data socket when reconnection fails', function (done) {
+		it('should send the expected message to the data socket when reconnection fails', function () {
 			var expectedMessage = JSON.stringify({ command: 'reconnection', valid: false});
 			var spy = sandbox.spy();
 			var data = {
@@ -51,13 +58,12 @@ describe('The Reconnection Route class', function () {
 
 			UsersModel.addResponse(null, null);
 
-			instance.execute(data).finally(function () {
+			return instance.execute(data).then(function () {
 				spy.should.have.been.calledWith(expectedMessage);
-				done();
 			});
 		});
 
-		it('should send the expected message to the data socket when reconnection succeeds', function (done) {
+		it('should send the expected message to the data socket when reconnection succeeds', function () {
 			var expectedMessage = JSON.stringify({ command: 'reconnection', valid: true});
 			var spy = sandbox.spy();
 			var data = {
@@ -69,9 +75,8 @@ describe('The Reconnection Route class', function () {
 			UsersModel.addResponse(null, user);
 			UsersModel.addResponse(null, [user]);
 
-			instance.execute(data).finally(function () {
+			return instance.execute(data).then(function () {
 				spy.should.have.been.calledWith(expectedMessage);
-				done();
 			});
 		});
 	});

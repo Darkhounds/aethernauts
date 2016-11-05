@@ -14,15 +14,10 @@ Constructor.prototype.initialize = function () {
 };
 Constructor.prototype.setup = function () {};
 
-var _responses = [];
-Constructor.addResponse = function (error, data) {
-	_responses.push({ error: error, data: data });
-};
-
 var _createPromise = function () {
 	var response = _responses.length ? _responses.shift() : {};
-
 	return response.error ? when.reject(response.error) : when.resolve(response.data);
+
 };
 
 Constructor.getInstance = function () {
@@ -30,12 +25,23 @@ Constructor.getInstance = function () {
 };
 
 Constructor.mockStart = function () {
-	mock('./../../../../src/server/component/data-storage', Constructor);
+	mock('./../../../../src/server/service/data-storage', Constructor);
 };
 
 Constructor.mockStop = function () {
-	mock.stop('./../../../../src/server/component/data-storage');
+	mock.stop('./../../../../src/server/service/data-storage');
+	Constructor.restore()
+};
+
+var _responses = [];
+Constructor.addResponse = function (error, data) {
+	_responses.push({ error: error, data: data });
+};
+
+Constructor.restore = function () {
+	_responses.length = 0;
 	Constructor.reset();
 };
 
 module.exports = Constructor;
+

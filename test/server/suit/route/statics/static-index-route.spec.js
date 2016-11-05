@@ -1,10 +1,15 @@
 var sinon = require('sinon');
 
 describe('The Static Index Route class', function () {
-	var StaticIndexRoute, sandbox;
+	var StaticIndexRoute, sandbox, config;
 
 	beforeEach(function () {
 		sandbox = sinon.sandbox.create();
+
+		config = {
+			index: 'bogus'
+		};
+
 		StaticIndexRoute = require('./../../../../../src/server/route/statics/static-index-route');
 	});
 
@@ -17,12 +22,9 @@ describe('The Static Index Route class', function () {
 	});
 
 	describe('as an instance', function () {
-		var instance, config;
+		var instance;
 
 		beforeEach(function () {
-			config = {
-				index: 'bogus'
-			};
 			instance = new StaticIndexRoute();
 			instance.setup(config);
 		});

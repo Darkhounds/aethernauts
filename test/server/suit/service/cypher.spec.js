@@ -3,15 +3,17 @@ var md5 = require('md5');
 var btoa = require('abab').btoa;
 
 describe('The Cypher class', function () {
-	var Cypher;
+	var Cypher, config;
 
 	beforeEach(function () {
-		ServerConfig.mockStart();
-		Cypher = require('./../../../../src/server/component/cypher');
+		ServerConfig.setSecret('bogus');
+		config = new ServerConfig();
+
+		Cypher = require('./../../../../src/server/service/cypher');
 	});
 
 	afterEach(function () {
-		ServerConfig.mockStop();
+		ServerConfig.restore();
 	});
 
 	it('should be a function', function () {
@@ -45,11 +47,7 @@ describe('The Cypher class', function () {
 		});
 
 		describe('after setup', function () {
-			var config;
-
 			beforeEach(function () {
-				ServerConfig.setSecret('bogus');
-				config = new ServerConfig();
 				instance.setup(config);
 			});
 			

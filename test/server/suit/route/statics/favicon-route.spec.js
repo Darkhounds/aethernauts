@@ -1,12 +1,11 @@
 var sinon = require('sinon');
 
-// var ServerConfig = require('./../../../mockups/object/server-config.mock');
-
 describe('The Favicon Route class', function() {
 	var FaviconRoute, sandbox;
 
 	beforeEach(function () {
 		sandbox = sinon.sandbox.create();
+
 		FaviconRoute = require('./../../../../../src/server/route/statics/favicon-route');
 	});
 
@@ -37,6 +36,7 @@ describe('The Favicon Route class', function() {
 		it('should write to the response the expected code', function () {
 			var spy = sandbox.spy();
 			var res = {writeHead: spy, end: function () {}};
+
 			instance.execute({}, res);
 
 			spy.should.have.been.calledWith(200);
@@ -49,6 +49,7 @@ describe('The Favicon Route class', function() {
 			};
 			var spy = sandbox.spy();
 			var res = {writeHead: spy, end: function () {}};
+
 			instance.execute({}, res);
 
 			spy.getCall(0).args[1].should.eql(expected);
@@ -57,6 +58,7 @@ describe('The Favicon Route class', function() {
 		it('should end the response with the expected data', function () {
 			var spy = sandbox.spy();
 			var res = {writeHead: function () {}, end: spy};
+
 			instance.execute({}, res);
 
 			spy.should.have.been.calledWith(icon);

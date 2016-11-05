@@ -1,13 +1,10 @@
 var SocketEvent = require('./../../event/socket-event');
 
-var Constructor = function (eventManager, dataStorage) {
+var Constructor = function (eventManager, dataStorage, cypher) {
+	this._cypher = cypher;
 	this._eventManager = eventManager;
 	this._dataStorage = dataStorage;
 	this._usersModel = this._dataStorage.getModel('users');
-};
-
-Constructor.prototype.setup = function (cypher) {
-	this._cypher = cypher;
 };
 
 Constructor.prototype.execute = function (data) {

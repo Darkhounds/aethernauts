@@ -12,11 +12,6 @@ Constructor.prototype.initialize = function () {
 	return _createPromise();
 };
 
-var _responses = [];
-Constructor.addResponse = function (error, data) {
-	_responses.push({ error: error, data: data });
-};
-
 var _createPromise = function () {
 	var response = _responses.length ? _responses.shift() : {};
 
@@ -33,6 +28,16 @@ Constructor.mockStart = function () {
 
 Constructor.mockStop = function () {
 	mock.stop('./../../../../src/server/route/http-request-router');
+	Constructor.restore();
+};
+
+var _responses = [];
+Constructor.addResponse = function (error, data) {
+	_responses.push({ error: error, data: data });
+};
+
+Constructor.restore = function () {
+	_responses.length = 0;
 	Constructor.reset();
 };
 

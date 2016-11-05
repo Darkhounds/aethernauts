@@ -6,14 +6,18 @@ describe('The Server Config class', function () {
 
 	beforeEach(function () {
 		sandbox = sinon.sandbox.create();
+
 		root = 'root';
 		port = '3000';
+
 		fs.mockStart();
+
 		ServerConfig = require('./../../../../src/server/object/server-config');
 	});
 
 	afterEach(function () {
 		fs.mockStop();
+
 		sandbox.restore();
 	});
 
@@ -28,7 +32,7 @@ describe('The Server Config class', function () {
 
 		var instance = new ServerConfig(root, port);
 
-		spy.should.have.been.calledWith(expectedWarning).once;
+		spy.should.have.been.calledWith(expectedWarning);
 	});
 
 	it('should output a warning when failing to load the secret data file', function () {
@@ -38,7 +42,7 @@ describe('The Server Config class', function () {
 
 		var instance = new ServerConfig(root, port);
 
-		spy.should.have.been.calledWith(expectedWarning).once;
+		spy.should.have.been.calledWith(expectedWarning);
 	});
 
 	describe('as an instance', function () {

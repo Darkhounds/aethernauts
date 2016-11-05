@@ -24,8 +24,12 @@ Constructor.mockStart = function () {
 
 Constructor.mockStop = function () {
 	mock.stop('./../../../../src/server/model/users-model');
+	Constructor.restore();
+};
+
+Constructor.restore = function () {
+	AbstractModel.restore();
 	Constructor.reset();
-	AbstractModel._resetResponses();
 };
 
 module.exports = Constructor;

@@ -10,8 +10,6 @@ describe('The Main View class', function () {
 
 	beforeEach(function() {
 		sandbox = sinon.sandbox.create();
-		ConnectionService.mockStart();
-		BroadcasterService.mockStart();
 		AuthenticationController.mockStart();
 		NotificationController.mockStart();
 		MainView = require('./../../../../src/client/js/view/main-view');
@@ -22,8 +20,6 @@ describe('The Main View class', function () {
 	afterEach(function() {
 		NotificationController.mockStop();
 		AuthenticationController.mockStop();
-		BroadcasterService.mockStop();
-		ConnectionService.mockStop();
 		sandbox.restore();
 	});
 

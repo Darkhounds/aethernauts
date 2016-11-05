@@ -19,19 +19,23 @@ Constructor.mockStart = function () {
 
 Constructor.mockStop = function () {
 	mock.stop('./../../../../src/server/object/server-config');
-	Constructor.reset();
-	_defaultUsers = null;
-	_secret = null;
+	Constructor.restore();
 };
+var _defaultUsers = null;
 
-var _defaultUsers = null; 
 Constructor.setDefaultUsers = function (defaultUsers) {
 	_defaultUsers = defaultUsers;
 };
-
 var _secret = null;
+
 Constructor.setSecret = function (secret) {
 	_secret = secret;
+};
+
+Constructor.restore = function () {
+	_defaultUsers = null;
+	_secret = null;
+	Constructor.reset();
 };
 
 module.exports = Constructor;
