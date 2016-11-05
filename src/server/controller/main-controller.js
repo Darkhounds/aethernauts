@@ -1,13 +1,13 @@
 var when = require('when');
 
-var EventManager = require('./../component/event-manager');
+var EventManager = require('./../service/event-manager');
 
 var WaterlineConfig = require('./../object/waterline-config');
 var ServerConfig = require('./../object/server-config');
-var Cypher = require('./../component/cypher');
-var DataStorage = require('./../component/data-storage');
+var Cypher = require('./../service/cypher');
+var DataStorage = require('./../service/data-storage');
 var UsersModel = require('./../model/users-model');
-var Connections = require('./../component/connections');
+var Connections = require('./../service/connections');
 
 var HTTPRequestRouter = require('./../route/http-request-router');
 var CommandsRouter = require('./../route/commands-router');

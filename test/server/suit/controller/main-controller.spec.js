@@ -1,11 +1,11 @@
 var sinon = require('sinon');
 
-var EventManager = require('./../../mockups/component/event-manager.mock');
+var EventManager = require('./../../mockups/service/event-manager.mock');
 
 var WaterlineConfig = require('./../../mockups/object/waterline-config.mock');
 var ServerConfig = require('./../../mockups/object/server-config.mock');
-var Cypher = require('./../../mockups/component/cypher.mock');
-var DataStorage = require('./../../mockups/component/data-storage.mock');
+var Cypher = require('./../../mockups/service/cypher.mock');
+var DataStorage = require('./../../mockups/service/data-storage.mock');
 var UsersModel = require('./../../mockups/model/users-model.mock');
 
 var HTTPRequestRouter = require('./../../mockups/route/http-request-router.mock');

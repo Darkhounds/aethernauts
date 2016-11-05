@@ -1,5 +1,6 @@
 var expect = require('chai').expect;
 var sinon = require('sinon');
+
 var Socket = require('./../../mockups/socket.mock');
 
 describe('The Connections class', function () {
@@ -7,7 +8,8 @@ describe('The Connections class', function () {
 
 	beforeEach(function () {
 		sandbox = sinon.sandbox.create();
-		Connections = require('./../../../../src/server/component/connections');
+
+		Connections = require('./../../../../src/server/service/connections');
 	});
 
 	afterEach(function () {

@@ -24,14 +24,12 @@ Constructor.getInstance = function () {
 };
 
 Constructor.mockStart = function () {
-	mock('./../../../../src/server/component/connections', Constructor);
+	mock('./../../../../src/server/service/connections', Constructor);
 };
 
 Constructor.mockStop = function () {
-	mock.stop('./../../../../src/server/component/connections');
-	Constructor.reset();
-	_responses.length = 0;
-	_connections.length = 0;
+	mock.stop('./../../../../src/server/service/connections');
+	Constructor.restore();
 };
 
 var _responses = [];
@@ -42,6 +40,12 @@ Constructor.addResponse = function (response) {
 var _connections = {};
 Constructor.addConnection = function (id, connection) {
 	_connections[id] = connection;
+};
+
+Constructor.restore = function () {
+	_responses.length = 0;
+	_connections = {};
+	Constructor.reset();
 };
 
 module.exports = Constructor;

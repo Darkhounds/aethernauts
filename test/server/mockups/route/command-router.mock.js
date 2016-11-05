@@ -18,6 +18,10 @@ Constructor.mockStart = function () {
 
 Constructor.mockStop = function () {
 	mock.stop('./../../../../src/server/route/commands-router');
+	Constructor.restore();
+};
+
+Constructor.restore = function () {
 	Constructor.reset();
 };
 

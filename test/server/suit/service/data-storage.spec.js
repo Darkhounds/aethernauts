@@ -8,15 +8,18 @@ describe('The Data Storage class', function () {
 	var DataStorage, sandbox, config;
 
 	beforeEach(function () {
-		config = new WaterlineConfig();
 		sandbox = sinon.sandbox.create();
+
+		config = new WaterlineConfig();
 		Waterline.mockStart();
-		DataStorage = require('./../../../../src/server/component/data-storage');
+
+		DataStorage = require('./../../../../src/server/service/data-storage');
 	});
 	
 	afterEach(function () {
-		DataStorage = null;
 		Waterline.mockStop();
+
+		WaterlineConfig.restore();
 		sandbox.restore();
 	});
 
@@ -25,11 +28,10 @@ describe('The Data Storage class', function () {
 	});
 
 	describe('as an instance', function () {
-		var instance, spy;
+		var instance;
 
 		beforeEach(function () {
 			instance = new DataStorage();
-			spy = sandbox.spy();
 		});
 
 		it('should be an instance of DataStorage', function () {
@@ -39,11 +41,10 @@ describe('The Data Storage class', function () {
 		it('should setup the model being added', function () {
 			var spy = sandbox.spy();
 			var model = { setup: spy };
-			var waterline = Waterline.getInstance();
 
 			instance.addModel('bogus', model);
 
-			spy.should.have.been.calledWith(waterline);
+			spy.should.have.been.calledWith(Waterline.getInstance());
 		});
 
 		it('should return the expected model', function () {

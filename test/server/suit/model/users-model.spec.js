@@ -8,14 +8,17 @@ describe('The Users Model Class', function () {
 
 	beforeEach(function () {
 		sandbox = sinon.sandbox.create();
+
 		Waterline.mockStart();
 		AbstractModel.mockStart();
+
 		UsersModel = require('./../../../../src/server/model/users-model');
 	});
 
 	afterEach(function () {
 		AbstractModel.mockStop();
 		Waterline.mockStop();
+
 		sandbox.restore();
 	});
 

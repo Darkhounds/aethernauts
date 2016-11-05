@@ -24,6 +24,10 @@ Constructor.mockStart = function () {
 
 Constructor.mockStop = function () {
 	mock.stop('./../../../../src/server/object/waterline-config');
+	Constructor.restore();
+};
+
+Constructor.restore = function () {
 	Constructor.reset();
 };
 

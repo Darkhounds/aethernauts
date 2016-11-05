@@ -14,11 +14,15 @@ Constructor.getInstance = function () {
 };
 
 Constructor.mockStart = function () {
-	mock('./../../../../src/server/component/event-manager', Constructor);
+	mock('./../../../../src/server/service/event-manager', Constructor);
 };
 
 Constructor.mockStop = function () {
-	mock.stop('./../../../../src/server/component/event-manager');
+	mock.stop('./../../../../src/server/service/event-manager');
+	Constructor.restore();
+};
+
+Constructor.restore = function () {
 	Constructor.reset();
 };
 

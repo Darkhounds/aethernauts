@@ -1,22 +1,37 @@
 var sinon = require('sinon');
 
-var EventManager = require('./../../mockups/component/event-manager.mock');
-var Connections = require('./../../mockups/component/connections.mock');
-var Cypher = require('./../../mockups/component/cypher.mock');
+var EventManager = require('./../../mockups/service/event-manager.mock');
+var Connections = require('./../../mockups/service/connections.mock');
+var Cypher = require('./../../mockups/service/cypher.mock');
 var Socket = require('./../../mockups/socket.mock');
 
 var SocketEvent = require('./../../../../src/server/event/socket-event');
 
 describe('The Connections Controller class', function () {
-	var ConnectionsController, sandbox, clock;
+	var ConnectionsController, sandbox, clock, eventManager, connections, cypher, socket, username, user;
 
 	beforeEach(function () {
 		sandbox = sinon.sandbox.create();
 		clock = sandbox.useFakeTimers();
+
+		eventManager = new EventManager();
+		connections = new Connections();
+		cypher = new Cypher();
+		socket = new Socket();
+
+		username = 'bogus';
+		user = {
+			username: username
+		};
+		socket.user = user;
+
 		ConnectionsController = require('./../../../../src/server/controller/connections-controller');
 	});
 
 	afterEach(function () {
+		EventManager.restore();
+		Connections.restore();
+		Cypher.restore();
 		sandbox.restore();
 	});
 
@@ -25,12 +40,9 @@ describe('The Connections Controller class', function () {
 	});
 
 	describe('as an instance', function () {
-		var instance, eventManager, connections, cypher;
+		var instance;
 
 		beforeEach(function () {
-			eventManager = new EventManager();
-			connections = new Connections();
-			cypher = new Cypher();
 			instance = new ConnectionsController(eventManager, connections, cypher);
 		});
 
@@ -55,16 +67,9 @@ describe('The Connections Controller class', function () {
 			spy.should.have.been.calledOnce;
 		});
 
-		describe('after the setup', function () {
-			var socket, username, user;
+		describe('after initialing', function () {
 
 			beforeEach(function () {
-				username = 'bogus';
-				user = {
-					username: username
-				};
-				socket = new Socket();
-				socket.user = user;
 				instance.initialize();
 			});
 
@@ -140,7 +145,7 @@ describe('The Connections Controller class', function () {
 			});
 
 			it('should not check existing connections before expected delay', function () {
-				var spy = sandbox.spy(connections, 'forEach');
+				var spy = sandbox.stub(connections, 'forEach');
 				var beforeTrigger = (ConnectionsController.SOCKET_CHECK_INTERVAL * 1000) - 1;
 
 				clock.tick(beforeTrigger);
@@ -148,8 +153,8 @@ describe('The Connections Controller class', function () {
 				spy.should.not.have.been.called;
 			});
 
-			it('should check existing connections before expected delay', function () {
-				var spy = sandbox.spy(connections, 'forEach');
+			it('should check existing connections after expected delay', function () {
+				var spy = sandbox.stub(connections, 'forEach');
 				var afterTrigger = (ConnectionsController.SOCKET_CHECK_INTERVAL * 1000);
 
 				clock.tick(afterTrigger);
@@ -169,7 +174,7 @@ describe('The Connections Controller class', function () {
 				Connections.addConnection('bogus3', connection3);
 				clock.tick(afterTrigger);
 
-				spy.should.have.been.calledWith(JSON.stringify({command: 'ping'})).calledThrice;
+				spy.should.have.been.calledWith(JSON.stringify({command: 'ping'}));
 			});
 
 			it('should emit a close event on a connection when it timesout', function () {

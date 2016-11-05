@@ -1,9 +1,8 @@
 var sinon = require('sinon');
 
-var Cypher = require('./../../../mockups/component/cypher.mock');
-
+var Cypher = require('./../../../mockups/service/cypher.mock');
 var UsersModel = require('./../../../mockups/model/users-model.mock');
-var DataStorage = require('./../../../mockups/component/data-storage.mock');
+var DataStorage = require('./../../../mockups/service/data-storage.mock');
 
 describe('The Register Route class', function () {
 	var RegisterRoute, sandbox, email, username, password, character, token, dataStorage, cypher, usersModel, config, req;
@@ -34,16 +33,13 @@ describe('The Register Route class', function () {
 			}
 		};
 
-		DataStorage.mockStart();
-		UsersModel.mockStart();
-
 		RegisterRoute = require('./../../../../../src/server/route/statics/register-route');
 	});
 
 	afterEach(function () {
-		UsersModel.mockStop();
-		DataStorage.mockStart();
-
+		DataStorage.restore();
+		Cypher.restore();
+		UsersModel.restore();
 		sandbox.restore();
 	});
 
@@ -72,7 +68,7 @@ describe('The Register Route class', function () {
 				type: 'user',
 				token: 'bogus'
 			};
-			var spy = sandbox.spy(UsersModel.getInstance(), 'create');
+			var spy = sandbox.spy(usersModel, 'create');
 			var res = {
 				end: function () {}
 			};
@@ -81,7 +77,7 @@ describe('The Register Route class', function () {
 			UsersModel.addResponse(null, []);
 			UsersModel.addResponse(null, {token: token});
 
-			return instance.execute(req, res).finally(function () {
+			return instance.execute(req, res).then(function () {
 				spy.should.have.been.calledWith(expectedData);
 			});
 		});

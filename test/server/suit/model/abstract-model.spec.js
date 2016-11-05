@@ -7,11 +7,14 @@ describe('The Abstract Model Class', function () {
 
 	beforeEach(function () {
 		sandbox = sinon.sandbox.create();
+
 		Waterline.mockStart();
+
 		Abstract = require('./../../../../src/server/model/abstract-model');
 	});
 	afterEach(function () {
 		Waterline.mockStop();
+
 		sandbox.restore();
 	});
 

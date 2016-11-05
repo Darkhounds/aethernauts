@@ -19,6 +19,10 @@ Constructor.mockStart = function () {
 
 Constructor.mockStop = function () {
 	mock.stop('./../../../../../src/server/route/statics/register-route');
+	Constructor.restore();
+};
+
+Constructor.restore = function () {
 	Constructor.reset();
 };
 

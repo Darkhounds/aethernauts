@@ -2,7 +2,7 @@ describe ('The Event Manager class', function () {
 	var EventManager;
 
 	beforeEach(function () {
-		EventManager = require('./../../../../src/server/component/event-manager');
+		EventManager = require('./../../../../src/server/service/event-manager');
 	});
 
 	it('should be a function', function () {

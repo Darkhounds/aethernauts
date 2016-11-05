@@ -18,6 +18,10 @@ Constructor.mockStart = function () {
 
 Constructor.mockStop = function () {
 	mock.stop('./../../../../../src/server/route/commands/pong-route');
+	Constructor.restore();
+};
+
+Constructor.restore = function () {
 	Constructor.reset();
 };
 

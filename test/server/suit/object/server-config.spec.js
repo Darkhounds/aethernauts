@@ -6,14 +6,18 @@ describe('The Server Config class', function () {
 
 	beforeEach(function () {
 		sandbox = sinon.sandbox.create();
+
 		root = 'root';
 		port = '3000';
+
 		fs.mockStart();
+
 		ServerConfig = require('./../../../../src/server/object/server-config');
 	});
 
 	afterEach(function () {
 		fs.mockStop();
+
 		sandbox.restore();
 	});
 

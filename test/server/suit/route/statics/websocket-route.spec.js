@@ -1,7 +1,7 @@
 var sinon = require('sinon');
 
 var Socket = require('./../../../mockups/socket.mock');
-var EventManager = require('./../../../mockups/component/event-manager.mock');
+var EventManager = require('./../../../mockups/service/event-manager.mock');
 
 var SocketEvent = require('./../../../../../src/server/event/socket-event');
 
@@ -17,6 +17,7 @@ describe('The Websocket Route class', function () {
 	});
 
 	afterEach(function () {
+		EventManager.restore();
 		sandbox.restore();
 	});
 

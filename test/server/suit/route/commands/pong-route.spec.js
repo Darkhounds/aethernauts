@@ -1,20 +1,25 @@
 var sinon = require('sinon');
 
-var EventManager = require('./../../../mockups/component/event-manager.mock');
+var EventManager = require('./../../../mockups/service/event-manager.mock');
 var Socket = require('./../../../mockups/socket.mock');
 
 var SocketEvent = require('./../../../../../src/server/event/socket-event');
 
 describe('The Pong Route class', function() {
-	var PongRoute, sandbox;
+	var PongRoute, sandbox, eventManager, socket;
 
 	beforeEach(function () {
 		sandbox = sinon.sandbox.create();
+
+		socket = new Socket();
+		eventManager = new EventManager();
 
 		PongRoute = require('./../../../../../src/server/route/commands/pong-route');
 	});
 
 	afterEach(function () {
+		EventManager.restore();
+
 		sandbox.restore();
 	});
 
@@ -23,11 +28,9 @@ describe('The Pong Route class', function() {
 	});
 
 	describe('as an instance', function () {
-		var instance, eventManager, socket;
+		var instance;
 
 		beforeEach(function () {
-			socket = new Socket();
-			eventManager = new EventManager();
 			instance = new PongRoute(eventManager);
 		});
 

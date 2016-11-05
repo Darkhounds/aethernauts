@@ -1,9 +1,10 @@
 var sinon = require('sinon');
 
 var Socket = require('./../../mockups/socket.mock');
-var EventManager = require('./../../mockups/component/event-manager.mock');
-var DataStorage = require('./../../mockups/component/data-storage.mock');
-var Cypher = require('./../../mockups/component/cypher.mock');
+
+var EventManager = require('./../../mockups/service/event-manager.mock');
+var DataStorage = require('./../../mockups/service/data-storage.mock');
+var Cypher = require('./../../mockups/service/cypher.mock');
 var UsersModel = require('./../../mockups/model/users-model.mock');
 var DataRouter = require('./../../mockups/data-router.mock');
 
@@ -45,6 +46,10 @@ describe('The Commands Router class', function () {
 		AuthenticationRoute.mockStop();
 		PongRoute.mockStop();
 
+		EventManager.restore();
+		DataStorage.restore();
+		Cypher.restore();
+		UsersModel.restore();
 		sandbox.restore();
 	});
 

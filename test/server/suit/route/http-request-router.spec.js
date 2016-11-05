@@ -2,9 +2,10 @@ var sinon = require('sinon');
 
 var express = require('./../../mockups/express.mock');
 var expressWs = require('./../../mockups/express-ws.mock');
-var EventManager = require('./../../mockups/component/event-manager.mock');
-var DataStorage = require('./../../mockups/component/data-storage.mock');
-var Cypher = require('./../../mockups/component/cypher.mock');
+
+var EventManager = require('./../../mockups/service/event-manager.mock');
+var DataStorage = require('./../../mockups/service/data-storage.mock');
+var Cypher = require('./../../mockups/service/cypher.mock');
 var ServerConfig = require('./../../mockups/object/server-config.mock');
 
 var RegisterRoute = require('./../../mockups/route/statics/register-route.mock');
@@ -52,6 +53,10 @@ describe('The HTTP Request Router class', function () {
 		expressWs.mockStop();
 		express.mockStop();
 
+		EventManager.restore();
+		DataStorage.restore();
+		Cypher.restore();
+		ServerConfig.restore();
 		sandbox.restore();
 	});
 

@@ -25,18 +25,22 @@ Constructor.getInstance = function () {
 };
 
 Constructor.mockStart = function () {
-	mock('./../../../../src/server/component/cypher', Constructor);
+	mock('./../../../../src/server/service/cypher', Constructor);
 };
 
 Constructor.mockStop = function () {
-	mock.stop('./../../../../src/server/component/cypher');
-	Constructor.reset();
-	_responses.length = 0;
+	mock.stop('./../../../../src/server/service/cypher');
+	Constructor.restore();
 };
 
 var _responses = [];
 Constructor.addResponse = function (response) {
 	_responses.push(response);
+};
+
+Constructor.restore = function () {
+	_responses.length = 0;
+	Constructor.reset();
 };
 
 module.exports = Constructor;

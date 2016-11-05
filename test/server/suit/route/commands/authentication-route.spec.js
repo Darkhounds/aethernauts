@@ -1,9 +1,9 @@
 var sinon = require('sinon');
 
-var Cypher = require('./../../../mockups/component/cypher.mock');
-var EventManager = require('./../../../mockups/component/event-manager.mock');
+var Cypher = require('./../../../mockups/service/cypher.mock');
+var EventManager = require('./../../../mockups/service/event-manager.mock');
 var UsersModel = require('./../../../mockups/model/users-model.mock');
-var DataStorage = require('./../../../mockups/component/data-storage.mock');
+var DataStorage = require('./../../../mockups/service/data-storage.mock');
 
 describe('The Authentication Route class', function() {
 	var AuthenticationRoute, sandbox, username, password, token, user, eventManager, dataStorage, usersModel, cypher;
@@ -14,10 +14,12 @@ describe('The Authentication Route class', function() {
 		username =  'username';
 		password = 'password';
 		token = 'token';
+
 		eventManager = new EventManager();
 		dataStorage = new DataStorage();
 		usersModel = new UsersModel();
 		cypher = new Cypher();
+
 		dataStorage.getModel = function () {
 			return usersModel;
 		};
@@ -27,6 +29,10 @@ describe('The Authentication Route class', function() {
 	});
 
 	afterEach(function () {
+		EventManager.restore();
+		DataStorage.restore();
+		UsersModel.restore();
+		Cypher.restore();
 		sandbox.restore();
 	});
 

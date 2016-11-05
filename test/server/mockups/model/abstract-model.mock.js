@@ -39,15 +39,10 @@ Constructor.prototype.query = function () {
 
 Constructor.prototype.initialize = function () {};
 
-var _responses = [];
-Constructor.addResponse = function (error, data) {
-	_responses.push({ error: error, data: data });
-};
-
 var _createPromise = function () {
 	var response = _responses.length ? _responses.shift() : {};
-
 	return response.error ? when.reject(response.error) : when.resolve(response.data);
+
 };
 
 Constructor.getInstance = function () {
@@ -61,11 +56,17 @@ Constructor.mockStart = function () {
 Constructor.mockStop = function () {
 	mock.stop('./../../../../src/server/model/abstract-model');
 	Constructor.reset();
-	this._resetResponses();
+	Constructor.restore();
 };
 
-Constructor._resetResponses = function () {
+var _responses = [];
+Constructor.addResponse = function (error, data) {
+	_responses.push({ error: error, data: data });
+};
+
+Constructor.restore = function () {
 	_responses.length = 0;
+	Constructor.reset();
 };
 
 module.exports = Constructor;

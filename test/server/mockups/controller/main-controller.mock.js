@@ -18,6 +18,10 @@ Constructor.mockStart = function () {
 
 Constructor.mockStop = function () {
 	mock.stop('./../../../../src/server/controller/main-controller');
+	Constructor.restore();
+};
+
+Constructor.restore = function () {
 	Constructor.reset();
 };
 
