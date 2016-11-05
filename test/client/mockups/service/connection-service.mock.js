@@ -9,9 +9,7 @@ var Constructor = sinon.spy(function () {
 });
 util.inherits(Constructor, EventEmitter);
 
-Constructor.prototype.setup = function (url) {
-	this._url = url;
-};
+Constructor.prototype.setup = function () {};
 
 Constructor.prototype.open = function () {};
 
@@ -25,11 +23,15 @@ Constructor.mockStart = function () {
 
 Constructor.mockStop = function () {
 	mock.stop('./../../../../src/client/js/service/connection-service');
-	Constructor.reset();
+	Constructor.restore();
 };
 
 Constructor.getInstance = function () {
 	return _instance;
+};
+
+Constructor.restore = function () {
+	Constructor.reset();
 };
 
 module.exports = Constructor;

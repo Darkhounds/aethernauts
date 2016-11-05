@@ -15,10 +15,14 @@ Constructor.mockStart = function () {
 };
 Constructor.mockStop = function () {
 	mock.stop('./../../../../src/client/js/view/main-view');
-	Constructor.reset();
+	Constructor.restore();
 };
 Constructor.getInstance = function () {
 	return _instance;
+};
+
+Constructor.restore = function () {
+	Constructor.reset();
 };
 
 module.exports = Constructor;

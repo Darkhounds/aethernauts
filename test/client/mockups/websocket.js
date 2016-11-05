@@ -39,11 +39,15 @@ var _websocket;
 Constructor.mockStop = function () {
 	global.WebSocket = _websocket;
 	window.WebSocket = _websocket;
-	Constructor.reset();
+	Constructor.restore();
 };
 
 Constructor.getInstance = function () {
 	return _instance;
+};
+
+Constructor.restore = function () {
+	Constructor.reset();
 };
 
 module.exports = Constructor;
