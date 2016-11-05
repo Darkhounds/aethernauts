@@ -1,14 +1,18 @@
 var sinon = require('sinon');
 
-var ConnectionEvent = require('./../../../../src/client/js/event/connection-event');
-var Websocket = require('./../../mockups/websocket');
 var XMLHttpRequest = require('./../../mockups/http-request');
+var Websocket = require('./../../mockups/websocket');
 var Cypher = require('./../../mockups/util/cypher.mock');
+
+var ConnectionEvent = require('./../../../../src/client/js/event/connection-event');
 
 describe('The Connection Service class', function () {
 	var ConnectionService, sandbox, clock, url, email, username, password, character, token, mask, timeout, handshakeData;
 
 	beforeEach(function() {
+		sandbox = sinon.sandbox.create();
+		clock = sandbox.useFakeTimers();
+
 		url = 'localhost:3001/server';
 		email = 'something@somewhere.com';
 		username = 'foo';
@@ -17,12 +21,12 @@ describe('The Connection Service class', function () {
 		token = 'bogus';
 		mask = 'bogus';
 		timeout = 10;
-		sandbox = sinon.sandbox.create();
-		clock = sandbox.useFakeTimers();
 		handshakeData = {data: JSON.stringify({command: 'handshake', mask: mask, timeout: timeout})};
+
 		Websocket.mockStart();
 		XMLHttpRequest.mockStart();
 		Cypher.mockStart();
+
 		ConnectionService = require('./../../../../src/client/js/service/connection-service');
 	});
 
@@ -30,6 +34,7 @@ describe('The Connection Service class', function () {
 		Cypher.mockStop();
 		XMLHttpRequest.mockStop();
 		Websocket.mockStop();
+
 		sandbox.restore();
 	});
 
@@ -421,6 +426,14 @@ describe('The Connection Service class', function () {
 					clock.tick(timeout * 1000 * 2);
 
 					spy.should.have.been.calledOnce;
+				});
+				
+				it('should clear the timeout when connection closes', function () {
+					var spy = sandbox.spy(global, 'clearTimeout');
+					
+					instance.close();
+
+					spy.should.have.been.called;
 				});
 			});
 		});

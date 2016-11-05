@@ -1,5 +1,6 @@
 var util = require('util');
 var EventEmitter = require('events').EventEmitter;
+
 var ConnectionEvent = require('./../event/connection-event');
 var Cypher = require('./../util/cypher');
 
@@ -219,6 +220,7 @@ Constructor.prototype.send = function (data, id) {
 };
 
 Constructor.prototype.close = function () {
+	clearTimeout(this._timeoutInterval);
 	this._destroyConnection();
 	this._username = '';
 	this._token = '';
