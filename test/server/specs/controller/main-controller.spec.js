@@ -1,12 +1,14 @@
 var sinon = require('sinon');
 
+var Cypher = require('./../../mockups/service/cypher.mock');
 var EventManager = require('./../../mockups/service/event-manager.mock');
+var Sessions = require('./../../mockups/service/sessions.mock');
 
 var WaterlineConfig = require('./../../mockups/object/waterline-config.mock');
 var ServerConfig = require('./../../mockups/object/server-config.mock');
-var Cypher = require('./../../mockups/service/cypher.mock');
 var DataStorage = require('./../../mockups/service/data-storage.mock');
 var UsersModel = require('./../../mockups/model/users-model.mock');
+var SessionsController = require('./../../mockups/controller/sessions-controller.mock');
 
 var HTTPRequestRouter = require('./../../mockups/route/http-request-router.mock');
 var CommandRouter = require('./../../mockups/route/command-router.mock');
@@ -21,27 +23,31 @@ describe('The Main Controller class', function () {
 		root = 'bogus';
 		consoleLog = sandbox.stub(console, 'log');
 
+		Cypher.mockStart();
 		EventManager.mockStart();
+		Sessions.mockStart();
 		WaterlineConfig.mockStart();
 		ServerConfig.mockStart();
-		Cypher.mockStart();
 		DataStorage.mockStart();
 		UsersModel.mockStart();
 		HTTPRequestRouter.mockStart();
 		CommandRouter.mockStart();
+		SessionsController.mockStart();
 
 		MainController = require('./../../../../src/server/controller/main-controller');
 	});
 
 	afterEach(function () {
+		SessionsController.mockStop()
 		CommandRouter.mockStop();
 		HTTPRequestRouter.mockStop();
 		UsersModel.mockStop();
 		DataStorage.mockStop();
-		Cypher.mockStop();
 		ServerConfig.mockStop();
 		WaterlineConfig.mockStop();
+		Sessions.mockStop();
 		EventManager.mockStop();
+		Cypher.mockStop();
 
 		sandbox.restore();
 	});
@@ -92,6 +98,12 @@ describe('The Main Controller class', function () {
 		var instance = new MainController(port, root);
 
 		ServerConfig.should.have.been.calledWith(root, port);
+	});
+
+	it('should create a new Cypher', function () {
+		var instance = new MainController(port, root);
+
+		Cypher.should.have.been.calledOnce;
 	});
 
 	it('should create a new Cypher', function () {

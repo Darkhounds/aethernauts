@@ -7,8 +7,8 @@ var Socket = require('./../../mockups/socket.mock');
 
 var SocketEvent = require('./../../../../src/server/event/socket-event');
 
-describe('The Connections Controller class', function () {
-	var ConnectionsController, sandbox, clock, eventManager, sessions, cypher, socket, username, user;
+describe('The Sessions Controller class', function () {
+	var SessionsController, sandbox, clock, eventManager, sessions, cypher, socket, username, user;
 
 	beforeEach(function () {
 		sandbox = sinon.sandbox.create();
@@ -25,7 +25,7 @@ describe('The Connections Controller class', function () {
 		};
 		socket.user = user;
 
-		ConnectionsController = require('./../../../../src/server/controller/connections-controller');
+		SessionsController = require('./../../../../src/server/controller/sessions-controller');
 	});
 
 	afterEach(function () {
@@ -36,18 +36,18 @@ describe('The Connections Controller class', function () {
 	});
 
 	it('should be a function', function () {
-		ConnectionsController.should.be.a('function');
+		SessionsController.should.be.a('function');
 	});
 
 	describe('as an instance', function () {
 		var instance;
 
 		beforeEach(function () {
-			instance = new ConnectionsController(eventManager, sessions, cypher);
+			instance = new SessionsController(eventManager, sessions, cypher);
 		});
 
 		it('should be an instance of the ConnectionsController class', function () {
-			instance.should.be.an.instanceOf(ConnectionsController);
+			instance.should.be.an.instanceOf(SessionsController);
 		});
 
 		it('should initiate a timer on initializatio', function () {
@@ -55,7 +55,7 @@ describe('The Connections Controller class', function () {
 
 			instance.initialize();
 
-			spy.getCall(0).args[1].should.equal(ConnectionsController.SOCKET_CHECK_INTERVAL * 1000);
+			spy.getCall(0).args[1].should.equal(SessionsController.SOCKET_CHECK_INTERVAL * 1000);
 		});
 
 		it('should not initialize more then once', function () {
@@ -86,7 +86,7 @@ describe('The Connections Controller class', function () {
 			it('should send the expected message to the socket after opening a new connection', function () {
 				var spy = sandbox.spy(socket, 'send');
 				var mask = 'bogus';
-				var data = {command: 'handshake', mask: mask, timeout: ConnectionsController.SOCKET_CHECK_INTERVAL};
+				var data = {command: 'handshake', mask: mask, timeout: SessionsController.SOCKET_CHECK_INTERVAL};
 				var expectedMessage = JSON.stringify(data);
 
 				sandbox.stub(console, 'log');
@@ -105,13 +105,13 @@ describe('The Connections Controller class', function () {
 			});
 
 			it('should change the connection checked state to true after a pong message', function () {
-				var connection = {};
+				var session = {};
 
-				Sessions.addResponse(connection);
+				Sessions.addResponse(session);
 
 				eventManager.emit(SocketEvent.PONG, socket);
 
-				connection.checked.should.be.true;
+				session.checked.should.be.true;
 			});
 
 			it('should output a log message when receiving a regular message', function () {
@@ -135,7 +135,7 @@ describe('The Connections Controller class', function () {
 				spy.should.not.have.been.called;
 			});
 
-			it('should unregister a connection when it closes', function () {
+			it('should unregister a session when it closes', function () {
 				var spy = sandbox.spy(sessions, 'remove');
 
 				sandbox.stub(console, 'log');
@@ -146,7 +146,7 @@ describe('The Connections Controller class', function () {
 
 			it('should not check existing sessions before expected delay', function () {
 				var spy = sandbox.stub(sessions, 'forEach');
-				var beforeTrigger = (ConnectionsController.SOCKET_CHECK_INTERVAL * 1000) - 1;
+				var beforeTrigger = (SessionsController.SOCKET_CHECK_INTERVAL * 1000) - 1;
 
 				clock.tick(beforeTrigger);
 
@@ -155,23 +155,23 @@ describe('The Connections Controller class', function () {
 
 			it('should check existing sessions after expected delay', function () {
 				var spy = sandbox.stub(sessions, 'forEach');
-				var afterTrigger = (ConnectionsController.SOCKET_CHECK_INTERVAL * 1000);
+				var afterTrigger = (SessionsController.SOCKET_CHECK_INTERVAL * 1000);
 
 				clock.tick(afterTrigger);
 
 				spy.should.have.been.called;
 			});
 
-			it('should send a ping message to each registered connection', function () {
+			it('should send a ping message to each registered session', function () {
 				var spy = sandbox.spy(socket, 'send');
-				var afterTrigger = (ConnectionsController.SOCKET_CHECK_INTERVAL * 1000);
-				var connection1 = {socket: socket, checked: true};
-				var connection2 = {socket: socket, checked: true};
-				var connection3 = {socket: socket, checked: true};
+				var afterTrigger = (SessionsController.SOCKET_CHECK_INTERVAL * 1000);
+				var session1 = {socket: socket, checked: true};
+				var session2 = {socket: socket, checked: true};
+				var session3 = {socket: socket, checked: true};
 
-				Sessions.addConnection('bogus1', connection1);
-				Sessions.addConnection('bogus2', connection2);
-				Sessions.addConnection('bogus3', connection3);
+				Sessions.addSession('bogus1', session1);
+				Sessions.addSession('bogus2', session2);
+				Sessions.addSession('bogus3', session3);
 				clock.tick(afterTrigger);
 
 				spy.should.have.been.calledWith(JSON.stringify({command: 'ping'}));
@@ -179,10 +179,10 @@ describe('The Connections Controller class', function () {
 
 			it('should emit a close event on a connection when it timesout', function () {
 				var spy = sandbox.spy(socket, 'emit');
-				var afterTrigger = (ConnectionsController.SOCKET_CHECK_INTERVAL * 1000);
-				var connection = {socket: socket, checked: false};
+				var afterTrigger = (SessionsController.SOCKET_CHECK_INTERVAL * 1000);
+				var session = {socket: socket, checked: false};
 
-				Sessions.addConnection('bogus', connection);
+				Sessions.addSession('bogus', session);
 				clock.tick(afterTrigger);
 
 				spy.should.have.been.calledWith('close', socket).calledOnce;
@@ -190,10 +190,10 @@ describe('The Connections Controller class', function () {
 
 			it('should close a connection when it timesout', function () {
 				var spy = sandbox.spy(socket, 'close');
-				var afterTrigger = (ConnectionsController.SOCKET_CHECK_INTERVAL * 1000);
-				var connection = {socket: socket, checked: false};
+				var afterTrigger = (SessionsController.SOCKET_CHECK_INTERVAL * 1000);
+				var session = {socket: socket, checked: false};
 
-				Sessions.addConnection('bogus', connection);
+				Sessions.addSession('bogus', session);
 				clock.tick(afterTrigger);
 
 				spy.should.have.been.calledOnce;

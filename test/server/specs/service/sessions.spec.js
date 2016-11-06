@@ -38,13 +38,13 @@ describe('The Sessions class', function () {
 		});
 
 		it('should return the registered session', function () {
-			var expectedConnection = {
+			var expectedSession = {
 				socket: socket,
 				checked: true
 			};
 
 			instance.add(socket);
-			instance.get(username).should.eql(expectedConnection);
+			instance.get(username).should.eql(expectedSession);
 		});
 
 		it('should fail silently when removing an unauthenticated socket', function () {

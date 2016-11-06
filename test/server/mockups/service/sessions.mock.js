@@ -14,8 +14,8 @@ Constructor.prototype.get = function () {
 };
 Constructor.prototype.remove = function () {};
 Constructor.prototype.forEach = function (iterator) {
-	for (var id in _connections) {
-		iterator(_connections[id], id, _connections);
+	for (var id in _sessions) {
+		iterator(_sessions[id], id, _sessions);
 	}
 };
 
@@ -37,14 +37,14 @@ Constructor.addResponse = function (response) {
 	_responses.push(response);
 };
 
-var _connections = {};
-Constructor.addConnection = function (id, connection) {
-	_connections[id] = connection;
+var _sessions = {};
+Constructor.addSession = function (id, connection) {
+	_sessions[id] = connection;
 };
 
 Constructor.restore = function () {
 	_responses.length = 0;
-	_connections = {};
+	_sessions = {};
 	Constructor.reset();
 };
 
