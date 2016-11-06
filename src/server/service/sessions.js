@@ -2,9 +2,10 @@ var Constructor = function () {
 	this._sessions = {};
 };
 
-Constructor.prototype.add = function (socket) {
-	this._sessions[socket.user.username] = {
+Constructor.prototype.add = function (socket, user) {
+	this._sessions[socket.username] = {
 		socket: socket,
+		user: user,
 		checked: true
 	};
 };
@@ -14,8 +15,8 @@ Constructor.prototype.get = function (username) {
 };
 
 Constructor.prototype.remove = function (socket) {
-	if (socket.user) {
-		delete this._sessions[socket.user.username];
+	if (socket.username) {
+		delete this._sessions[socket.username];
 	}
 };
 

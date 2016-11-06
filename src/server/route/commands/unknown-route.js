@@ -7,9 +7,9 @@ var Constructor = function (eventManager, dataStorage) {
 
 Constructor.prototype.execute = function (data) {
 	return when.resolve().then(function () {
-		var message = JSON.stringify({ command: 'error', code:'unknownCommand', message: data.command });
+		var message = JSON.stringify({ command: 'error', code:'unknownCommand', message: data.message.command });
 
-		data._socket.send(message);
+		data.socket.send(message);
 	});
 };
 

@@ -35,12 +35,12 @@ Constructor.prototype._handleSocketOpened = function (socket) {
 	socket.send(JSON.stringify({command: 'handshake', mask: socket.mask, timeout: Constructor.SOCKET_CHECK_INTERVAL}));
 };
 
-Constructor.prototype._handleSocketAuthenticated = function (socket) {
-	this._sessions.add(socket)
+Constructor.prototype._handleSocketAuthenticated = function (socket, user) {
+	this._sessions.add(socket, user)
 };
 
 Constructor.prototype._handleSocketPong = function (socket) {
-	var connection = this._sessions.get(socket.user.username);
+	var connection = this._sessions.get(socket.username);
 	connection.checked = true;
 };
 

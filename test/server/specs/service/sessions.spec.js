@@ -4,10 +4,17 @@ var sinon = require('sinon');
 var Socket = require('./../../mockups/socket.mock');
 
 describe('The Sessions class', function () {
-	var Sessions, sandbox;
+	var Sessions, sandbox, username, user, socket;
 
 	beforeEach(function () {
 		sandbox = sinon.sandbox.create();
+
+		username = 'bogus';
+		user = {
+			username: username
+		};
+		socket = new Socket();
+		socket.username = username;
 
 		Sessions = require('./../../../../src/server/service/sessions');
 	});
@@ -21,15 +28,9 @@ describe('The Sessions class', function () {
 	});
 
 	describe('as an instance', function () {
-		var instance, username, user, socket;
+		var instance;
 
 		beforeEach(function () {
-			username = 'bgus';
-			user = {
-				username: username
-			};
-			socket = new Socket();
-			socket.user = user;
 			instance = new Sessions();
 		});
 
@@ -40,10 +41,11 @@ describe('The Sessions class', function () {
 		it('should return the registered session', function () {
 			var expectedSession = {
 				socket: socket,
+				user: user,
 				checked: true
 			};
 
-			instance.add(socket);
+			instance.add(socket, user);
 			instance.get(username).should.eql(expectedSession);
 		});
 
@@ -64,10 +66,11 @@ describe('The Sessions class', function () {
 			var sessions = {};
 			var createSession = function (username, instance, sessions) {
 				var socket = new Socket();
-				socket.user = {username: username};
-				instance.add(socket);
+				socket.username = username;
+				instance.add(socket, user);
 				sessions[username] = {
 					socket: socket,
+					user: user,
 					checked: true
 				};
 			};
@@ -84,6 +87,7 @@ describe('The Sessions class', function () {
 			spy.should.have.been.calledWith(sessions[username1], username1, sessions)
 				.and.calledWith(sessions[username2], username2, sessions)
 				.and.calledWith(sessions[username3], username3, sessions)
+				.and.calledThrice;
 		});
 	});
 });

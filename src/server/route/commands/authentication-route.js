@@ -8,15 +8,15 @@ var Constructor = function (eventManager, dataStorage, cypher) {
 };
 
 Constructor.prototype.execute = function (data) {
-	var decoded = this._cypher.decode(data.password);
-	var unmasked = this._cypher.unmask(decoded, data._socket.mask);
+	var decoded = this._cypher.decode(data.message.password);
+	var unmasked = this._cypher.unmask(decoded, data.socket.mask);
 	var password = this._cypher.encrypt(unmasked);
 
-	return this._usersModel.findOne({ username: data.username.toLowerCase(), password: password })
+	return this._usersModel.findOne({ username: data.message.username.toLowerCase(), password: password })
 		.then(this._checkUserIsValid.bind(this))
 		.then(this._updateUserToken.bind(this))
-		.then(this._sendSuccess.bind(this, data._socket))
-		.catch(this._sendFailure.bind(this, data._socket));
+		.then(this._sendSuccess.bind(this, data.socket))
+		.catch(this._sendFailure.bind(this, data.socket));
 };
 
 
@@ -33,14 +33,13 @@ Constructor.prototype._sendSuccess = function (socket, users) {
 	var user = users[0];
 	var message = JSON.stringify({ command: 'authentication', valid: true, token: user.token });
 
-	socket.user = { username: user.username };
-
+	socket.username = user.username;
 	socket.send(message);
 
-	this._eventManager.emit(SocketEvent.AUTHENTICATED, socket);
+	this._eventManager.emit(SocketEvent.AUTHENTICATED, socket, user);
 };
 
-Constructor.prototype._sendFailure = function (socket, error) {
+Constructor.prototype._sendFailure = function (socket) {
 	var message = JSON.stringify({ command: 'authentication', valid: false });
 
 	socket.send(message);

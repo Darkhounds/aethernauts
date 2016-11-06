@@ -144,11 +144,15 @@ describe('The Commands Router class', function () {
 
 			it('should use the DataRouter to resolve commands from a message when a socket receives a it', function () {
 				var spy = sandbox.spy(DataRouter.getInstance(), 'resolve');
-				var expectedData = {command: 'bogus'};
-				eventManager.emit(SocketEvent.MESSAGE, socket, JSON.stringify(expectedData));
+				var message = {command: 'bogus'};
+				var expectedData = {
+					command: message.command,
+					message: message,
+					socket: socket
+				};
+				eventManager.emit(SocketEvent.MESSAGE, socket, JSON.stringify(message));
 
-				expectedData._socket = socket;
-				spy.should.have.been.calledWith(expectedData);
+				spy.should.have.been.calledWith(expectedData).and.calledOnce;
 			});
 		});
 	});

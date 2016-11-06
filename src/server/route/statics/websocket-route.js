@@ -1,6 +1,6 @@
 var util = require('util');
 var AbstractRoute = require('./abstract-route');
-var SocketEvents = require('./../../event/socket-event');
+var SocketEvent = require('./../../event/socket-event');
 
 var Constructor = function (eventManager) {
 	this._eventManager = eventManager;
@@ -8,7 +8,7 @@ var Constructor = function (eventManager) {
 util.inherits(Constructor, AbstractRoute);
 
 Constructor.prototype.execute = function (socket) {
-	this._eventManager.emit(SocketEvents.OPENED, socket);
+	this._eventManager.emit(SocketEvent.OPENED, socket);
 
 	socket._handleMessage = this._handleMessage.bind(this, socket);
 	socket.on('message', socket._handleMessage);
@@ -18,7 +18,7 @@ Constructor.prototype.execute = function (socket) {
 };
 
 Constructor.prototype._handleMessage = function (socket, msg) {
-	this._eventManager.emit(SocketEvents.MESSAGE, socket, msg)
+	this._eventManager.emit(SocketEvent.MESSAGE, socket, msg)
 };
 
 Constructor.prototype._handleClosed = function (socket) {
@@ -28,7 +28,7 @@ Constructor.prototype._handleClosed = function (socket) {
 	socket.removeListener('close', socket._handleClosed);
 	socket._handleClosed = null;
 
-	this._eventManager.emit(SocketEvents.CLOSED, socket);
+	this._eventManager.emit(SocketEvent.CLOSED, socket);
 };
 
 module.exports = Constructor;
