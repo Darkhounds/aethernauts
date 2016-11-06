@@ -5,10 +5,14 @@ var connectionErrorTemplate = require('./../../../../../src/client/html/notifica
 var NotificationEvent = require('./../../../../../src/client/js/event/notification-event');
 
 describe('The Connection Error View class', function () {
-	var ConnectionErrorView, sandbox;
+	var ConnectionErrorView, sandbox, context;
 
 	beforeEach(function () {
 		sandbox = sinon.sandbox.create();
+
+		context = document.createElement('div');
+		context.id = 'NOTIFICATION';
+
 		ConnectionErrorView = require('./../../../../../src/client/js/view/notification/connection-error-view');
 	});
 
@@ -21,11 +25,9 @@ describe('The Connection Error View class', function () {
 	});
 
 	describe('as an instance', function () {
-		var instance, context;
+		var instance;
 
 		beforeEach(function () {
-			context = document.createElement('div');
-			context.id = 'NOTIFICATION';
 			instance = new ConnectionErrorView();
 		});
 

@@ -22,17 +22,21 @@ Constructor.mockStart = function () {
 
 Constructor.mockStop = function () {
 	mock.stop('./../../../../src/client/js/util/cypher');
-	Constructor.reset();
-	_responses.length = 0;
+	Constructor.restore();
 };
 
 Constructor.getInstance = function () {
 	return _instance;
 };
-
 var _responses = [];
+
 Constructor.addResponse = function (response) {
 	_responses.push(response)
+};
+
+Constructor.restore = function () {
+	_responses.length = 0;
+	Constructor.reset();
 };
 
 module.exports = Constructor;

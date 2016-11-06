@@ -7,7 +7,8 @@ var Cypher = require('./../../mockups/util/cypher.mock');
 var ConnectionEvent = require('./../../../../src/client/js/event/connection-event');
 
 describe('The Connection Service class', function () {
-	var ConnectionService, sandbox, clock, url, email, username, password, character, token, mask, timeout, handshakeData;
+	var ConnectionService, sandbox, clock, url, email, username, password, character, mask
+		, timeout, handshakeData, websocket, token, data;
 
 	beforeEach(function() {
 		sandbox = sinon.sandbox.create();
@@ -22,6 +23,7 @@ describe('The Connection Service class', function () {
 		mask = 'bogus';
 		timeout = 10;
 		handshakeData = {data: JSON.stringify({command: 'handshake', mask: mask, timeout: timeout})};
+		data = JSON.stringify({command: 'authentication', valid: true, token: token});
 
 		Websocket.mockStart();
 		XMLHttpRequest.mockStart();
@@ -147,8 +149,6 @@ describe('The Connection Service class', function () {
 		});
 
 		describe('after opening a connection', function () {
-			var websocket;
-
 			beforeEach(function () {
 				instance.open(username, password);
 
@@ -298,14 +298,10 @@ describe('The Connection Service class', function () {
 			});
 
 			describe('and authenticated', function () {
-				var token, data;
-
 				beforeEach(function () {
 					websocket.dispatchEvent('open', {});
 					websocket.dispatchEvent('message', handshakeData);
 
-					token = 'bogus';
-					data = JSON.stringify({command: 'authentication', valid: true, token: token});
 					websocket.dispatchEvent('message', {data: data});
 				});
 

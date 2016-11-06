@@ -1,9 +1,12 @@
 var disconnectedTemplate = require('./../../../../../src/client/html/notification/disconnected.html');
 
 describe('The Disconnected View class', function () {
-	var DisconnectedView;
+	var DisconnectedView, context;
 
 	beforeEach(function () {
+		context = document.createElement('div');
+		context.id = 'NOTIFICATION';
+
 		DisconnectedView = require('./../../../../../src/client/js/view/notification/disconnected-view');
 	});
 
@@ -12,11 +15,9 @@ describe('The Disconnected View class', function () {
 	});
 
 	describe('as an instance', function () {
-		var instance, context;
+		var instance;
 
 		beforeEach(function () {
-			context = document.createElement('div');
-			context.id = 'NOTIFICATION';
 			instance = new DisconnectedView();
 		});
 

@@ -32,11 +32,15 @@ var _httpRequest;
 Constructor.mockStop = function () {
 	global.XMLHttpRequest = _httpRequest;
 	window.XMLHttpRequest = _httpRequest;
-	Constructor.reset();
+	Constructor.restore();
 };
 
 Constructor.getInstance = function () {
 	return _instance;
+};
+
+Constructor.restore = function () {
+	Constructor.reset();
 };
 
 module.exports = Constructor;

@@ -1,21 +1,24 @@
 var sinon = require('sinon');
 var simulant = require('simulant');
+
 var EventEmitter = require('events').EventEmitter;
 
 var AuthenticationEvent = require('./../../../../../src/client/js/event/authentication-event');
 
 describe('The Register View class', function () {
-	var RegisterView, sandbox, context;
-	var email = 'email@domain.ext';
-	var username = 'foo';
-	var password = 'bar';
-	var character = 'bogus';
+	var RegisterView, sandbox, email, username, password, character, context;
 
 	beforeEach(function() {
 		sandbox = sinon.sandbox.create();
-		RegisterView = require('./../../../../../src/client/js/view/authentication/register-view');
+
+		email = 'email@domain.ext';
+		username = 'foo';
+		password = 'bar';
+		character = 'bogus';
 		context = document.createElement('div');
 		context.id = 'REGISTRATION';
+
+		RegisterView = require('./../../../../../src/client/js/view/authentication/register-view');
 	});
 
 	afterEach(function() {
