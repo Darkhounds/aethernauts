@@ -38,12 +38,14 @@ describe('The Pong Route class', function() {
 			instance.should.be.an.instanceOf(PongRoute);
 		});
 
-		it('should invoke the send method of the data socket', function () {
+		it('should invoke the send method', function () {
 			var spy = sandbox.spy(eventManager, 'emit');
-			var data = { _socket: socket };
+			var data = {
+				socket: socket
+			}
 
 			return instance.execute(data).then(function () {
-				spy.should.have.been.calledWith(SocketEvent.PONG, socket).calledTOnce;
+				spy.should.have.been.calledWith(SocketEvent.PONG, socket).and.calledOnce;
 			});
 		});
 	});

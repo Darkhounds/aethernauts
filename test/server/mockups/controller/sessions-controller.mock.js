@@ -13,11 +13,11 @@ Constructor.getInstance = function () {
 };
 
 Constructor.mockStart = function () {
-	mock('./../../../../src/server/controller/connection-controller', Constructor);
+	mock('./../../../../src/server/controller/sessions-controller', Constructor);
 };
 
 Constructor.mockStop = function () {
-	mock.stop('./../../../../src/server/controller/connection-controller');
+	mock.stop('./../../../../src/server/controller/sessions-controller');
 	Constructor.restore();
 };
 

@@ -37,8 +37,13 @@ Constructor.prototype.initialize = function () {
 };
 
 Constructor.prototype._handleNewMessage = function (socket, msg) {
-	var data = JSON.parse(msg);
-	data._socket = socket;
+	var message = JSON.parse(msg);
+	var data = {
+		command: message.command,
+		message: message,
+		socket: socket
+	};
+
 	this._dataRouter.resolve(data);
 };
 

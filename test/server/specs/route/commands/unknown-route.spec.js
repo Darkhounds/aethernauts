@@ -1,10 +1,13 @@
 var sinon = require('sinon');
+var Socket = require('./../../../mockups/socket.mock');
 
-describe('The Data Route class', function() {
-	var DataRoute, sandbox;
+describe('The Unknown Route class', function() {
+	var DataRoute, sandbox, socket;
 
 	beforeEach(function () {
 		sandbox = sinon.sandbox.create();
+
+		socket = new Socket();
 
 		DataRoute = require('./../../../../../src/server/route/commands/unknown-route');
 	});
@@ -28,15 +31,19 @@ describe('The Data Route class', function() {
 			instance.should.be.an.instanceOf(DataRoute);
 		});
 
-		it('should invoke the send method of the data socket', function () {
-			var spy = sandbox.spy();
-			var data = {
-				_socket: {
-					send: spy
-				}
+		it('should send the expected message', function () {
+			var spy = sandbox.spy(socket, 'send');
+			var message = {
+				command: 'bogus'
 			};
+			var data = {
+				message: message,
+				socket: socket
+			};
+			var expectedMessage = JSON.stringify({ command: 'error', code:'unknownCommand', message: message.command })
+
 			return instance.execute(data).then(function () {
-				spy.should.have.been.called;
+				spy.should.have.been.calledWith(expectedMessage).and.calledOnce;
 			});
 		});
 	});

@@ -7,18 +7,18 @@ var ServerConfig = require('./../object/server-config');
 var Cypher = require('./../service/cypher');
 var DataStorage = require('./../service/data-storage');
 var UsersModel = require('./../model/users-model');
-var Connections = require('./../service/connections');
+var Sessions = require('./../service/sessions');
 
 var HTTPRequestRouter = require('./../route/http-request-router');
 var CommandsRouter = require('./../route/commands-router');
 
-var ConnectionsController = require('./connections-controller');
+var SessionsController = require('./sessions-controller');
 
 var Constructor = function (port, root) {
 	this._waterlineConfig = new WaterlineConfig(root + '/data/');
 	this._serverConfig = new ServerConfig(root, port);
 
-	this._connections = new Connections();
+	this._sessions = new Sessions();
 	this._eventManager = new EventManager();
 
 	this._createCypher();
@@ -26,8 +26,8 @@ var Constructor = function (port, root) {
 	this._setupHTTPRequestRouter();
 	this._setupCommandsRouter();
 
-	this._connectionsController = new ConnectionsController(this._eventManager, this._connections, this._cypher);
-	this._connectionsController.initialize();
+	this._sessionsController = new SessionsController(this._eventManager, this._sessions, this._cypher);
+	this._sessionsController.initialize();
 };
 
 Constructor.prototype._createCypher = function ()  {
