@@ -1,8 +1,8 @@
 var SocketEvent = require('./../event/socket-event');
 
-var Constructor = function (eventManager, connections, cypher) {
+var Constructor = function (eventManager, sessions, cypher) {
 	this._eventManager = eventManager;
-	this._connections = connections;
+	this._sessions = sessions;
 	this._cypher = cypher;
 	this._intialized = false;
 
@@ -36,11 +36,11 @@ Constructor.prototype._handleSocketOpened = function (socket) {
 };
 
 Constructor.prototype._handleSocketAuthenticated = function (socket) {
-	this._connections.add(socket)
+	this._sessions.add(socket)
 };
 
 Constructor.prototype._handleSocketPong = function (socket) {
-	var connection = this._connections.get(socket.user.username);
+	var connection = this._sessions.get(socket.user.username);
 	connection.checked = true;
 };
 
@@ -53,11 +53,11 @@ Constructor.prototype._handleSocketMessage = function (socket, msg) {
 Constructor.prototype._handleSocketClosed = function (socket) {
 	console.log('WEBSOCKET CONNECTION CLOSED:', socket.upgradeReq.connection.remoteAddress);
 
-	this._connections.remove(socket);
+	this._sessions.remove(socket);
 };
 
 Constructor.prototype._handleSocketsCheck = function () {
-	this._connections.forEach(function (connection) {
+	this._sessions.forEach(function (connection) {
 		connection.socket.send(JSON.stringify({command: 'ping'}));
 
 		if (!connection.checked) {

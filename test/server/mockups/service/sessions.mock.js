@@ -24,11 +24,11 @@ Constructor.getInstance = function () {
 };
 
 Constructor.mockStart = function () {
-	mock('./../../../../src/server/service/connections', Constructor);
+	mock('./../../../../src/server/service/sessions', Constructor);
 };
 
 Constructor.mockStop = function () {
-	mock.stop('./../../../../src/server/service/connections');
+	mock.stop('./../../../../src/server/service/sessions');
 	Constructor.restore();
 };
 

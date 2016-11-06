@@ -3,13 +3,13 @@ var sinon = require('sinon');
 
 var Socket = require('./../../mockups/socket.mock');
 
-describe('The Connections class', function () {
-	var Connections, sandbox;
+describe('The Sessions class', function () {
+	var Sessions, sandbox;
 
 	beforeEach(function () {
 		sandbox = sinon.sandbox.create();
 
-		Connections = require('./../../../../src/server/service/connections');
+		Sessions = require('./../../../../src/server/service/sessions');
 	});
 
 	afterEach(function () {
@@ -17,7 +17,7 @@ describe('The Connections class', function () {
 	});
 
 	it('should be a function', function () {
-		Connections.should.be.a('function');
+		Sessions.should.be.a('function');
 	});
 
 	describe('as an instance', function () {
@@ -30,14 +30,14 @@ describe('The Connections class', function () {
 			};
 			socket = new Socket();
 			socket.user = user;
-			instance = new Connections();
+			instance = new Sessions();
 		});
 
 		it('should be an instance of the Connections class', function () {
-			instance.should.be.an.instanceOf(Connections);
+			instance.should.be.an.instanceOf(Sessions);
 		});
 
-		it('should return the registered connection', function () {
+		it('should return the registered session', function () {
 			var expectedConnection = {
 				socket: socket,
 				checked: true
@@ -53,20 +53,20 @@ describe('The Connections class', function () {
 			expect(instance.get(username)).to.be.undefined;
 		});
 
-		it('should return an undefined value when requesting a removed connection', function () {
+		it('should return an undefined value when requesting a removed session', function () {
 			instance.add(socket);
 			instance.remove(socket);
 			expect(instance.get(username)).to.be.undefined;
 		});
 
-		it('should iterate through all registered connections', function () {
+		it('should iterate through all registered sessions', function () {
 			var spy = sandbox.spy();
-			var connections = {};
-			var createConnection = function (username, instance, connections) {
+			var sessions = {};
+			var createSession = function (username, instance, sessions) {
 				var socket = new Socket();
 				socket.user = {username: username};
 				instance.add(socket);
-				connections[username] = {
+				sessions[username] = {
 					socket: socket,
 					checked: true
 				};
@@ -75,15 +75,15 @@ describe('The Connections class', function () {
 			var username2 = 'bogus2';
 			var username3 = 'bogus3';
 
-			createConnection(username1, instance, connections);
-			createConnection(username2, instance, connections);
-			createConnection(username3, instance, connections);
+			createSession(username1, instance, sessions);
+			createSession(username2, instance, sessions);
+			createSession(username3, instance, sessions);
 
 			instance.forEach(spy);
 
-			spy.should.have.been.calledWith(connections[username1], username1, connections)
-				.and.calledWith(connections[username2], username2, connections)
-				.and.calledWith(connections[username3], username3, connections)
+			spy.should.have.been.calledWith(sessions[username1], username1, sessions)
+				.and.calledWith(sessions[username2], username2, sessions)
+				.and.calledWith(sessions[username3], username3, sessions)
 		});
 	});
 });

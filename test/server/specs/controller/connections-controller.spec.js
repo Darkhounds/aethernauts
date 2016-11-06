@@ -1,21 +1,21 @@
 var sinon = require('sinon');
 
 var EventManager = require('./../../mockups/service/event-manager.mock');
-var Connections = require('./../../mockups/service/connections.mock');
+var Sessions = require('./../../mockups/service/sessions.mock');
 var Cypher = require('./../../mockups/service/cypher.mock');
 var Socket = require('./../../mockups/socket.mock');
 
 var SocketEvent = require('./../../../../src/server/event/socket-event');
 
 describe('The Connections Controller class', function () {
-	var ConnectionsController, sandbox, clock, eventManager, connections, cypher, socket, username, user;
+	var ConnectionsController, sandbox, clock, eventManager, sessions, cypher, socket, username, user;
 
 	beforeEach(function () {
 		sandbox = sinon.sandbox.create();
 		clock = sandbox.useFakeTimers();
 
 		eventManager = new EventManager();
-		connections = new Connections();
+		sessions = new Sessions();
 		cypher = new Cypher();
 		socket = new Socket();
 
@@ -30,7 +30,7 @@ describe('The Connections Controller class', function () {
 
 	afterEach(function () {
 		EventManager.restore();
-		Connections.restore();
+		Sessions.restore();
 		Cypher.restore();
 		sandbox.restore();
 	});
@@ -43,7 +43,7 @@ describe('The Connections Controller class', function () {
 		var instance;
 
 		beforeEach(function () {
-			instance = new ConnectionsController(eventManager, connections, cypher);
+			instance = new ConnectionsController(eventManager, sessions, cypher);
 		});
 
 		it('should be an instance of the ConnectionsController class', function () {
@@ -97,7 +97,7 @@ describe('The Connections Controller class', function () {
 			});
 
 			it('should register a new connection after authenticating', function () {
-				var spy = sandbox.spy(connections, 'add');
+				var spy = sandbox.spy(sessions, 'add');
 
 				eventManager.emit(SocketEvent.AUTHENTICATED, socket);
 
@@ -107,7 +107,7 @@ describe('The Connections Controller class', function () {
 			it('should change the connection checked state to true after a pong message', function () {
 				var connection = {};
 
-				Connections.addResponse(connection);
+				Sessions.addResponse(connection);
 
 				eventManager.emit(SocketEvent.PONG, socket);
 
@@ -136,7 +136,7 @@ describe('The Connections Controller class', function () {
 			});
 
 			it('should unregister a connection when it closes', function () {
-				var spy = sandbox.spy(connections, 'remove');
+				var spy = sandbox.spy(sessions, 'remove');
 
 				sandbox.stub(console, 'log');
 				eventManager.emit(SocketEvent.CLOSED, socket);
@@ -144,8 +144,8 @@ describe('The Connections Controller class', function () {
 				spy.should.have.been.calledWith(socket).calledOnce;
 			});
 
-			it('should not check existing connections before expected delay', function () {
-				var spy = sandbox.stub(connections, 'forEach');
+			it('should not check existing sessions before expected delay', function () {
+				var spy = sandbox.stub(sessions, 'forEach');
 				var beforeTrigger = (ConnectionsController.SOCKET_CHECK_INTERVAL * 1000) - 1;
 
 				clock.tick(beforeTrigger);
@@ -153,8 +153,8 @@ describe('The Connections Controller class', function () {
 				spy.should.not.have.been.called;
 			});
 
-			it('should check existing connections after expected delay', function () {
-				var spy = sandbox.stub(connections, 'forEach');
+			it('should check existing sessions after expected delay', function () {
+				var spy = sandbox.stub(sessions, 'forEach');
 				var afterTrigger = (ConnectionsController.SOCKET_CHECK_INTERVAL * 1000);
 
 				clock.tick(afterTrigger);
@@ -169,9 +169,9 @@ describe('The Connections Controller class', function () {
 				var connection2 = {socket: socket, checked: true};
 				var connection3 = {socket: socket, checked: true};
 
-				Connections.addConnection('bogus1', connection1);
-				Connections.addConnection('bogus2', connection2);
-				Connections.addConnection('bogus3', connection3);
+				Sessions.addConnection('bogus1', connection1);
+				Sessions.addConnection('bogus2', connection2);
+				Sessions.addConnection('bogus3', connection3);
 				clock.tick(afterTrigger);
 
 				spy.should.have.been.calledWith(JSON.stringify({command: 'ping'}));
@@ -182,7 +182,7 @@ describe('The Connections Controller class', function () {
 				var afterTrigger = (ConnectionsController.SOCKET_CHECK_INTERVAL * 1000);
 				var connection = {socket: socket, checked: false};
 
-				Connections.addConnection('bogus', connection);
+				Sessions.addConnection('bogus', connection);
 				clock.tick(afterTrigger);
 
 				spy.should.have.been.calledWith('close', socket).calledOnce;
@@ -193,7 +193,7 @@ describe('The Connections Controller class', function () {
 				var afterTrigger = (ConnectionsController.SOCKET_CHECK_INTERVAL * 1000);
 				var connection = {socket: socket, checked: false};
 
-				Connections.addConnection('bogus', connection);
+				Sessions.addConnection('bogus', connection);
 				clock.tick(afterTrigger);
 
 				spy.should.have.been.calledOnce;
