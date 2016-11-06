@@ -6,8 +6,6 @@ var Constructor = sinon.spy(function () {
 	_instance = this;
 });
 
-Constructor.prototype.setup = function () {};
-
 Constructor.prototype.setContext = function () {};
 
 Constructor.mockStart = function () {

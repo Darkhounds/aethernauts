@@ -26,6 +26,83 @@ var Constructor = function () {
 };
 util.inherits(Constructor, EventEmitter);
 
+Constructor.prototype.setup = function (url) {
+	this._url = url;
+};
+
+Constructor.prototype.register = function (email, username, password, character) {
+	if (!this._registerRequest) {
+		var params = 'email=' + email + '&username=' + username + '&password=' + password + '&character=' + character;
+		this._username = username;
+
+		this._password = password;
+		this._registerRequest = new XMLHttpRequest();
+		this._registerRequest.open('POST', '/register', true);
+		this._registerRequest.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+		this._registerRequest.addEventListener('load', this._handleRegisterRequest);
+		this._registerRequest.addEventListener('error', this._handleRegisterRequestError);
+		this._registerRequest.send(params);
+	}
+};
+
+Constructor.prototype.open = function (username, password, token) {
+	if (!this._websocket) {
+		this._username = username;
+		this._password = password;
+		this._token = token || this._token;
+		this._connected = false;
+		this._createConnection(password);
+	}
+};
+
+Constructor.prototype._createConnection = function () {
+	clearTimeout(this._reconnectionTimeout);
+
+	this._websocket = new WebSocket(this._url);
+
+	this._websocket.addEventListener('error', this._handleConnectionError);
+	this._websocket.addEventListener('message', this._handleMessageReceived);
+	this._websocket.addEventListener('close', this._handleClosed);
+};
+
+Constructor.prototype.send = function (data, id) {
+	var result = false;
+
+	if (this._connected) {
+		var package = {
+			command: 'message',
+			id: id || '',
+			data: data
+		};
+		this._websocket.send(JSON.stringify(package));
+		result = true;
+	}
+	return result;
+
+};
+
+Constructor.prototype.close = function () {
+	clearTimeout(this._timeoutInterval);
+	this._destroyConnection();
+	this._username = '';
+	this._token = '';
+	this.emit(ConnectionEvent.CLOSED);
+
+};
+
+Constructor.prototype._destroyConnection = function () {
+	this._connected = false;
+
+	if (this._websocket) {
+		this._websocket.removeEventListener('close', this._handleClosed);
+		this._websocket.removeEventListener('message', this._handleMessageReceived);
+		this._websocket.removeEventListener('error', this._handleConnectionError);
+		this._websocket.close();
+	}
+
+	this._websocket = null;
+};
+
 Constructor.prototype._handleRegisterRequest = function () {
 	var data = JSON.parse(this._registerRequest.responseText);
 	this._registerRequest = null;
@@ -57,18 +134,6 @@ Constructor.prototype._reconnect = function () {
 	this._destroyConnection();
 
 	this.emit(ConnectionEvent.DISCONNECTED);
-};
-
-Constructor.prototype._destroyConnection = function () {
-	if (this._websocket) {
-		this._websocket.removeEventListener('close', this._handleClosed);
-		this._websocket.removeEventListener('message', this._handleMessageReceived);
-		this._websocket.removeEventListener('error', this._handleConnectionError);
-		this._websocket.close();
-	}
-	this._websocket = null;
-
-	this._connected = false;
 };
 
 Constructor.prototype._handleMessageReceived = function (e) {
@@ -162,70 +227,6 @@ Constructor.prototype._handleTimeout = function () {
 	}
 
 	this._connectionChecked = false;
-};
-
-Constructor.prototype.register = function (email, username, password, character) {
-	if (!this._registerRequest) {
-		var params = 'email=' + email + '&username=' + username + '&password=' + password + '&character=' + character;
-		this._username = username;
-
-		this._password = password;
-		this._registerRequest = new XMLHttpRequest();
-		this._registerRequest.open('POST', '/register', true);
-		this._registerRequest.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-		this._registerRequest.addEventListener('load', this._handleRegisterRequest);
-		this._registerRequest.addEventListener('error', this._handleRegisterRequestError);
-		this._registerRequest.send(params);
-	}
-};
-
-Constructor.prototype.setup = function (url) {
-	this._url = url;
-};
-
-Constructor.prototype.open = function (username, password, token) {
-	if (!this._websocket) {
-		this._username = username;
-		this._password = password;
-		this._token = token || this._token;
-		this._connected = false;
-		this._createConnection(password);
-	}
-};
-
-Constructor.prototype._createConnection = function () {
-	clearTimeout(this._reconnectionTimeout);
-
-	this._websocket = new WebSocket(this._url);
-
-	this._websocket.addEventListener('error', this._handleConnectionError);
-	this._websocket.addEventListener('message', this._handleMessageReceived);
-	this._websocket.addEventListener('close', this._handleClosed);
-};
-
-Constructor.prototype.send = function (data, id) {
-	var result = false;
-
-	if (this._connected) {
-		var package = {
-			command: 'message',
-			id: id || '',
-			data: data
-		};
-		this._websocket.send(JSON.stringify(package));
-		result = true;
-	}
-	return result;
-
-};
-
-Constructor.prototype.close = function () {
-	clearTimeout(this._timeoutInterval);
-	this._destroyConnection();
-	this._username = '';
-	this._token = '';
-	this.emit(ConnectionEvent.CLOSED);
-
 };
 
 Constructor.DEFAULT_DELAY = 3 * 1000;

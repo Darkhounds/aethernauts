@@ -1,7 +1,8 @@
 var sinon = require('sinon');
 
-var ConnectionService = require('./../../mockups/service/connection-service.mock');
 var BroadcasterService = require('./../../mockups/service/broadcaster-service.mock');
+var ConnectionService = require('./../../mockups/service/connection-service.mock');
+
 var AuthenticationController = require('./../../mockups/controller/authentication-controller.mock');
 var NotificationController = require('./../../mockups/controller/notification-controller.mock');
 
@@ -11,8 +12,8 @@ describe('The Main View class', function () {
 	beforeEach(function() {
 		sandbox = sinon.sandbox.create();
 
-		connectionService = new ConnectionService();
 		broadcasterService = new BroadcasterService();
+		connectionService = new ConnectionService();
 		context = document.createElement('div');
 		context.innerHTML = '<div id="APP"><div id="AUTHENTICATION"></div><div id="NOTIFICATION"></div></div>';
 
@@ -26,11 +27,29 @@ describe('The Main View class', function () {
 		NotificationController.mockStop();
 		AuthenticationController.mockStop();
 
+		BroadcasterService.restore();
+		ConnectionService.restore();
 		sandbox.restore();
 	});
 
 	it ('should be a function', function () {
 		MainView.should.be.a('function');
+	});
+
+	it ('should create a new authenticationController with the expected broadcasterService and connectionService during creation', function () {
+		var instance = new MainView(broadcasterService, connectionService);
+
+		AuthenticationController.should.have.been.calledWith(broadcasterService, connectionService)
+			.and.calledWithNew
+			.and.calledOnce;
+	});
+
+	it ('should create a new notificationController with the expected broadcasterService during creation', function () {
+		var instance = new MainView(broadcasterService, connectionService);
+
+		NotificationController.should.have.been.calledWith(BroadcasterService.getInstance())
+			.and.calledWithNew
+			.and.calledOnce;
 	});
 
 	describe('as an instance', function () {
@@ -44,60 +63,26 @@ describe('The Main View class', function () {
 			instance.should.be.an.instanceof(MainView);
 		});
 
-		it ('should create a new Authentication Controller during setup', function () {
-			instance.setup(broadcasterService, connectionService);
+		it ('should render', function () {
+			instance.render(context);
 
-			AuthenticationController.should.have.been.called;
+			context.querySelector('#APP').classList.contains('app').should.be.true;
 		});
 
-		it ('should setup the authenticationController with the expected broadcasterService and connectionService during setup', function () {
-			var spy = sandbox.spy(AuthenticationController.prototype, 'setup');
+		it ('should set the authenticationController context when rendering', function () {
+			var spy = sandbox.spy(AuthenticationController.getInstance(), 'setContext');
 
-			instance.setup(broadcasterService, connectionService);
+			instance.render(context);
 
-			spy.should.have.been.calledWith(broadcasterService, connectionService);
+			spy.should.have.been.calledWith(context.querySelector('#AUTHENTICATION'));
 		});
 
-		it ('should create a new Notification Controller during setup', function () {
-			instance.setup(broadcasterService, connectionService);
+		it ('should set the notificationController context when rendering', function () {
+			var spy = sandbox.spy(NotificationController.getInstance(), 'setContext');
 
-			NotificationController.should.have.been.called;
-		});
+			instance.render(context);
 
-		it ('should setup the notificationController with the expected broadcasterService during setup', function () {
-			var spy = sandbox.spy(NotificationController.prototype, 'setup');
-
-			instance.setup(broadcasterService, connectionService);
-
-			spy.should.have.been.calledWith(broadcasterService);
-		});
-
-		describe('after the setup', function () {
-			beforeEach(function () {
-				instance.setup(broadcasterService, connectionService);
-			});
-
-			it ('should render', function () {
-				instance.render(context);
-
-				context.querySelector('#APP').classList.contains('app').should.be.true;
-			});
-
-			it ('should set the authenticationController context when rendering', function () {
-				var spy = sandbox.spy(AuthenticationController.getInstance(), 'setContext');
-
-				instance.render(context);
-
-				spy.should.have.been.calledWith(context.querySelector('#AUTHENTICATION'));
-			});
-
-			it ('should set the notificationController context when rendering', function () {
-				var spy = sandbox.spy(NotificationController.getInstance(), 'setContext');
-
-				instance.render(context);
-
-				spy.should.have.been.calledWith(context.querySelector('#NOTIFICATION'));
-			});
+			spy.should.have.been.calledWith(context.querySelector('#NOTIFICATION'));
 		});
 	});
 });

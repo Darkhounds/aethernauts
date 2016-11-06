@@ -6,9 +6,15 @@ var LoginView = require('./../view/authentication/login-view');
 var LogoutView = require('./../view/authentication/logout-view');
 var RegisterView = require('./../view/authentication/register-view');
 
-var Constructor = function () {
+var Constructor = function (broadcasterService, connectionService) {
+	this._broadcasterService = broadcasterService;
+	this._connectionService = connectionService;
 	this._context = null;
 	this._data = null;
+
+	this._loginView = new LoginView();
+	this._logoutView = new LogoutView();
+	this._registerView = new RegisterView();
 
 	this._handleConnectionError = Constructor.prototype._handleConnectionError.bind(this);
 	this._handleAuthenticationError = Constructor.prototype._handleAuthenticationError.bind(this);
@@ -22,9 +28,44 @@ var Constructor = function () {
 	this._handleAuthenticate = Constructor.prototype._handleAuthenticate.bind(this);
 	this._handleAuthenticated = Constructor.prototype._handleAuthenticated.bind(this);
 	this._handleLogout = Constructor.prototype._handleLogout.bind(this);
+
+	this._addConnectionServiceEvents();
+	this._setupLoginView();
+	this._setupLogoutView();
+	this._setupRegisterView();
 };
 
-Constructor.prototype._handleConnectionError = function (e) {
+Constructor.prototype.setContext = function (context) {
+	this._context = context;
+	this._loginView.setData(this._data);
+	this._loginView.render(context);
+};
+
+Constructor.prototype._addConnectionServiceEvents = function () {
+	this._connectionService.on(ConnectionEvent.CONNECTION_ERROR, this._handleConnectionError);
+	this._connectionService.on(ConnectionEvent.AUTHENTICATION_ERROR, this._handleAuthenticationError);
+	this._connectionService.on(ConnectionEvent.REGISTRATION_ERROR, this._handleRegistrationError);
+	this._connectionService.on(ConnectionEvent.OPENED, this._handleConnectionOpened);
+	this._connectionService.on(ConnectionEvent.DISCONNECTED, this._handleConnectionDisconnected);
+	this._connectionService.on(ConnectionEvent.RECONNECTED, this._handleConnectionReconnected);
+	this._connectionService.on(ConnectionEvent.CLOSED, this._handleConnectionClosed);
+};
+
+Constructor.prototype._setupLoginView = function () {
+	this._loginView.on(AuthenticationEvent.AUTHENTICATE, this._handleAuthenticated);
+	this._loginView.on(AuthenticationEvent.REGISTER, this._handleRegister);
+};
+
+Constructor.prototype._setupLogoutView = function () {
+	this._logoutView.on(AuthenticationEvent.LOGOUT, this._handleLogout);
+};
+
+Constructor.prototype._setupRegisterView = function () {
+	this._registerView.on(AuthenticationEvent.REGISTER, this._handleRegistered);
+	this._registerView.on(AuthenticationEvent.AUTHENTICATE, this._handleAuthenticate);
+};
+
+Constructor.prototype._handleConnectionError = function () {
 	this._broadcasterService.emit(NotificationEvent.CONNECTION_FAILED);
 };
 
@@ -71,52 +112,6 @@ Constructor.prototype._handleAuthenticated = function (username, password) {
 
 Constructor.prototype._handleLogout = function () {
 	this._connectionService.close();
-};
-
-Constructor.prototype.setup = function (broadcasterService, connectionService) {
-	this._broadcasterService = broadcasterService;
-
-	this._connectionService = connectionService;
-	this._addConnectionServiceEvents();
-
-	this._loginView = new LoginView();
-	this._setupLoginView();
-
-	this._logoutView = new LogoutView();
-	this._setupLogoutView();
-
-	this._registerView = new RegisterView();
-	this._setupRegisterView();
-};
-
-Constructor.prototype._addConnectionServiceEvents = function () {
-	this._connectionService.on(ConnectionEvent.CONNECTION_ERROR, this._handleConnectionError);
-	this._connectionService.on(ConnectionEvent.AUTHENTICATION_ERROR, this._handleAuthenticationError);
-	this._connectionService.on(ConnectionEvent.REGISTRATION_ERROR, this._handleRegistrationError);
-	this._connectionService.on(ConnectionEvent.OPENED, this._handleConnectionOpened);
-	this._connectionService.on(ConnectionEvent.DISCONNECTED, this._handleConnectionDisconnected);
-	this._connectionService.on(ConnectionEvent.RECONNECTED, this._handleConnectionReconnected);
-	this._connectionService.on(ConnectionEvent.CLOSED, this._handleConnectionClosed);
-};
-
-Constructor.prototype._setupRegisterView = function () {
-	this._registerView.on(AuthenticationEvent.REGISTER, this._handleRegistered);
-	this._registerView.on(AuthenticationEvent.AUTHENTICATE, this._handleAuthenticate);
-};
-
-Constructor.prototype._setupLoginView = function () {
-	this._loginView.on(AuthenticationEvent.AUTHENTICATE, this._handleAuthenticated);
-	this._loginView.on(AuthenticationEvent.REGISTER, this._handleRegister);
-};
-
-Constructor.prototype._setupLogoutView = function () {
-	this._logoutView.on(AuthenticationEvent.LOGOUT, this._handleLogout);
-};
-
-Constructor.prototype.setContext = function (context) {
-	this._context = context;
-	this._loginView.setData(this._data);
-	this._loginView.render(context);
 };
 
 module.exports = Constructor;

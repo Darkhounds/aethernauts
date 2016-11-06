@@ -43,232 +43,225 @@ describe('The Notification Controller class', function () {
 	it('should be a function', function () {
 		NotificationController.should.be.a('function');
 	});
-	
+
+	it('should register a NotificationEvent.DISCONNECTED event after the creation', function () {
+		var spy = sandbox.spy(broadcasterService, 'on');
+
+		var instance = new NotificationController(broadcasterService);
+
+		spy.should.have.been.calledWith(NotificationEvent.DISCONNECTED);
+	});
+
+	it('should register a NotificationEvent.RECONNECTED event after the creation', function () {
+		var spy = sandbox.spy(broadcasterService, 'on');
+
+		var instance = new NotificationController(broadcasterService);
+
+		spy.should.have.been.calledWith(NotificationEvent.RECONNECTED);
+	});
+
+	it('should register a NotificationEvent.AUTHENTICATION_FAILED event after the creation', function () {
+		var spy = sandbox.spy(broadcasterService, 'on');
+
+		var instance = new NotificationController(broadcasterService);
+
+		spy.should.have.been.calledWith(NotificationEvent.AUTHENTICATION_FAILED);
+	});
+
+	it('should register a NotificationEvent.CONNECTION_FAILED event after the creation', function () {
+		var spy = sandbox.spy(broadcasterService, 'on');
+
+		var instance = new NotificationController(broadcasterService);
+
+		spy.should.have.been.calledWith(NotificationEvent.CONNECTION_FAILED);
+	});
+
+	it('should register a NotificationEvent.REGISTRATION_FAILED event after the creation', function () {
+		var spy = sandbox.spy(broadcasterService, 'on');
+
+		var instance = new NotificationController(broadcasterService);
+
+		spy.should.have.been.calledWith(NotificationEvent.REGISTRATION_FAILED);
+	});
+
 	describe('as an instance', function () {
 		var instance;
 
 		beforeEach(function () {
-			instance = new NotificationController();
+			instance = new NotificationController(broadcasterService);
 		});
 
 		it('should be an instance of the NotificationController class', function () {
 			instance.should.be.an.instanceOf(NotificationController);
 		});
 
-		it('should register a NotificationEvent.DISCONNECTED event after the setup', function () {
-			var spy = sandbox.spy(broadcasterService, 'on');
+		it('should render the emptyView when the setContext is called', function () {
+			var spy = sandbox.spy(EmptyView.getInstance(), 'render');
 
-			instance.setup(broadcasterService);
+			instance.setContext(context);
 
-			spy.should.have.been.calledWith(NotificationEvent.DISCONNECTED);
+			spy.should.have.been.calledWith(context);
 		});
 
-		it('should register a NotificationEvent.RECONNECTED event after the setup', function () {
-			var spy = sandbox.spy(broadcasterService, 'on');
+		it('should render the disconnectedView when the NotificationEvent.DISCONNECTED is fired', function () {
+			var spy = sandbox.spy(DisconnectedView.getInstance(), 'render');
 
-			instance.setup(broadcasterService);
+			instance.setContext(context);
+			broadcasterService.emit(NotificationEvent.DISCONNECTED);
 
-			spy.should.have.been.calledWith(NotificationEvent.RECONNECTED);
+			spy.should.have.been.calledWith(context);
 		});
 
-		it('should register a NotificationEvent.AUTHENTICATION_FAILED event after the setup', function () {
-			var spy = sandbox.spy(broadcasterService, 'on');
+		it('should fail silently when the NotificationEvent.DISCONNECTED is fired more then once', function () {
+			var spy = sandbox.spy(DisconnectedView.getInstance(), 'render');
 
-			instance.setup(broadcasterService);
+			instance.setContext(context);
+			broadcasterService.emit(NotificationEvent.DISCONNECTED);
+			broadcasterService.emit(NotificationEvent.DISCONNECTED);
 
-			spy.should.have.been.calledWith(NotificationEvent.AUTHENTICATION_FAILED);
+			spy.should.have.been.calledWith(context);
 		});
 
-		it('should register a NotificationEvent.CONNECTION_FAILED event after the setup', function () {
-			var spy = sandbox.spy(broadcasterService, 'on');
+		it('should render the emptyView when the NotificationEvent.RECONNECTED is fired', function () {
+			var spy = sandbox.spy(EmptyView.getInstance(), 'render');
 
-			instance.setup(broadcasterService);
+			instance.setContext(context);
+			broadcasterService.emit(NotificationEvent.DISCONNECTED);
+			broadcasterService.emit(NotificationEvent.RECONNECTED);
 
-			spy.should.have.been.calledWith(NotificationEvent.CONNECTION_FAILED);
-		});
-		
-		it('should register a NotificationEvent.REGISTRATION_FAILED event after the setup', function () {
-			var spy = sandbox.spy(broadcasterService, 'on');
-
-			instance.setup(broadcasterService);
-
-			spy.should.have.been.calledWith(NotificationEvent.REGISTRATION_FAILED);
+			spy.should.have.been.calledWith(context);
 		});
 
-		describe('after the setup', function () {
+		it('should fail silently when the NotificationEvent.RECONNECTED is fired more then once', function () {
+			var spy = sandbox.spy(EmptyView.getInstance(), 'render');
 
-			beforeEach(function () {
-				instance.setup(broadcasterService);
-			});
+			instance.setContext(context);
+			broadcasterService.emit(NotificationEvent.DISCONNECTED);
+			broadcasterService.emit(NotificationEvent.RECONNECTED);
+			broadcasterService.emit(NotificationEvent.RECONNECTED);
 
-			it('should render the emptyView when the setContext is called', function () {
-				var spy = sandbox.spy(EmptyView.getInstance(), 'render');
+			spy.should.have.been.calledWith(context);
+		});
 
-				instance.setContext(context);
+		it('should render the wrongCredentialsView when the NotificationEvent.AUTHENTICATION_FAILED is fired', function () {
+			var spy = sandbox.spy(WrongCredentialsView.getInstance(), 'render');
 
-				spy.should.have.been.calledWith(context);
-			});
+			instance.setContext(context);
+			broadcasterService.emit(NotificationEvent.AUTHENTICATION_FAILED);
 
-			it('should render the disconnectedView when the NotificationEvent.DISCONNECTED is fired', function () {
-				var spy = sandbox.spy(DisconnectedView.getInstance(), 'render');
+			spy.should.have.been.calledWith(context);
+		});
 
-				instance.setContext(context);
-				broadcasterService.emit(NotificationEvent.DISCONNECTED);
+		it('should fail silently when the NotificationEvent.AUTHENTICATION_FAILED is fired more then once', function () {
+			var spy = sandbox.spy(WrongCredentialsView.getInstance(), 'render');
 
-				spy.should.have.been.calledWith(context);
-			});
+			instance.setContext(context);
+			broadcasterService.emit(NotificationEvent.AUTHENTICATION_FAILED);
+			broadcasterService.emit(NotificationEvent.AUTHENTICATION_FAILED);
 
-			it('should fail silently when the NotificationEvent.DISCONNECTED is fired more then once', function () {
-				var spy = sandbox.spy(DisconnectedView.getInstance(), 'render');
+			spy.should.have.been.calledWith(context);
+		});
 
-				instance.setContext(context);
-				broadcasterService.emit(NotificationEvent.DISCONNECTED);
-				broadcasterService.emit(NotificationEvent.DISCONNECTED);
+		it('should render the emptyView when the wrongCredentialsView fires a NotificationEvent.CLOSE event', function () {
+			instance.setContext(context);
 
-				spy.should.have.been.calledWith(context);
-			});
+			var spy = sandbox.spy(EmptyView.getInstance(), 'render');
+			broadcasterService.emit(NotificationEvent.AUTHENTICATION_FAILED);
+			WrongCredentialsView.getInstance().emit(NotificationEvent.CLOSE);
 
-			it('should render the emptyView when the NotificationEvent.RECONNECTED is fired', function () {
-				var spy = sandbox.spy(EmptyView.getInstance(), 'render');
+			spy.should.have.been.calledWith(context);
+		});
 
-				instance.setContext(context);
-				broadcasterService.emit(NotificationEvent.DISCONNECTED);
-				broadcasterService.emit(NotificationEvent.RECONNECTED);
+		it('should fail silently when the wrongCredentialsView fires a NotificationEvent.CLOSE is fired more then once', function () {
+			instance.setContext(context);
 
-				spy.should.have.been.calledWith(context);
-			});
+			var spy = sandbox.spy(EmptyView.getInstance(), 'render');
+			broadcasterService.emit(NotificationEvent.AUTHENTICATION_FAILED);
+			WrongCredentialsView.getInstance().emit(NotificationEvent.CLOSE);
+			WrongCredentialsView.getInstance().emit(NotificationEvent.CLOSE);
 
-			it('should fail silently when the NotificationEvent.RECONNECTED is fired more then once', function () {
-				var spy = sandbox.spy(EmptyView.getInstance(), 'render');
+			spy.should.have.been.calledWith(context);
+		});
 
-				instance.setContext(context);
-				broadcasterService.emit(NotificationEvent.DISCONNECTED);
-				broadcasterService.emit(NotificationEvent.RECONNECTED);
-				broadcasterService.emit(NotificationEvent.RECONNECTED);
+		it('should render the connectionErrorView when the NotificationEvent.CONNECTION_FAILED is fired', function () {
+			var spy = sandbox.spy(ConnectionErrorView.getInstance(), 'render');
 
-				spy.should.have.been.calledWith(context);
-			});
+			instance.setContext(context);
+			broadcasterService.emit(NotificationEvent.CONNECTION_FAILED);
 
-			it('should render the wrongCredentialsView when the NotificationEvent.AUTHENTICATION_FAILED is fired', function () {
-				var spy = sandbox.spy(WrongCredentialsView.getInstance(), 'render');
+			spy.should.have.been.calledWith(context);
+		});
 
-				instance.setContext(context);
-				broadcasterService.emit(NotificationEvent.AUTHENTICATION_FAILED);
+		it('should fail silently when the NotificationEvent.CONNECTION_FAILED is fired more then once', function () {
+			var spy = sandbox.spy(ConnectionErrorView.getInstance(), 'render');
 
-				spy.should.have.been.calledWith(context);
-			});
+			instance.setContext(context);
+			broadcasterService.emit(NotificationEvent.CONNECTION_FAILED);
+			broadcasterService.emit(NotificationEvent.CONNECTION_FAILED);
 
-			it('should fail silently when the NotificationEvent.AUTHENTICATION_FAILED is fired more then once', function () {
-				var spy = sandbox.spy(WrongCredentialsView.getInstance(), 'render');
+			spy.should.have.been.calledWith(context);
+		});
 
-				instance.setContext(context);
-				broadcasterService.emit(NotificationEvent.AUTHENTICATION_FAILED);
-				broadcasterService.emit(NotificationEvent.AUTHENTICATION_FAILED);
+		it('should render the emptyView when the connectionErrorView fires a NotificationEvent.CLOSE event', function () {
+			instance.setContext(context);
 
-				spy.should.have.been.calledWith(context);
-			});
+			var spy = sandbox.spy(EmptyView.getInstance(), 'render');
+			broadcasterService.emit(NotificationEvent.CONNECTION_FAILED);
+			ConnectionErrorView.getInstance().emit(NotificationEvent.CLOSE);
 
-			it('should render the emptyView when the wrongCredentialsView fires a NotificationEvent.CLOSE event', function () {
-				instance.setContext(context);
+			spy.should.have.been.calledWith(context);
+		});
 
-				var spy = sandbox.spy(EmptyView.getInstance(), 'render');
-				broadcasterService.emit(NotificationEvent.AUTHENTICATION_FAILED);
-				WrongCredentialsView.getInstance().emit(NotificationEvent.CLOSE);
+		it('should fail silently when the connectionErrorView fires a NotificationEvent.CLOSE is fired more then once', function () {
+			instance.setContext(context);
 
-				spy.should.have.been.calledWith(context);
-			});
+			var spy = sandbox.spy(EmptyView.getInstance(), 'render');
+			broadcasterService.emit(NotificationEvent.CONNECTION_FAILED);
+			ConnectionErrorView.getInstance().emit(NotificationEvent.CLOSE);
+			ConnectionErrorView.getInstance().emit(NotificationEvent.CLOSE);
 
-			it('should fail silently when the wrongCredentialsView fires a NotificationEvent.CLOSE is fired more then once', function () {
-				instance.setContext(context);
+			spy.should.have.been.calledWith(context);
+		});
 
-				var spy = sandbox.spy(EmptyView.getInstance(), 'render');
-				broadcasterService.emit(NotificationEvent.AUTHENTICATION_FAILED);
-				WrongCredentialsView.getInstance().emit(NotificationEvent.CLOSE);
-				WrongCredentialsView.getInstance().emit(NotificationEvent.CLOSE);
+		it('should render the registrationErrorView when the NotificationEvent.REGISTRATION_FAILED is fired', function () {
+			var errors = ['email', 'user', 'character'];
+			var spy = sandbox.spy(RegistrationErrorView.getInstance(), 'render');
 
-				spy.should.have.been.calledWith(context);
-			});
+			instance.setContext(context);
+			broadcasterService.emit(NotificationEvent.REGISTRATION_FAILED, errors);
 
-			it('should render the connectionErrorView when the NotificationEvent.CONNECTION_FAILED is fired', function () {
-				var spy = sandbox.spy(ConnectionErrorView.getInstance(), 'render');
+			spy.should.have.been.calledWith(context, errors);
+		});
 
-				instance.setContext(context);
-				broadcasterService.emit(NotificationEvent.CONNECTION_FAILED);
+		it('should fail silently when the NotificationEvent.REGISTRATION_FAILED is fired more then once', function () {
+			var spy = sandbox.spy(RegistrationErrorView.getInstance(), 'render');
 
-				spy.should.have.been.calledWith(context);
-			});
+			instance.setContext(context);
+			broadcasterService.emit(NotificationEvent.REGISTRATION_FAILED);
+			broadcasterService.emit(NotificationEvent.REGISTRATION_FAILED);
 
-			it('should fail silently when the NotificationEvent.CONNECTION_FAILED is fired more then once', function () {
-				var spy = sandbox.spy(ConnectionErrorView.getInstance(), 'render');
+			spy.should.have.been.calledWith(context);
+		});
 
-				instance.setContext(context);
-				broadcasterService.emit(NotificationEvent.CONNECTION_FAILED);
-				broadcasterService.emit(NotificationEvent.CONNECTION_FAILED);
+		it('should render the emptyView when the registrationErrorView fires a NotificationEvent.CLOSE event', function () {
+			instance.setContext(context);
 
-				spy.should.have.been.calledWith(context);
-			});
+			var spy = sandbox.spy(EmptyView.getInstance(), 'render');
+			broadcasterService.emit(NotificationEvent.REGISTRATION_FAILED);
+			RegistrationErrorView.getInstance().emit(NotificationEvent.CLOSE);
 
-			it('should render the emptyView when the connectionErrorView fires a NotificationEvent.CLOSE event', function () {
-				instance.setContext(context);
+			spy.should.have.been.calledWith(context);
+		});
 
-				var spy = sandbox.spy(EmptyView.getInstance(), 'render');
-				broadcasterService.emit(NotificationEvent.CONNECTION_FAILED);
-				ConnectionErrorView.getInstance().emit(NotificationEvent.CLOSE);
+		it('should fail silently when the registrationErrorView fires a NotificationEvent.CLOSE is fired more then once', function () {
+			instance.setContext(context);
 
-				spy.should.have.been.calledWith(context);
-			});
+			var spy = sandbox.spy(EmptyView.getInstance(), 'render');
+			broadcasterService.emit(NotificationEvent.REGISTRATION_FAILED);
+			RegistrationErrorView.getInstance().emit(NotificationEvent.CLOSE);
+			RegistrationErrorView.getInstance().emit(NotificationEvent.CLOSE);
 
-			it('should fail silently when the connectionErrorView fires a NotificationEvent.CLOSE is fired more then once', function () {
-				instance.setContext(context);
-
-				var spy = sandbox.spy(EmptyView.getInstance(), 'render');
-				broadcasterService.emit(NotificationEvent.CONNECTION_FAILED);
-				ConnectionErrorView.getInstance().emit(NotificationEvent.CLOSE);
-				ConnectionErrorView.getInstance().emit(NotificationEvent.CLOSE);
-
-				spy.should.have.been.calledWith(context);
-			});
-
-			it('should render the registrationErrorView when the NotificationEvent.REGISTRATION_FAILED is fired', function () {
-				var errors = ['email', 'user', 'character'];
-				var spy = sandbox.spy(RegistrationErrorView.getInstance(), 'render');
-
-				instance.setContext(context);
-				broadcasterService.emit(NotificationEvent.REGISTRATION_FAILED, errors);
-
-				spy.should.have.been.calledWith(context, errors);
-			});
-
-			it('should fail silently when the NotificationEvent.REGISTRATION_FAILED is fired more then once', function () {
-				var spy = sandbox.spy(RegistrationErrorView.getInstance(), 'render');
-
-				instance.setContext(context);
-				broadcasterService.emit(NotificationEvent.REGISTRATION_FAILED);
-				broadcasterService.emit(NotificationEvent.REGISTRATION_FAILED);
-
-				spy.should.have.been.calledWith(context);
-			});
-
-			it('should render the emptyView when the registrationErrorView fires a NotificationEvent.CLOSE event', function () {
-				instance.setContext(context);
-
-				var spy = sandbox.spy(EmptyView.getInstance(), 'render');
-				broadcasterService.emit(NotificationEvent.REGISTRATION_FAILED);
-				RegistrationErrorView.getInstance().emit(NotificationEvent.CLOSE);
-
-				spy.should.have.been.calledWith(context);
-			});
-
-			it('should fail silently when the registrationErrorView fires a NotificationEvent.CLOSE is fired more then once', function () {
-				instance.setContext(context);
-
-				var spy = sandbox.spy(EmptyView.getInstance(), 'render');
-				broadcasterService.emit(NotificationEvent.REGISTRATION_FAILED);
-				RegistrationErrorView.getInstance().emit(NotificationEvent.CLOSE);
-				RegistrationErrorView.getInstance().emit(NotificationEvent.CLOSE);
-
-				spy.should.have.been.calledWith(context);
-			});
+			spy.should.have.been.calledWith(context);
 		});
 	});
 });

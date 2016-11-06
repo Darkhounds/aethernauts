@@ -47,190 +47,184 @@ describe('The AuthenticationController class', function () {
 		AuthenticationController.should.be.a('function');
 	});
 
+	it('should register to the ConnectionEvent.REGISTRATION_ERROR event on the connectionService during creation', function () {
+		var spy = sandbox.spy(ConnectionService.prototype, 'on');
+
+		var instance = new AuthenticationController(broadcasterService, connectionService);
+
+		spy.should.have.been.calledWith(ConnectionEvent.REGISTRATION_ERROR);
+	});
+
+	it('should register to the ConnectionEvent.CONNECTION_ERROR event on the connectionService during creation', function () {
+		var spy = sandbox.spy(ConnectionService.prototype, 'on');
+
+		var instance = new AuthenticationController(broadcasterService, connectionService);
+
+		spy.should.have.been.calledWith(ConnectionEvent.CONNECTION_ERROR);
+	});
+
+	it('should register to the ConnectionEvent.AUTHENTICATION_ERROR event on the connectionService during creation', function () {
+		var spy = sandbox.spy(ConnectionService.prototype, 'on');
+
+		var instance = new AuthenticationController(broadcasterService, connectionService);
+
+		spy.should.have.been.calledWith(ConnectionEvent.AUTHENTICATION_ERROR);
+	});
+
+	it('should register to the ConnectionEvent.OPENED event on the connectionService during creation', function () {
+		var spy = sandbox.spy(ConnectionService.prototype, 'on');
+
+		var instance = new AuthenticationController(broadcasterService, connectionService);
+
+		spy.should.have.been.calledWith(ConnectionEvent.OPENED);
+	});
+
+	it('should register to the ConnectionEvent.DISCONNECTED event on the connectionService during creation', function () {
+		var spy = sandbox.spy(ConnectionService.prototype, 'on');
+
+		var instance = new AuthenticationController(broadcasterService, connectionService);
+
+		spy.should.have.been.calledWith(ConnectionEvent.DISCONNECTED);
+	});
+
+	it('should register to the ConnectionEvent.RECONNECTED event on the connectionService during creation', function () {
+		var spy = sandbox.spy(ConnectionService.prototype, 'on');
+
+		var instance = new AuthenticationController(broadcasterService, connectionService);
+
+		spy.should.have.been.calledWith(ConnectionEvent.RECONNECTED);
+	});
+
+	it('should register to the ConnectionEvent.CLOSED event on the connectionService during creation', function () {
+		var spy = sandbox.spy(ConnectionService.prototype, 'on');
+
+		var instance = new AuthenticationController(broadcasterService, connectionService);
+
+		spy.should.have.been.calledWith(ConnectionEvent.CLOSED);
+	});
+
 	describe('as an instance', function () {
 		var instance;
 
 		beforeEach(function () {
-			instance = new AuthenticationController();
+			instance = new AuthenticationController(broadcasterService, connectionService);
 		});
 
 		it ('should be an instance of "AuthenticationController"', function () {
 			instance.should.be.an.instanceof(AuthenticationController);
 		});
 
-		it('should register to the ConnectionEvent.REGISTRATION_ERROR event on the connectionService during setup', function () {
-			var spy = sandbox.spy(ConnectionService.prototype, 'on');
 
-			instance.setup(broadcasterService, connectionService);
+		it ('should render the Login view when setting the context', function () {
+			var spy = sandbox.spy(LoginView.getInstance(), 'render');
 
-			spy.should.have.been.calledWith(ConnectionEvent.REGISTRATION_ERROR);
+			instance.setContext(context);
+
+			spy.should.have.been.calledWith(context);
 		});
 
-		it('should register to the ConnectionEvent.CONNECTION_ERROR event on the connectionService during setup', function () {
-			var spy = sandbox.spy(ConnectionService.prototype, 'on');
+		it ('should trigger a NotificationEvent.CONNECTION_FAILED on the broadcastService on a ConnectionEvent.CONNECTION_ERROR', function () {
+			var spy = sandbox.spy(broadcasterService, 'emit');
 
-			instance.setup(broadcasterService, connectionService);
+			connectionService.emit(ConnectionEvent.CONNECTION_ERROR);
 
-			spy.should.have.been.calledWith(ConnectionEvent.CONNECTION_ERROR);
+			spy.should.have.been.calledWith(NotificationEvent.CONNECTION_FAILED);
 		});
 
-		it('should register to the ConnectionEvent.AUTHENTICATION_ERROR event on the connectionService during setup', function () {
-			var spy = sandbox.spy(ConnectionService.prototype, 'on');
+		it ('should trigger a NotificationEvent.AUTHENTICATION_FAILED on the broadcastService on a ConnectionEvent.AUTHENTICATION_ERROR', function () {
+			var spy = sandbox.spy(broadcasterService, 'emit');
 
-			instance.setup(broadcasterService, connectionService);
+			connectionService.emit(ConnectionEvent.AUTHENTICATION_ERROR);
 
-			spy.should.have.been.calledWith(ConnectionEvent.AUTHENTICATION_ERROR);
+			spy.should.have.been.calledWith(NotificationEvent.AUTHENTICATION_FAILED);
 		});
 
-		it('should register to the ConnectionEvent.OPENED event on the connectionService during setup', function () {
-			var spy = sandbox.spy(ConnectionService.prototype, 'on');
+		it ('should trigger a NotificationEvent.REGISTRATION_FAILED on the broadcastService on a ConnectionEvent.REGISTRATION_ERROR', function () {
+			var errors = ['email', 'user', 'character'];
+			var spy = sandbox.spy(broadcasterService, 'emit');
 
-			instance.setup(broadcasterService, connectionService);
+			connectionService.emit(ConnectionEvent.REGISTRATION_ERROR, errors);
 
-			spy.should.have.been.calledWith(ConnectionEvent.OPENED);
+			spy.should.have.been.calledWith(NotificationEvent.REGISTRATION_FAILED, errors);
 		});
 
-		it('should register to the ConnectionEvent.DISCONNECTED event on the connectionService during setup', function () {
-			var spy = sandbox.spy(ConnectionService.prototype, 'on');
+		it ('should handle a login view AuthenticationEvent.AUTHENTICATE event', function () {
+			var spy = sandbox.spy(connectionService, 'open');
 
-			instance.setup(broadcasterService, connectionService);
+			LoginView.getInstance().emit(AuthenticationEvent.AUTHENTICATE, username, password);
 
-			spy.should.have.been.calledWith(ConnectionEvent.DISCONNECTED);
+			spy.should.have.been.calledWith(username, password);
 		});
 
-		it('should register to the ConnectionEvent.RECONNECTED event on the connectionService during setup', function () {
-			var spy = sandbox.spy(ConnectionService.prototype, 'on');
+		it ('should handle a login view AuthenticationEvent.REGISTER event', function () {
+			var spy = sandbox.spy(RegisterView.getInstance(), 'render');
 
-			instance.setup(broadcasterService, connectionService);
+			instance.setContext(context);
+			LoginView.getInstance().emit(AuthenticationEvent.REGISTER);
 
-			spy.should.have.been.calledWith(ConnectionEvent.RECONNECTED);
+			spy.should.have.been.calledWith(context);
 		});
 
-		it('should register to the ConnectionEvent.CLOSED event on the connectionService during setup', function () {
-			var spy = sandbox.spy(ConnectionService.prototype, 'on');
+		it ('should handle a register view AuthenticationEvent.REGISTER event', function () {
+			var spy = sandbox.spy(connectionService, 'register');
 
-			instance.setup(broadcasterService, connectionService);
+			RegisterView.getInstance().emit(AuthenticationEvent.REGISTER, email, username, password, character);
 
-			spy.should.have.been.calledWith(ConnectionEvent.CLOSED);
+			spy.should.have.been.calledWith(email, username, password, character);
 		});
 
-		describe('after the setup', function () {
+		it ('should handle a register view AuthenticationEvent.AUTHENTICATE event', function () {
+			instance.setContext(context);
 
-			beforeEach(function () {
-				instance.setup(broadcasterService, connectionService);
-			});
+			var spy = sandbox.spy(LoginView.getInstance(), 'render');
+			RegisterView.getInstance().emit(AuthenticationEvent.AUTHENTICATE);
 
-			it ('should render the Login view when setting the context', function () {
-				var spy = sandbox.spy(LoginView.getInstance(), 'render');
+			spy.should.have.been.calledWith(context);
+		});
 
-				instance.setContext(context);
+		it ('should render the Logout view after connecting', function () {
+			var spy = sandbox.spy(LogoutView.getInstance(), 'render');
 
-				spy.should.have.been.calledWith(context);
-			});
+			instance.setContext(context);
+			connectionService.emit(ConnectionEvent.OPENED);
 
-			it ('should trigger a NotificationEvent.CONNECTION_FAILED on the broadcastService on a ConnectionEvent.CONNECTION_ERROR', function () {
-				var spy = sandbox.spy(broadcasterService, 'emit');
+			spy.should.have.been.calledWith(context);
+		});
 
-				connectionService.emit(ConnectionEvent.CONNECTION_ERROR);
+		it ('should add the disconnected class to the context on connection service disconnected event', function () {
+			var spy = sandbox.spy(context.classList, 'add');
 
-				spy.should.have.been.calledWith(NotificationEvent.CONNECTION_FAILED);
-			});
+			instance.setContext(context);
+			connectionService.emit(ConnectionEvent.DISCONNECTED);
 
-			it ('should trigger a NotificationEvent.AUTHENTICATION_FAILED on the broadcastService on a ConnectionEvent.AUTHENTICATION_ERROR', function () {
-				var spy = sandbox.spy(broadcasterService, 'emit');
+			spy.should.have.been.calledWith('disconnected');
+		});
 
-				connectionService.emit(ConnectionEvent.AUTHENTICATION_ERROR);
+		it ('should remove the disconnected class from the context on connection service reconnected event', function () {
+			var spy = sandbox.spy(context.classList, 'remove');
 
-				spy.should.have.been.calledWith(NotificationEvent.AUTHENTICATION_FAILED);
-			});
+			instance.setContext(context);
+			connectionService.emit(ConnectionEvent.RECONNECTED);
 
-			it ('should trigger a NotificationEvent.REGISTRATION_FAILED on the broadcastService on a ConnectionEvent.REGISTRATION_ERROR', function () {
-				var errors = ['email', 'user', 'character'];
-				var spy = sandbox.spy(broadcasterService, 'emit');
+			spy.should.have.been.calledWith('disconnected');
+		});
 
-				connectionService.emit(ConnectionEvent.REGISTRATION_ERROR, errors);
+		it ('should handle a logout view AuthenticationEvent.LOGOUT event', function () {
+			var spy = sandbox.spy(connectionService, 'close');
 
-				spy.should.have.been.calledWith(NotificationEvent.REGISTRATION_FAILED, errors);
-			});
+			LogoutView.getInstance().emit(AuthenticationEvent.LOGOUT);
 
-			it ('should handle a login view AuthenticationEvent.AUTHENTICATE event', function () {
-				var spy = sandbox.spy(connectionService, 'open');
+			spy.should.have.been.calledOnce;
+		});
 
-				LoginView.getInstance().emit(AuthenticationEvent.AUTHENTICATE, username, password);
+		it ('should render the Login view after disconnecting', function () {
+			instance.setContext(context);
 
-				spy.should.have.been.calledWith(username, password);
-			});
+			var spy = sandbox.spy(LoginView.getInstance(), 'render');
 
-			it ('should handle a login view AuthenticationEvent.REGISTER event', function () {
-				var spy = sandbox.spy(RegisterView.getInstance(), 'render');
+			connectionService.emit(ConnectionEvent.CLOSED);
 
-				instance.setContext(context);
-				LoginView.getInstance().emit(AuthenticationEvent.REGISTER);
-
-				spy.should.have.been.calledWith(context);
-			});
-
-			it ('should handle a register view AuthenticationEvent.REGISTER event', function () {
-				var spy = sandbox.spy(connectionService, 'register');
-
-				RegisterView.getInstance().emit(AuthenticationEvent.REGISTER, email, username, password, character);
-
-				spy.should.have.been.calledWith(email, username, password, character);
-			});
-
-			it ('should handle a register view AuthenticationEvent.AUTHENTICATE event', function () {
-				instance.setContext(context);
-
-				var spy = sandbox.spy(LoginView.getInstance(), 'render');
-				RegisterView.getInstance().emit(AuthenticationEvent.AUTHENTICATE);
-
-				spy.should.have.been.calledWith(context);
-			});
-
-			it ('should render the Logout view after connecting', function () {
-				var spy = sandbox.spy(LogoutView.getInstance(), 'render');
-
-				instance.setContext(context);
-				connectionService.emit(ConnectionEvent.OPENED);
-
-				spy.should.have.been.calledWith(context);
-			});
-
-			it ('should add the disconnected class to the context on connection service disconnected event', function () {
-				var spy = sandbox.spy(context.classList, 'add');
-
-				instance.setContext(context);
-				connectionService.emit(ConnectionEvent.DISCONNECTED);
-
-				spy.should.have.been.calledWith('disconnected');
-			});
-
-			it ('should remove the disconnected class from the context on connection service reconnected event', function () {
-				var spy = sandbox.spy(context.classList, 'remove');
-
-				instance.setContext(context);
-				connectionService.emit(ConnectionEvent.RECONNECTED);
-
-				spy.should.have.been.calledWith('disconnected');
-			});
-
-			it ('should handle a logout view AuthenticationEvent.LOGOUT event', function () {
-				var spy = sandbox.spy(connectionService, 'close');
-
-				LogoutView.getInstance().emit(AuthenticationEvent.LOGOUT);
-
-				spy.should.have.been.calledOnce;
-			});
-
-			it ('should render the Login view after disconnecting', function () {
-				instance.setContext(context);
-
-				var spy = sandbox.spy(LoginView.getInstance(), 'render');
-
-				connectionService.emit(ConnectionEvent.CLOSED);
-
-				spy.should.have.been.calledWith(context);
-			});
+			spy.should.have.been.calledWith(context);
 		});
 	});
 });

@@ -9,10 +9,6 @@ var Constructor = function () {
 };
 util.inherits(Constructor, EventEmitter);
 
-Constructor.prototype._handleClose = function () {
-	this.emit(NotificationEvent.CLOSE);
-};
-
 Constructor.prototype.render = function (context) {
 	this._context = context;
 
@@ -20,6 +16,10 @@ Constructor.prototype.render = function (context) {
 	context.classList.remove('hidden');
 
 	this._context.querySelector('.wrong-credentials').addEventListener('click', this._handleClose);
+};
+
+Constructor.prototype._handleClose = function () {
+	this.emit(NotificationEvent.CLOSE);
 };
 
 module.exports = Constructor;
