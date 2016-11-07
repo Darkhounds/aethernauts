@@ -40,11 +40,9 @@ describe('The Pong Route class', function() {
 
 		it('should invoke the send method', function () {
 			var spy = sandbox.spy(eventManager, 'emit');
-			var data = {
-				socket: socket
-			}
+			var data = {};
 
-			return instance.execute(data).then(function () {
+			return instance.execute(data, socket).then(function () {
 				spy.should.have.been.calledWith(SocketEvent.PONG, socket).and.calledOnce;
 			});
 		});

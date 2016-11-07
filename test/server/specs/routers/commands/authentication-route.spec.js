@@ -57,17 +57,14 @@ describe('The Authentication Route class', function() {
 			var expectedPassword = 'encryptedPassword';
 			var spy = sandbox.spy(UsersModel.getInstance(), 'findOne');
 			var data = {
-				message: {
-					username: username,
-					password: password
-				},
-				socket: socket
+				username: username,
+				password: password
 			};
 
 			Cypher.addResponse(expectedPassword);
 			Cypher.addResponse(expectedPassword);
 			Cypher.addResponse(expectedPassword);
-			instance.execute(data);
+			instance.execute(data, socket);
 
 			spy.should.have.been.calledWith({ username: username, password: expectedPassword }).and.calledOnce;
 		});
@@ -76,15 +73,12 @@ describe('The Authentication Route class', function() {
 			var expectedMessage = JSON.stringify({ command: 'authentication', valid: false});
 			var spy = sandbox.spy(socket, 'send');
 			var data = {
-				message: {
-					username: username
-				},
-				socket: socket
+				username: username
 			};
 
 			UsersModel.addResponse(null, null);
 
-			return instance.execute(data).then(function () {
+			return instance.execute(data, socket).then(function () {
 				spy.should.have.been.calledWith(expectedMessage).and.calledOnces;
 			});
 		});
@@ -93,16 +87,13 @@ describe('The Authentication Route class', function() {
 			var expectedMessage = JSON.stringify({ command: 'authentication', valid: true, token: user.token });
 			var spy = sandbox.spy(socket, 'send');
 			var data = {
-				message: {
-					username: username
-				},
-				socket: socket
+				username: username
 			};
 
 			UsersModel.addResponse(null, user);
 			UsersModel.addResponse(null, [user]);
 
-			return instance.execute(data).then(function () {
+			return instance.execute(data, socket).then(function () {
 				spy.should.have.been.calledWith(expectedMessage).and.calledOnce;
 			});
 		});

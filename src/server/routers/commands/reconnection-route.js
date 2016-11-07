@@ -6,11 +6,11 @@ var Constructor = function (eventManager, dataStorage) {
 	this._usersModel = this._dataStorage.getModel('users');
 };
 
-Constructor.prototype.execute = function (data) {
-	return this._usersModel.findOne({ username: data.message.username, token: data.message.token })
+Constructor.prototype.execute = function (data, socket) {
+	return this._usersModel.findOne({ username: data.username, token: data.token })
 		.then(this._checkUserIsValid.bind(this))
-		.then(this._sendSuccess.bind(this, data.socket))
-		.catch(this._sendFailure.bind(this, data.socket));
+		.then(this._sendSuccess.bind(this, socket))
+		.catch(this._sendFailure.bind(this, socket));
 };
 
 Constructor.prototype._checkUserIsValid = function (user) {

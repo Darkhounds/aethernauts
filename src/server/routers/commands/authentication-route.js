@@ -7,16 +7,16 @@ var Constructor = function (eventManager, dataStorage, cypher) {
 	this._usersModel = this._dataStorage.getModel('users');
 };
 
-Constructor.prototype.execute = function (data) {
-	var decoded = this._cypher.decode(data.message.password);
-	var unmasked = this._cypher.unmask(decoded, data.socket.mask);
+Constructor.prototype.execute = function (data, socket) {
+	var decoded = this._cypher.decode(data.password);
+	var unmasked = this._cypher.unmask(decoded, socket.mask);
 	var password = this._cypher.encrypt(unmasked);
 
-	return this._usersModel.findOne({ username: data.message.username.toLowerCase(), password: password })
+	return this._usersModel.findOne({ username: data.username.toLowerCase(), password: password })
 		.then(this._checkUserIsValid.bind(this))
 		.then(this._updateUserToken.bind(this))
-		.then(this._sendSuccess.bind(this, data.socket))
-		.catch(this._sendFailure.bind(this, data.socket));
+		.then(this._sendSuccess.bind(this, socket))
+		.catch(this._sendFailure.bind(this, socket));
 };
 
 

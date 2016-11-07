@@ -5,11 +5,11 @@ var Constructor = function (eventManager, dataStorage) {
 	this._dataStorage = dataStorage;
 };
 
-Constructor.prototype.execute = function (data) {
+Constructor.prototype.execute = function (data, socket) {
 	return when.resolve().then(function () {
-		var message = JSON.stringify({ command: 'error', code:'unknownCommand', message: data.message.command });
+		var message = JSON.stringify({ command: 'error', code:'unknownCommand', message: data.command });
 
-		data.socket.send(message);
+		socket.send(message);
 	});
 };
 

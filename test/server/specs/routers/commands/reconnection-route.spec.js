@@ -52,14 +52,11 @@ describe('The Reconnection Route class', function () {
 		it('should send the expected message when reconnection fails', function () {
 			var expectedMessage = JSON.stringify({ command: 'reconnection', valid: false});
 			var spy = sandbox.spy(socket, 'send');
-			var data = {
-				message: {},
-				socket: socket
-			};
+			var data = {};
 
 			UsersModel.addResponse(null, null);
 
-			return instance.execute(data).then(function () {
+			return instance.execute(data, socket).then(function () {
 				spy.should.have.been.calledWith(expectedMessage);
 			});
 		});
@@ -67,15 +64,12 @@ describe('The Reconnection Route class', function () {
 		it('should send the expected message when reconnection succeeds', function () {
 			var expectedMessage = JSON.stringify({ command: 'reconnection', valid: true});
 			var spy = sandbox.spy(socket, 'send');
-			var data = {
-				message: {},
-				socket: socket
-			};
+			var data = {};
 
 			UsersModel.addResponse(null, user);
 			UsersModel.addResponse(null, [user]);
 
-			return instance.execute(data).then(function () {
+			return instance.execute(data, socket).then(function () {
 				spy.should.have.been.calledWith(expectedMessage);
 			});
 		});

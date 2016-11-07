@@ -33,16 +33,12 @@ describe('The Unknown Route class', function() {
 
 		it('should send the expected message', function () {
 			var spy = sandbox.spy(socket, 'send');
-			var message = {
+			var data = {
 				command: 'bogus'
 			};
-			var data = {
-				message: message,
-				socket: socket
-			};
-			var expectedMessage = JSON.stringify({ command: 'error', code:'unknownCommand', message: message.command })
+			var expectedMessage = JSON.stringify({ command: 'error', code:'unknownCommand', message: data.command })
 
-			return instance.execute(data).then(function () {
+			return instance.execute(data, socket).then(function () {
 				spy.should.have.been.calledWith(expectedMessage).and.calledOnce;
 			});
 		});
